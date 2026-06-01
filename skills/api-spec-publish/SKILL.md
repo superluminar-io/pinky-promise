@@ -1,6 +1,6 @@
 ---
 name: api-spec-publish
-description: "Publish a service's API spec to the registry. Invoke when finishing a branch that has a draft spec or unresolved guardian decisions."
+description: "Invoke when completing a branch where the public API was defined or changed. Commits the draft public API definition to the registry. Typical triggers: branch completion, 'ready to merge', 'done with this feature', or when a draft public API or unresolved versioning decisions are in context."
 ---
 
 # API Spec Publish

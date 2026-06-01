@@ -1,6 +1,6 @@
 ---
 name: api-change-guardian
-description: "Detect changes to a published API spec and force a conscious versioning decision. Invoke when a brainstorm or plan proposes changes to a service's public interface."
+description: "Invoke before adopting any design or plan that modifies a service's published public API — operations added, removed, or renamed; inputs or outputs changed. Typical triggers: 'remove this endpoint', 'rename this operation', 'change the response shape', 'change the parameter type to string', 'breaking change', 'simplify the API', 'the interface should look different'."
 ---
 
 # API Change Guardian

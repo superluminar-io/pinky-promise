@@ -1,6 +1,6 @@
 ---
 name: api-contract-check
-description: "Validate the current implementation or plan against published API specs. Invoke when writing plans that call another service, or when reviewing consumer code."
+description: "Invoke before finalizing any plan or code that calls another service's public API. Verifies the call matches the published interface contract. Typical triggers: 'this service calls X', 'integrate with Y', 'use Z's API', 'make a request to', code that imports or invokes an external service client."
 ---
 
 # API Contract Check
