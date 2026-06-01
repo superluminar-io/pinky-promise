@@ -76,7 +76,7 @@ ls /tmp/api-registry-check/services/<service-name>/ 2>/dev/null
 ```
 
 If the service directory does not exist:
-> "Warning: [service-name] has no published spec in the registry. Skipping contract check for this service."
+> "Warning: **[service-name]** has no entry in the registry. Run `/api-spec-import <url-to-spec>` to register it and enable contract checking. Skipping contract check for this service."
 
 Continue to the next dependency.
 
