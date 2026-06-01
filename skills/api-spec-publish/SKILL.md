@@ -1,3 +1,8 @@
+---
+name: api-spec-publish
+description: "Publish a service's API spec to the registry. Invoke when finishing a branch that has a draft spec or unresolved guardian decisions."
+---
+
 # API Spec Publish
 
 Publish a service's API spec to the registry.

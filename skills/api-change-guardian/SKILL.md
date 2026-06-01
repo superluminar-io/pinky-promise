@@ -1,3 +1,8 @@
+---
+name: api-change-guardian
+description: "Detect changes to a published API spec and force a conscious versioning decision. Invoke when a brainstorm or plan proposes changes to a service's public interface."
+---
+
 # API Change Guardian
 
 Detect changes to a published API spec and force a conscious versioning decision.

@@ -1,3 +1,8 @@
+---
+name: api-spec-brainstorming
+description: "Define the public API surface of a service alongside a brainstorming session. Invoke when brainstorming a service that has no published spec in the registry."
+---
+
 # API Spec Brainstorming
 
 Define the public API surface of a service in parallel with the superpowers brainstorming skill.

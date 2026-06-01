@@ -1,3 +1,8 @@
+---
+name: api-contract-check
+description: "Validate the current implementation or plan against published API specs. Invoke when writing plans that call another service, or when reviewing consumer code."
+---
+
 # API Contract Check
 
 Validate the current implementation or plan against published API specs.
