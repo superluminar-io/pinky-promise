@@ -1,0 +1,78 @@
+{
+  "name": "user-service",
+  "version": "1.0.0",
+  "description": "Manages users and authentication",
+  "operations": [
+    {
+      "name": "getUser",
+      "kind": "operation",
+      "input": {
+        "userId": { "type": "string" }
+      },
+      "output": { "type": "User" }
+    },
+    {
+      "name": "createUser",
+      "kind": "operation",
+      "input": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "age": { "optional": true, "type": "number" }
+      },
+      "output": { "type": "User" }
+    }
+  ],
+  "events": [
+    {
+      "name": "userCreated",
+      "kind": "event",
+      "payload": { "type": "User" }
+    }
+  ],
+  "subscriptions": [
+    {
+      "name": "watchUser",
+      "kind": "subscription",
+      "input": {
+        "userId": { "type": "string" }
+      },
+      "output": { "type": "User" }
+    }
+  ],
+  "types": {
+    "User": {
+      "kind": "object",
+      "fields": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "age": { "optional": true, "type": "number" },
+        "status": { "type": "UserStatus" }
+      }
+    },
+    "UserStatus": {
+      "kind": "enum",
+      "values": ["active", "inactive", "banned"]
+    }
+  },
+  "bindings": [
+    {
+      "protocol": "http-json-rest",
+      "operations": {
+        "getUser": { "method": "GET", "path": "/users/{userId}" },
+        "createUser": { "method": "POST", "path": "/users" }
+      },
+      "connection": {
+        "url": "https://api.example.com/v1"
+      }
+    },
+    {
+      "protocol": "grpc",
+      "service": "UserService",
+      "operations": {
+        "getUser": { "rpc": "GetUser" },
+        "createUser": { "rpc": "CreateUser" }
+      }
+    }
+  ]
+}
