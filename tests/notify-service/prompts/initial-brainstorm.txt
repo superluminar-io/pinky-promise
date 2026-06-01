@@ -1,0 +1,20 @@
+I'm starting a new service called notify-service.
+
+It does two things:
+
+**Public API (producer)**
+
+Sync operations:
+- sendNotification(recipientId, channel, payload) → deliveryId
+- cancelNotification(deliveryId) → cancelled: bool
+- getDeliveryStatus(deliveryId) → status, attempts, lastError
+
+Async patterns:
+- subscribeToDeliveryEvents(recipientId) — ongoing stream of delivery status changes
+- deliveryFailed event — fire-and-forget, emitted when a delivery has permanently failed
+
+**Internal self-consumption (consumer)**
+
+The service has a dead-letter queue processor that runs on a cron schedule. When a delivery exhausts all retries, the processor calls the service's own sendNotification operation to emit a system-level deliveryFailed notification to any ops subscribers. The processor is cron-driven and only emits deliveryFailed notifications — deliveryFailed notifications are never retried, so there is no recursion.
+
+Let's brainstorm the design.
