@@ -48,7 +48,8 @@ If `<source>` is a local file path, read it directly with the Read tool.
 
 ### 4. Detect format
 
-Inspect the content:
+Check in order — the first match wins:
+
 - JSON/YAML containing `"openapi":` or `openapi:` at the top level → OpenAPI 3.x
 - JSON/YAML containing `"swagger":` or `swagger:` at the top level → OpenAPI 2.x (Swagger)
 - Contains `syntax = "proto` → gRPC Protocol Buffers
@@ -65,10 +66,12 @@ Stop.
 
 **gRPC**: derive name from the proto `package` declaration converted to kebab-case. Ask the user for a version string if the proto does not declare one.
 
-**GraphQL**: ask the user for both service name (kebab-case) and version string.
+**GraphQL**: ask the user for both service name (kebab-case) and version string. If the user does not provide a version, use `"unknown"`.
 
 Confirm with the user:
 > "Service name: `<derived-name>`, external version: `<external-version>`. Press enter to confirm or provide corrections."
+
+If the user provides corrections, use their values as-is without re-deriving. For gRPC and GraphQL where the user is asked directly, use their input verbatim.
 
 ### 6. Check for existing registry entry
 
@@ -80,6 +83,8 @@ If clone fails:
 > "Registry unreachable. Check your SSH key and API_REGISTRY_REPO value."
 
 Stop.
+
+**Note:** From this point on, if execution stops for any reason, run `rm -rf /tmp/api-registry-import` before stopping.
 
 ```bash
 ls /tmp/api-registry-import/services/<service-name>/ 2>/dev/null | sort -V | tail -1
@@ -139,7 +144,7 @@ Use all converted operations. Proceed to step 9.
 
 Scan the current codebase for references to `<service-name>` or its client class:
 ```bash
-grep -r "<service-name>\|<ServiceNameClient>\|<ServiceName>Client" . \
+grep -rE "<service-name>|<ServiceNameClient>|<ServiceName>Client" . \
   --include="*.ts" --include="*.tsx" --include="*.js" \
   --include="*.py" --include="*.go" --include="*.java" \
   -l 2>/dev/null
@@ -181,6 +186,8 @@ Present as a selection list:
 
 Wait for 'done' before proceeding.
 
+If the user types 'cancel' or 'quit', stop and run `rm -rf /tmp/api-registry-import`.
+
 ### 9. Determine pinky-swear version
 
 **First import:** version is `1.0.0`.
@@ -189,6 +196,7 @@ Wait for 'done' before proceeding.
 - Operations or types added only → minor bump (e.g. `1.0.0` → `1.1.0`)
 - Operations removed or input/output signatures changed → major bump (e.g. `1.0.0` → `2.0.0`)
 - Only description or metadata changes → patch bump (e.g. `1.0.0` → `1.0.1`)
+- Confirmed set is identical to the previous entry → patch bump, reason: 'no functional changes'
 
 Propose to user:
 > "Proposed version: `<new-version>` (<bump-type> bump — <reason>). Press enter to confirm or type a different version."
@@ -203,7 +211,7 @@ Build the final IDL JSON:
   "_source": {
     "url": "<source>",
     "external_version": "<external-version>",
-    "imported_at": "<YYYY-MM-DD>"
+    "imported_at": "<today's date — use the currentDate context variable if available, otherwise run: date +%F>"
   },
   "operations": [ ...confirmed operations only... ],
   "events": [ ...confirmed events only... ],
@@ -223,15 +231,16 @@ mkdir -p /tmp/api-registry-import/services/<service-name>
 Write the JSON to `/tmp/api-registry-import/services/<service-name>/<pinky-swear-version>.json`.
 
 ```bash
-cd /tmp/api-registry-import
-git add services/<service-name>/<version>.json
-git commit -m "<service-name>: <version> (import) — imported from <source>"
-git push
-cd -
+git -C /tmp/api-registry-import add services/<service-name>/<version>.json
+git -C /tmp/api-registry-import commit -m "<service-name>: <version> (import) — imported from <source>"
+git -C /tmp/api-registry-import push
 rm -rf /tmp/api-registry-import
 ```
 
 If `git push` fails:
+```bash
+rm -rf /tmp/api-registry-import
+```
 > "Registry write failed (git push error). The converted IDL is shown below — copy it and push manually."
 
 Display the full JSON. Do not stop the session.
