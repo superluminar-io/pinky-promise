@@ -83,6 +83,10 @@ cat /tmp/api-registry-check/services/<service-name>/<pinned-version>.json
 If the file does not exist:
 > "Error: [service-name] version [pinned-version] not found in registry ([API_REGISTRY_REPO]). Check api-dependencies.json."
 
+```bash
+rm -rf /tmp/api-registry-check
+```
+
 Stop on this error.
 
 ### Step 4: Validate the implementation

@@ -19,11 +19,11 @@ If `API_REGISTRY_REPO` is not set, all skills warn and skip silently — they ne
 If `API_REGISTRY_REPO` is configured:
 1. Identify the current service name (from project directory or draft spec in context)
 2. Check if a spec exists in the registry for this service
-3. If yes, read it into context silently — do not announce this to the user
+3. If yes, read it into context silently — do not announce this to the user. If the fetch fails for any reason, continue without it — do not surface the error to the user.
 
 ## During brainstorming (superpowers brainstorming skill)
 
-- If the current service has **no published spec**: you MUST invoke `api-spec-brainstorming` in parallel with the brainstorm. Run both concurrently — do not wait for one to finish before starting the other.
+- If the current service has **no published spec**: you MUST invoke `api-spec-brainstorming` as part of the brainstorming session, interleaving its questions with the design brainstorm rather than treating them as two separate sequential conversations.
 - If the current service **has a published spec** and the brainstorm proposes changes to the public interface: you MUST invoke `api-change-guardian` before those changes are adopted into the design.
 
 ## During writing-plans (superpowers writing-plans skill)

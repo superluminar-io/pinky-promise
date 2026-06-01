@@ -64,7 +64,7 @@ ls /tmp/api-registry-publish/services/<service-name>/ 2>/dev/null | sort -V | ta
 
 **First publish:** No versions found → version is `1.0.0`.
 
-**Subsequent publish:** Current version is the last result above. Apply the highest bump classification from all guardian decisions recorded in this session (major > minor > patch). If no guardian decisions were recorded, use the version already in the draft spec.
+**Subsequent publish:** Current version is the last result above. Apply the highest bump classification from all guardian decisions recorded in this session (major > minor > patch). If no guardian decisions were recorded, apply a patch bump to the current registry version.
 
 Calculate the new semver:
 - patch: increment third number (1.2.3 → 1.2.4)
@@ -97,19 +97,15 @@ Verify the file:
 cat /tmp/api-registry-publish/services/<service-name>/<new-version>.json
 ```
 
-Commit:
+Commit and push:
 ```bash
 cd /tmp/api-registry-publish
 git add services/<service-name>/<new-version>.json
 git commit -m "<service-name>: <new-version> (<bump>) — <one-line summary>"
+git push origin main
 ```
 
 The summary describes the most significant change (e.g. "added listUsers operation", "removed deprecated getUser", "updated connection URL").
-
-Push:
-```bash
-git push origin main
-```
 
 ### Step 6: Announce and clean up
 

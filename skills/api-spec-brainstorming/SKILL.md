@@ -67,7 +67,7 @@ For each binding:
 
 ### 7. Produce the draft IDL
 
-Synthesize all answers into a valid IDL JSON following the format in `docs/idl-reference.md`. Use version `1.0.0` for all first-time specs.
+Synthesize all answers into a valid IDL JSON following the format in `docs/idl-reference.md`. Use version `1.0.0` for first-time specs. If this is a major version redesign (invoked alongside a planned major bump), use the new major version number from the guardian-recorded decision (e.g. `2.0.0`).
 
 State it explicitly:
 

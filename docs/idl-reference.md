@@ -182,6 +182,7 @@ For gRPC bindings, a `service` field names the protobuf service:
 |---|---|
 | Add operation, event, subscription, or optional field | minor |
 | Remove or change any operation, event, subscription, or type | major |
+| Add a required field to an existing type | major |
 | Deprecate any member | minor |
 | Change descriptions or connection properties | patch |
 

@@ -43,7 +43,13 @@ Stop.
 ls /tmp/api-registry-check/services/<service-name>/ 2>/dev/null | sort -V | tail -1
 ```
 
-If no versions exist, this is a new service — no published contract to check. Clean up and stop.
+If no versions exist, this is a new service — no published contract to check.
+
+```bash
+rm -rf /tmp/api-registry-check
+```
+
+Stop.
 
 Read the spec:
 ```bash
@@ -66,6 +72,7 @@ Apply these rules to each change:
 | Change | Classification |
 |---|---|
 | Remove or change an existing operation, event, subscription, or type | **major** |
+| Add a required field to an existing type | **major** |
 | Add a new operation, event, or subscription | **minor** |
 | Add an optional field to an existing type | **minor** |
 | Deprecate a member | **minor** |

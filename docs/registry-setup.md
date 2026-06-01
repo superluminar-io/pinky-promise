@@ -9,8 +9,9 @@ mkdir api-registry
 cd api-registry
 git init
 mkdir -p services
-git add services
-git commit --allow-empty -m "chore: init registry"
+touch services/.gitkeep
+git add services/
+git commit -m "chore: init registry"
 git remote add origin git@github.com:yourorg/api-registry.git
 git push -u origin main
 ```
