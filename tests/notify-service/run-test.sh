@@ -34,8 +34,11 @@ echo ""
 
 cp "$PROMPT_FILE" "$OUTPUT_DIR/prompt.txt"
 
-# Run Claude headlessly with pinky-swear loaded
+# Run Claude headlessly with pinky-swear loaded.
+# API_REGISTRY_REPO must be set (any value) — without it, pinky-swear skips all
+# skill invocations silently per its CLAUDE.md configuration guard.
 cd "$OUTPUT_DIR"
+API_REGISTRY_REPO="${API_REGISTRY_REPO:-git@github.com:test/api-registry.git}" \
 timeout 300 claude -p "$PROMPT" \
   --plugin-dir "$PLUGIN_DIR" \
   --dangerously-skip-permissions \
@@ -47,8 +50,10 @@ echo "=== Results ==="
 
 PASS=true
 
-# Assert api-spec-brainstorming was invoked
-if grep -q '"name":"Skill"' "$LOG_FILE" && grep -q '"skill":"api-spec-brainstorming"' "$LOG_FILE"; then
+# Assert api-spec-brainstorming was invoked.
+# Match bare name or namespace-prefixed form (e.g. pinky-swear:api-spec-brainstorming).
+SKILL_PATTERN='"skill":"([^"]*:)?api-spec-brainstorming"'
+if grep -q '"name":"Skill"' "$LOG_FILE" && grep -qE "$SKILL_PATTERN" "$LOG_FILE"; then
   echo "PASS: api-spec-brainstorming was triggered"
 else
   echo "FAIL: api-spec-brainstorming was NOT triggered"
