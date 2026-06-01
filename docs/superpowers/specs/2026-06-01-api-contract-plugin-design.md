@@ -171,16 +171,31 @@ Both forms are valid. Use inline when the shape is simple and local; use a type 
 
 #### Type system
 
-Primitives: `string`, `number`, `boolean`, `null`
+**Inline type expressions** — used directly in `input`, `output`, `payload`, and field definitions:
 
 ```json
-{ "type": "string" }
-{ "type": "array", "items": { "type": "string" } }
-{ "type": "User" }                              // reference to types map
-{ "optional": true, "type": "string" }          // optional wrapper on any type
+{ "type": "string" }                                         // primitive: string, number, boolean, null
+{ "type": "array", "items": { "type": "string" } }          // array of any inline type
+{ "type": "User" }                                           // reference to a named type in types map
+{ "optional": true, "type": "string" }                      // optional wrapper on any inline type
 ```
 
-Named types (defined in `types` map): `object`, `enum`, `union`.
+**Named types** — defined in the `types` map, referenced by name. `object`, `enum`, and `union` must be declared here; they cannot appear inline:
+
+```json
+"Status": { "kind": "enum", "values": ["active", "inactive", "banned"] },
+"UserId": { "kind": "union", "variants": [{ "type": "string" }, { "type": "number" }] },
+"User": {
+  "kind": "object",
+  "fields": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "age": { "optional": true, "type": "number" }
+  }
+}
+```
+
+Variants in a union and items in an array are inline type expressions. Named types may reference other named types.
 
 #### Bindings
 
