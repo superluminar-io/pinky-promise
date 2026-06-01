@@ -1,4 +1,4 @@
-# claude-api-plugin
+# pinky-swear
 
 This plugin manages API contracts between producer and consumer services. It integrates with the superpowers development workflow.
 

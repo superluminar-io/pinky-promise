@@ -1,4 +1,4 @@
-# claude-api-plugin
+# pinky-swear
 
 A Claude Code plugin for managing API contracts between producer and consumer services.
 

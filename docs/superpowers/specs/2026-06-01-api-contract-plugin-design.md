@@ -1,4 +1,4 @@
-# API Contract Plugin Design
+# pinky-swear Design
 
 **Date:** 2026-06-01
 **Status:** Draft
