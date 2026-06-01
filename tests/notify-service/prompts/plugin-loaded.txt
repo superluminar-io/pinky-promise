@@ -1,0 +1,1 @@
+What plugins are loaded in this session? List any skills or CLAUDE.md instructions you have access to from a plugin called pinky-swear.

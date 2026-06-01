@@ -40,6 +40,7 @@ cp "$PROMPT_FILE" "$OUTPUT_DIR/prompt.txt"
 cd "$OUTPUT_DIR"
 API_REGISTRY_REPO="${API_REGISTRY_REPO:-git@github.com:test/api-registry.git}" \
 claude -p "$PROMPT" \
+  --verbose \
   --plugin-dir "$PLUGIN_DIR" \
   --dangerously-skip-permissions \
   --max-turns "$MAX_TURNS" \
