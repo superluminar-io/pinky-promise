@@ -4,6 +4,10 @@
 
 Allow developers to register external third-party API specs (OpenAPI, gRPC, GraphQL) in the pinky-swear registry so that `api-contract-check` can validate consumer code against those external interfaces — catching hallucinated parameters and incorrect types introduced by the coding agent.
 
+Secondary goals enabled by having accurate external specs in the registry:
+- **Client codegen**: generate type-safe client code for an external service directly from its registry entry
+- **MCP server generation**: generate an MCP server that proxies an external service's operations as tools, letting AI agents call the service directly
+
 ## Invocation
 
 User-invocable slash command:
@@ -58,13 +62,46 @@ Claude fetches the spec (via `curl` for URLs, reads directly for local files) an
 
 | Source format | Operations | Events | Types | Bindings |
 |---|---|---|---|---|
-| OpenAPI 3.x/2.x | paths + HTTP methods | `webhooks` section | `$ref` schemas | protocol + server URL |
-| gRPC proto | unary RPC methods | — | `message` types | gRPC + service address |
-| gRPC proto (streaming) | server-streaming RPCs | client-streaming RPCs | `message` types | gRPC + service address |
-| GraphQL SDL | queries + mutations | — | object types | GraphQL + endpoint URL |
-| GraphQL SDL | — | subscriptions → IDL subscriptions | object types | GraphQL + endpoint URL |
+| OpenAPI 3.x/2.x | paths + HTTP methods | `webhooks` section | `$ref` schemas | protocol + named environments |
+| gRPC proto | unary RPC methods | — | `message` types | gRPC + named environments |
+| gRPC proto (streaming) | server-streaming RPCs | client-streaming RPCs | `message` types | gRPC + named environments |
+| GraphQL SDL | queries + mutations | — | object types | GraphQL + named environments |
+| GraphQL SDL | — | subscriptions → IDL subscriptions | object types | GraphQL + named environments |
 
 Member names are converted to camelCase. Type names are converted to PascalCase. Service name is derived from `info.title` (OpenAPI) or package name (gRPC/GraphQL), converted to kebab-case.
+
+### Binding format
+
+Bindings use named environments rather than a single connection URL. Each environment entry is an object with a `url` and an optional `auth` block (defined by the binding-spec-extension design). Sensitive values use `${VAR_NAME}` env var template syntax and are never hardcoded:
+
+```json
+"bindings": [{
+  "protocol": "http",
+  "environments": {
+    "dev": {
+      "url": "https://service-dev.internal",
+      "auth": { "type": "basic", "username": "${DEV_USER}", "password": "${DEV_PASSWORD}" }
+    },
+    "staging": {
+      "url": "https://service-staging.internal",
+      "auth": {
+        "type": "oauth2",
+        "flow": "client_credentials",
+        "tokenUrl": "https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token",
+        "clientId": "${ENTRA_CLIENT_ID}",
+        "clientSecret": "${ENTRA_CLIENT_SECRET}",
+        "scopes": ["api://service/.default"]
+      }
+    },
+    "prod": {
+      "url": "https://service.example.com",
+      "auth": { "type": "none" }
+    }
+  }
+}]
+```
+
+The full `auth` type catalogue (`none`, `basic`, `bearer`, `api_key`, `oauth2`) is defined in the **binding-spec-extension** design. The import skill populates the `url` fields from the source spec's server definitions and leaves `auth` blocks empty for the user to fill in, since auth configuration is not part of external spec formats.
 
 ## Modes
 
@@ -117,3 +154,7 @@ Three hook points:
 | `skills/api-contract-check/SKILL.md` | Add: surface import suggestion for unregistered external services |
 
 No changes to `api-spec-brainstorming`, `api-change-guardian`, or `api-spec-publish`.
+
+## Dependencies
+
+- **binding-spec-extension**: defines the named environments + auth type catalogue used in `bindings`. Must be designed and implemented before codegen or MCP server generation are possible. The import skill can land without it (auth blocks left empty), but the full binding format depends on it.
