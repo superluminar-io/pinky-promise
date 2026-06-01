@@ -25,11 +25,15 @@ If `API_REGISTRY_REPO` is configured:
 
 - If the current service has **no published spec**: you MUST invoke `api-spec-brainstorming` as part of the brainstorming session, interleaving its questions with the design brainstorm rather than treating them as two separate sequential conversations.
 - If the current service **has a published spec** and the brainstorm proposes changes to the public interface: you MUST invoke `api-change-guardian` before those changes are adopted into the design.
+- If the brainstorm mentions **calling an external service** (a service not developed in this repo) and no registry entry exists for it: you MUST surface this before the brainstorm concludes:
+  > "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
 
 ## During writing-plans (superpowers writing-plans skill)
 
 - If the plan involves **calling another service**: you MUST invoke `api-contract-check` before the plan is finalized.
 - If the plan proposes **changes to the current service's public interface**: you MUST invoke `api-change-guardian` before the plan is finalized.
+- If the plan involves **calling an external service** with no registry entry: you MUST surface this before the plan is finalized:
+  > "The plan depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before finalizing this plan."
 
 ## During subagent-driven-development (superpowers subagent-driven-development skill)
 
