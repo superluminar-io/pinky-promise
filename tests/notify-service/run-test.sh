@@ -68,8 +68,8 @@ grep -o '"skill":"[^"]*"' "$LOG_FILE" 2>/dev/null | sort -u || echo "  (none)"
 if [ "$VERBOSE" = "true" ]; then
   echo ""
   echo "First assistant response:"
-  grep '"type":"assistant"' "$LOG_FILE" | head -1 \
-    | jq -r '.message.content[0].text // .message.content' 2>/dev/null | head -c 800 \
+  grep '"type":"result"' "$LOG_FILE" | head -1 \
+    | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('result','')[:800])" 2>/dev/null \
     || echo "  (could not extract)"
 fi
 

@@ -37,9 +37,9 @@ claude -p "$PROMPT" \
 
 echo "=== Results ==="
 
-# Extract assistant text response
-RESPONSE=$(grep '"type":"assistant"' "$LOG_FILE" | head -1 \
-  | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); [print(c['text']) for c in d.get('message',{}).get('content',[]) if c.get('type')=='text']" 2>/dev/null || echo "")
+# Extract final result text (stream-json puts the full response in "type":"result")
+RESPONSE=$(grep '"type":"result"' "$LOG_FILE" | head -1 \
+  | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('result',''))" 2>/dev/null || echo "")
 
 if [ -z "$RESPONSE" ]; then
   echo "FAIL: no assistant response — plugin may have failed to load"
