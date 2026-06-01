@@ -37,6 +37,12 @@ A notification service that is simultaneously a producer (public sendNotificatio
 
 **Asserts:** `api-spec-brainstorming` is invoked when brainstorming a service with no published spec.
 
+### import-external-spec
+
+A slash command invocation of `/api-spec-import` with a public OpenAPI spec URL.
+
+**Asserts:** `api-spec-import` skill is invoked when the user requests an external spec import.
+
 ## Adding a new scenario
 
 1. Create `tests/<scenario-name>/prompts/<prompt>.txt`
