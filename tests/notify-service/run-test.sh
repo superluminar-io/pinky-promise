@@ -11,7 +11,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 PROMPT_FILE="$SCRIPT_DIR/prompts/initial-brainstorm.txt"
-MAX_TURNS=3
+MAX_TURNS=10
 VERBOSE=false
 
 for arg in "$@"; do
