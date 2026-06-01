@@ -39,7 +39,7 @@ cp "$PROMPT_FILE" "$OUTPUT_DIR/prompt.txt"
 # skill invocations silently per its CLAUDE.md configuration guard.
 cd "$OUTPUT_DIR"
 API_REGISTRY_REPO="${API_REGISTRY_REPO:-git@github.com:test/api-registry.git}" \
-timeout 300 claude -p "$PROMPT" \
+claude -p "$PROMPT" \
   --plugin-dir "$PLUGIN_DIR" \
   --dangerously-skip-permissions \
   --max-turns "$MAX_TURNS" \
