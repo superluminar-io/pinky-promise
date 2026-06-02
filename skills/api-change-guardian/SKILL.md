@@ -69,9 +69,12 @@ cat /tmp/api-registry-check/services/<service-name>/<current-version>.json
 From the conversation context, determine exactly what is changing:
 - Which operations/events/subscriptions are being added, removed, or changed
 - Which types are being added, removed, or changed
-- Which descriptions or connection properties are changing
+- Which member descriptions are changing
 
-List each change explicitly before classifying.
+If only connection URLs, paths, or protocols are changing, these are binding changes — they belong in `bindings.json` and are not subject to semver. Stop and inform the user:
+> "This change only affects bindings (connection URLs, paths, or protocols). Update `bindings.json` directly — no contract version bump needed."
+
+List each contract change explicitly before classifying.
 
 ### Step 6: Classify
 
@@ -84,7 +87,7 @@ Apply these rules to each change:
 | Add a new operation, event, or subscription | **minor** |
 | Add an optional field to an existing type | **minor** |
 | Deprecate a member | **minor** |
-| Change a description or connection property | **patch** |
+| Change a description | **patch** |
 
 The overall classification is the highest across all individual changes (major > minor > patch).
 
