@@ -31,3 +31,6 @@ echo "Installing pinky-swear..."
 claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
 
 echo "Done. Plugin installed for $PROJECT_PATH only."
+echo ""
+echo "To pick up changes after editing the plugin source, run from $PROJECT_PATH:"
+echo "  claude plugin update pinky-swear@$MARKETPLACE_NAME --scope project"
