@@ -143,6 +143,9 @@ Use all converted operations. Proceed to step 9.
 **`--auto`** (default)
 
 Scan the current codebase for references to `<service-name>` or its client class:
+
+Substitute the actual derived service name and its PascalCase client class name for `<service-name>`, `<ServiceNameClient>`, and `<ServiceName>Client` in the grep pattern before running.
+
 ```bash
 grep -rE "<service-name>|<ServiceNameClient>|<ServiceName>Client" . \
   --include="*.ts" --include="*.tsx" --include="*.js" \
@@ -197,6 +200,7 @@ If the user types 'cancel' or 'quit', stop and run `rm -rf /tmp/api-registry-imp
 - Operations removed or input/output signatures changed → major bump (e.g. `1.0.0` → `2.0.0`)
 - Only description or metadata changes → patch bump (e.g. `1.0.0` → `1.0.1`)
 - Confirmed set is identical to the previous entry → patch bump, reason: 'no functional changes'
+- Operations or types both added AND removed/changed in the same re-import → major bump (the most-breaking change takes precedence)
 
 Propose to user:
 > "Proposed version: `<new-version>` (<bump-type> bump — <reason>). Press enter to confirm or type a different version."
@@ -232,10 +236,12 @@ Write the JSON to `/tmp/api-registry-import/services/<service-name>/<pinky-swear
 
 ```bash
 git -C /tmp/api-registry-import add services/<service-name>/<version>.json
-git -C /tmp/api-registry-import commit -m "<service-name>: <version> (import) — imported from <source>"
+git -C /tmp/api-registry-import commit -m "<service-name>: <version> (first-import|re-import) — imported from <source>"
 git -C /tmp/api-registry-import push
 rm -rf /tmp/api-registry-import
 ```
+
+Use `first-import` for first imports and `re-import` for subsequent ones.
 
 If `git push` fails:
 ```bash

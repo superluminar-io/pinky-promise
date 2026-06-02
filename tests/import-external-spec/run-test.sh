@@ -51,15 +51,19 @@ echo "=== Results ==="
 PASS=true
 
 # Slash command skills execute their content directly — the Skill tool is not
-# invoked. Assert on behavioural evidence: the result must mention format
-# detection or service name derivation, proving the skill steps ran.
+# invoked. Assert on behavioural evidence: the result must show both service
+# name derivation and version detection, proving the skill executed past
+# fetch+detect into derivation (step 5).
 RESULT=$(grep '"type":"result"' "$LOG_FILE" | head -1 \
   | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('result','').lower())" 2>/dev/null || echo "")
 
-if echo "$RESULT" | grep -qE "format detected|openapi|service name|swagger|petstore|api-spec-import"; then
-  echo "PASS: api-spec-import executed (skill steps observed in response)"
+# Require evidence of both step 5 (service name derivation) and step 5's
+# version field — proving the skill executed past fetch+detect into derivation.
+if echo "$RESULT" | grep -qE "(service name|derived service name|swagger-petstore|petstore)" && \
+   echo "$RESULT" | grep -qE "(external version|version.*1\.[0-9]|1\.0\.[0-9]+)"; then
+  echo "PASS: api-spec-import executed (service name and version derivation observed)"
 else
-  echo "FAIL: api-spec-import skill steps not observed in response"
+  echo "FAIL: api-spec-import skill steps not observed in response (expected service name + version derivation)"
   PASS=false
 fi
 
