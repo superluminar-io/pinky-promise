@@ -122,6 +122,16 @@ Produce two outputs — a contract and a bindings object — held in context unt
 | gRPC | `grpc` | rpc name per operation | — | first server address |
 | GraphQL | `graphql` | — | — | first server URL |
 
+**Description mapping** — populate `description` on each operation, event, and subscription:
+
+| Format | Source for `description` |
+|---|---|
+| OpenAPI 3.x/2.x | `summary` if present, otherwise `description`; strip HTML |
+| gRPC | Leading comment block above the `rpc` declaration (lines starting with `//`) |
+| GraphQL | Field description string |
+
+If no source text is available for a member, omit `description` rather than generating one.
+
 Naming rules:
 - Member names (operation names, parameter names, field names): camelCase
 - Type names: PascalCase

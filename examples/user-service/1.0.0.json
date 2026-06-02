@@ -6,6 +6,7 @@
     {
       "name": "getUser",
       "kind": "operation",
+      "description": "Fetch a user's full profile by ID. Use when you have a userId and need name, email, or status. Prefer this over listUsers when the ID is already known.",
       "input": {
         "userId": { "type": "string" }
       },
@@ -14,6 +15,7 @@
     {
       "name": "createUser",
       "kind": "operation",
+      "description": "Create a new user account. Use during onboarding or when provisioning an account on behalf of another service. Returns the created user including the assigned ID.",
       "input": {
         "name": { "type": "string" },
         "email": { "type": "string" },
@@ -26,6 +28,7 @@
     {
       "name": "userCreated",
       "kind": "event",
+      "description": "Emitted after a new user is successfully persisted. React to this to trigger welcome emails, audit logs, or downstream provisioning.",
       "payload": { "type": "User" }
     }
   ],
@@ -33,6 +36,7 @@
     {
       "name": "watchUser",
       "kind": "subscription",
+      "description": "Stream live updates for a specific user. Use when you need to react to profile or status changes in real time rather than polling getUser on an interval.",
       "input": {
         "userId": { "type": "string" }
       },

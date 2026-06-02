@@ -37,15 +37,20 @@ For each operation named:
 - Ask for input parameters (names and types)
 - Ask for the return value
 - Ask: "Is this truly part of the public contract, or is it an internal implementation detail?"
+- Ask: "When should a caller use this operation — and when should they prefer a different one?"
 
-Drop anything the user identifies as internal.
+Use the answer to the last question as the `description` field. Write it from the caller's perspective. Drop anything the user identifies as internal.
 
 ### 3. Identify events
 
 Ask:
 > "Does [service-name] emit any events that other services would react to? (fire-and-forget — no response expected)"
 
-For each event, ask for the payload structure.
+For each event:
+- Ask for the payload structure
+- Ask: "What triggers this event, and what should a consumer do when it receives it?"
+
+Use the answer as the `description` field.
 
 If none, proceed.
 
@@ -54,7 +59,11 @@ If none, proceed.
 Ask:
 > "Does [service-name] support any ongoing streams or subscriptions — where a caller receives repeated data over time?"
 
-For each subscription, ask for input (what the subscriber provides) and output (what they receive).
+For each subscription:
+- Ask for input (what the subscriber provides) and output (what they receive)
+- Ask: "When should a caller subscribe to this rather than polling via an operation?"
+
+Use the answer as the `description` field.
 
 If none, proceed.
 

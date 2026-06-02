@@ -24,6 +24,7 @@ Request/response. Caller sends `input`, receives `output`.
 {
   "name": "getUser",
   "kind": "operation",
+  "description": "Fetch a user's full profile by ID. Use when you have a userId and need name, email, or status. Prefer this over listing when the ID is already known.",
   "input": { "userId": { "type": "string" } },
   "output": { "type": "User" }
 }
@@ -37,6 +38,7 @@ Fire-and-forget. Producer emits `payload`, no response.
 {
   "name": "userCreated",
   "kind": "event",
+  "description": "Emitted after a new user is successfully persisted. React to this to trigger welcome emails, audit logs, or downstream provisioning.",
   "payload": { "type": "User" }
 }
 ```
@@ -49,10 +51,13 @@ Ongoing stream. Consumer subscribes with `input`, receives repeated `output`.
 {
   "name": "watchUser",
   "kind": "subscription",
+  "description": "Stream live updates for a specific user. Use when you need to react to profile or status changes in real time rather than polling.",
   "input": { "userId": { "type": "string" } },
   "output": { "type": "User" }
 }
 ```
+
+The `description` field is optional but strongly recommended. It is used verbatim as the MCP tool description when the service is exposed via an MCP server — it is the primary signal an AI agent uses to decide when and how to invoke the tool. Write it from the caller's perspective: what is this for, when should I call it, and when should I prefer something else?
 
 ## Input, output, and payload fields
 
