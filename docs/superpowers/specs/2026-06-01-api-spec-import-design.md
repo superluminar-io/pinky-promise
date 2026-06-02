@@ -53,55 +53,40 @@ The external API version and source URL are stored as provenance metadata inside
 **Version bump rules on re-import:**
 - Operations or types added only → minor bump
 - Operations removed or signatures changed → major bump
+- Both additions and removals/changes in the same re-import → major bump (most-breaking change wins)
+- Confirmed set identical to previous entry → patch bump (reason: "no functional changes")
 - Description or metadata changes only → patch bump
 - Claude proposes the bump level; the user can override before writing
 
 ## Conversion
 
-Claude fetches the spec (via `curl` for URLs, reads directly for local files) and converts it to IDL JSON. No external scripts required.
+Claude fetches the spec (via `curl` for URLs, reads directly for local files) and converts it to two outputs written separately to the registry — a contract file and a bindings file.
 
-| Source format | Operations | Events | Types | Bindings |
+**Contract mapping:**
+
+| Source format | Operations | Events | Types |
+|---|---|---|---|
+| OpenAPI 3.x/2.x | paths + HTTP methods | `webhooks` section | `$ref` schemas |
+| gRPC proto | unary RPC methods | — | `message` types |
+| gRPC proto (streaming) | server-streaming RPCs | client-streaming RPCs | `message` types |
+| GraphQL SDL | queries + mutations | — | object types |
+| GraphQL SDL | — | subscriptions → IDL subscriptions | object types |
+
+**Bindings mapping:**
+
+| Source format | protocol | operations | prefix | connection |
 |---|---|---|---|---|
-| OpenAPI 3.x/2.x | paths + HTTP methods | `webhooks` section | `$ref` schemas | protocol + named environments |
-| gRPC proto | unary RPC methods | — | `message` types | gRPC + named environments |
-| gRPC proto (streaming) | server-streaming RPCs | client-streaming RPCs | `message` types | gRPC + named environments |
-| GraphQL SDL | queries + mutations | — | object types | GraphQL + named environments |
-| GraphQL SDL | — | subscriptions → IDL subscriptions | object types | GraphQL + named environments |
+| OpenAPI 3.x/2.x | `http-json-rest` | method + path per operation | common path prefix if present | first `servers[].url` stripped of any path prefix |
+| gRPC | `grpc` | rpc name per operation | — | first server address |
+| GraphQL | `graphql` | — | — | first server URL |
 
 Member names are converted to camelCase. Type names are converted to PascalCase. Service name is derived from `info.title` (OpenAPI) or package name (gRPC/GraphQL), converted to kebab-case.
 
-### Binding format
+Operation, event, and subscription `description` fields are populated from the source spec: OpenAPI `summary` (falling back to `description`), proto leading comments, GraphQL field descriptions.
 
-Bindings use named environments rather than a single connection URL. Each environment entry is an object with a `url` and an optional `auth` block (defined by the binding-spec-extension design). Sensitive values use `${VAR_NAME}` env var template syntax and are never hardcoded:
-
-```json
-"bindings": [{
-  "protocol": "http",
-  "environments": {
-    "dev": {
-      "url": "https://service-dev.internal",
-      "auth": { "type": "basic", "username": "${DEV_USER}", "password": "${DEV_PASSWORD}" }
-    },
-    "staging": {
-      "url": "https://service-staging.internal",
-      "auth": {
-        "type": "oauth2",
-        "flow": "client_credentials",
-        "tokenUrl": "https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token",
-        "clientId": "${ENTRA_CLIENT_ID}",
-        "clientSecret": "${ENTRA_CLIENT_SECRET}",
-        "scopes": ["api://service/.default"]
-      }
-    },
-    "prod": {
-      "url": "https://service.example.com",
-      "auth": { "type": "none" }
-    }
-  }
-}]
-```
-
-The full `auth` type catalogue (`none`, `basic`, `bearer`, `api_key`, `oauth2`) is defined in the **binding-spec-extension** design. The import skill populates the `url` fields from the source spec's server definitions and leaves `auth` blocks empty for the user to fill in, since auth configuration is not part of external spec formats.
+The import skill writes two files to the registry:
+- `services/<name>/<version>.json` — abstract contract (operations, events, subscriptions, types)
+- `services/<name>/bindings.json` — protocol mappings and connection URLs
 
 ## Modes
 
@@ -123,7 +108,7 @@ Claude presents the full operation list from the external spec with a selection 
 
 Converts and writes all operations. No selection step.
 
-- **Re-import**: overwrites the previous entry with the full new spec and proposes a semver bump based on what changed.
+- **Re-import**: overwrites the previous contract and bindings files with the converted outputs and proposes a semver bump based on what changed.
 
 ## CLAUDE.md integration
 
@@ -155,6 +140,10 @@ Three hook points:
 
 No changes to `api-spec-brainstorming`, `api-change-guardian`, or `api-spec-publish`.
 
-## Dependencies
+## Implementation notes
 
-- **binding-spec-extension**: defines the named environments + auth type catalogue used in `bindings`. Must be designed and implemented before codegen or MCP server generation are possible. The import skill can land without it (auth blocks left empty), but the full binding format depends on it.
+**Question style**: use `AskUserQuestion` only for questions with a small closed set of options (e.g. confirming the derived service name, choosing a mode). Ask open-ended questions — operation selection, version overrides — as plain text. Never force open-ended answers into the options list.
+
+**Publish default bump**: on subsequent publishes with no guardian decisions recorded, a patch bump is applied to the current registry version (not "use the version already in the draft").
+
+**binding-spec-extension**: the named-environments + auth type catalogue described in earlier drafts has been superseded by the simpler `connection` + `prefix` binding format in `docs/idl-reference.md`. No separate extension design is needed.

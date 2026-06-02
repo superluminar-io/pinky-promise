@@ -77,17 +77,32 @@ api-registry/
       1.0.0.json
 ```
 
-One JSON file per version, named by semver. The highest semver in a service directory is latest. Published versions are immutable — `api-spec-publish` never overwrites an existing file. All commits are automated; no human commits. Commit message format:
+Two files per service: a versioned contract file (`<version>.json`) and a non-versioned `bindings.json`. The highest semver in a service directory is the latest contract. Published contract versions are immutable — `api-spec-publish` never overwrites an existing versioned file. `bindings.json` is always overwritten on publish. All commits are automated; no human commits. Commit message format:
 
 ```
 user-service: 1.1.0 (minor) — added getUsers operation
 ```
 
-Skills clone the registry to a temp directory on demand. Shallow clone (`--depth 1`) for reads; full clone only when diffing history.
+Skills clone the registry to a temp directory on demand. Shallow clone (`--depth 1`) for reads; full clone for pushes. Always `rm -rf` the target path before cloning to prevent stale copies from a crashed previous session.
+
+### Registry is the only source of truth
+
+**No skill may read another service's code or spec files from the local filesystem.** This means no `find`, no directory traversal, no reading `.json`, `.proto`, `.go`, `.ts`, or any other file from outside the current working directory. Sibling service directories must never be consulted — even when they happen to be checked out next to the current project.
+
+All contract data for any service other than the current one must come exclusively from a fresh clone of `API_REGISTRY_REPO` into `/tmp`. If the registry is unreachable or has no entry for a service, the skill says so and stops.
 
 ### IDL format
 
-A single JSON file per service version.
+Each service has **two files** in the registry, with different versioning lifecycles:
+
+```
+services/
+  user-service/
+    1.2.0.json      ← abstract contract (versioned with semver)
+    bindings.json   ← protocol mappings + connection URLs (not versioned)
+```
+
+**Contract file** (`<version>.json`) — the abstract API surface. No transport details.
 
 ```json
 {
@@ -98,9 +113,8 @@ A single JSON file per service version.
     {
       "name": "getUser",
       "kind": "operation",
-      "input": {
-        "userId": { "type": "string" }
-      },
+      "description": "Fetch a user by ID. Use when you have a userId and need their profile.",
+      "input": { "userId": { "type": "string" } },
       "output": { "type": "User" }
     }
   ],
@@ -108,6 +122,7 @@ A single JSON file per service version.
     {
       "name": "userCreated",
       "kind": "event",
+      "description": "Emitted after a user is persisted. React to trigger provisioning or welcome flows.",
       "payload": { "type": "User" }
     }
   ],
@@ -115,6 +130,7 @@ A single JSON file per service version.
     {
       "name": "watchUser",
       "kind": "subscription",
+      "description": "Stream live updates for a user. Prefer over polling getUser on an interval.",
       "input": { "userId": { "type": "string" } },
       "output": { "type": "User" }
     }
@@ -136,18 +152,29 @@ A single JSON file per service version.
       "kind": "union",
       "variants": [{ "type": "string" }, { "type": "number" }]
     }
-  },
+  }
+}
+```
+
+**Bindings file** (`bindings.json`) — protocol mappings and connection URLs. Updated independently of the contract version; no semver bump required when bindings change.
+
+```json
+{
+  "service": "user-service",
   "bindings": [
     {
       "protocol": "http-json-rest",
+      "prefix": "/v1",
       "operations": {
         "getUser": { "method": "GET", "path": "/users/{userId}" }
       },
-      "connection": { "url": "https://api.example.com/v1" }
+      "connection": { "url": "https://api.example.com" }
     }
   ]
 }
 ```
+
+The `description` field on operations, events, and subscriptions is used verbatim as the MCP tool description when the service is exposed via an MCP server — write it from the caller's perspective.
 
 #### Interface member kinds
 
@@ -199,7 +226,7 @@ Variants in a union and items in an array are inline type expressions. Named typ
 
 #### Bindings
 
-Each binding maps the abstract interface to a transport and optionally declares connection properties. Multiple bindings per service are allowed (e.g., `http-json-rest` and `grpc`). The `connection` field is optional — omit when URLs vary by environment.
+Bindings live in `bindings.json` alongside the contract files, not inside the contract itself. They map the abstract interface to a transport and declare connection URLs. Multiple bindings per service are allowed. The `prefix` field is an optional path prefix prepended to all HTTP operation paths (e.g. `/v1`). See `docs/idl-reference.md` for the full schema.
 
 #### Deprecation
 
@@ -224,8 +251,11 @@ Deprecation is informational only — it signals intent for the next major versi
 |---|---|
 | Add operation, event, subscription, or optional field | minor |
 | Remove or change any operation, event, subscription, or type | major |
+| Add a required field to an existing type | major |
 | Deprecate any member | minor |
-| Change descriptions or connection properties | patch |
+| Change descriptions | patch |
+
+Binding changes (paths, URLs, protocols) are not subject to semver — they are managed in `bindings.json` independently of the contract version.
 
 Major bumps have no constraints on shape — v2 is a clean slate with no obligations to v1.
 
@@ -246,7 +276,12 @@ Each consumer project declares pinned versions in `api-dependencies.json` at the
 
 #### `api-spec-brainstorming`
 
-Triggered in parallel with superpowers brainstorming when a service has no published spec yet. Runs a focused sub-conversation to identify the public API surface: which operations to expose, inputs and outputs, event types, subscription streams. Produces a draft IDL JSON held in conversation context. The draft is not published until `api-spec-publish` runs.
+Triggered in parallel with superpowers brainstorming when a service has no published spec yet. Runs a focused sub-conversation to identify the public API surface: which operations to expose, inputs and outputs, event types, subscription streams. Produces two artefacts persisted to disk so they survive across sessions:
+
+- `.pinky-swear/draft-spec.json` — abstract contract (operations, events, subscriptions, types)
+- `.pinky-swear/bindings.json` — protocol mappings and connection URLs (see IDL reference)
+
+Neither is published until `api-spec-publish` runs.
 
 #### `api-change-guardian`
 
@@ -260,24 +295,24 @@ Deferred decisions are tracked and must be resolved before `api-spec-publish` ru
 
 #### `api-contract-check`
 
-For consumers. Fetches the target service's spec at the pinned version and validates the current plan or implementation against it. Flags: missing required parameters, wrong types, calling undefined operations, missing error handling. Also reports whether a newer compatible version is available, including a summary of what was added.
+For consumers. Fetches the target service's contract at the pinned version and `bindings.json` from the registry and validates the current plan or implementation against both. Flags: missing required parameters, wrong types, calling undefined operations, incorrect HTTP paths or gRPC RPC names, missing error handling. Also reports whether a newer compatible version is available, including a summary of what was added.
 
 #### `api-spec-publish`
 
-Final step for producers. Takes the current draft IDL, resolves any deferred guardian decisions (blocking if unresolved), determines the new version number, clones the registry, writes the new versioned file, commits with a descriptive message, and pushes. If no draft exists, runs `api-spec-brainstorming` first. Fails hard if the registry is unreachable.
+Final step for producers. Reads `.pinky-swear/draft-spec.json` and `.pinky-swear/bindings.json` from disk (falling back to context if the files are absent), resolves any deferred guardian decisions (blocking if unresolved), determines the new version number, clones the registry, writes both the versioned contract file and `bindings.json`, commits with a descriptive message, and pushes. Deletes the `.pinky-swear/` draft files on success. If no draft exists, runs `api-spec-brainstorming` first. Fails hard if the registry is unreachable.
 
-Version number is determined from the guardian decisions accumulated during the session: the highest classification across all resolved changes (major > minor > patch) sets the bump. If no guardian decisions exist (first publish), the version is `1.0.0`.
+Version number is determined from the guardian decisions accumulated during the session: the highest classification across all resolved changes (major > minor > patch) sets the bump. If no guardian decisions exist (first publish), the version is `1.0.0`. On subsequent publishes with no guardian decisions, a patch bump is applied.
 
 ### CLAUDE.md integration
 
 The plugin's CLAUDE.md injects trigger instructions into every session:
 
-- **Session start** — if `API_REGISTRY_REPO` is configured and the service has a published spec, silently fetch it into context
+- **Session start** — if `API_REGISTRY_REPO` is configured: infer the current service name from the project directory, `.pinky-swear/draft-spec.json`, or draft spec in context; clone the registry fresh to `/tmp/api-registry-session`; if a published spec exists for the service, read it into context silently; clean up the clone. Any failure is silent — never surfaced to the user
 - **Brainstorming** — if no spec exists: invoke `api-spec-brainstorming` in parallel; if spec exists: invoke `api-change-guardian` when interface changes are proposed
 - **writing-plans** — invoke `api-contract-check` before finalizing any plan that consumes another service; invoke `api-change-guardian` if the plan changes the current service's interface
 - **subagent-driven-development** — invoke `api-change-guardian` when subagent code would alter a published interface
 - **requesting-code-review** — invoke `api-contract-check` for consumer code; invoke `api-change-guardian` for producer code
-- **finishing-a-development-branch** — invoke `api-spec-publish` if a draft spec or unresolved guardian decisions exist
+- **finishing-a-development-branch** — invoke `api-spec-publish` if `.pinky-swear/draft-spec.json` exists or unresolved guardian decisions exist
 
 ### Error handling
 
