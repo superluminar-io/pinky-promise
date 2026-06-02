@@ -1,0 +1,32 @@
+{
+  "service": "user-service",
+  "bindings": [
+    {
+      "protocol": "http-json-rest",
+      "prefix": "/v1",
+      "operations": {
+        "getUser": { "method": "GET", "path": "/users/{userId}" },
+        "createUser": { "method": "POST", "path": "/users" }
+      },
+      "events": {
+        "userCreated": { "method": "POST", "path": "/webhooks/user-created" }
+      },
+      "subscriptions": {
+        "watchUser": { "path": "/users/{userId}/watch" }
+      },
+      "connection": { "url": "https://api.example.com" }
+    },
+    {
+      "protocol": "grpc",
+      "service": "UserService",
+      "operations": {
+        "getUser": { "rpc": "GetUser" },
+        "createUser": { "rpc": "CreateUser" }
+      },
+      "subscriptions": {
+        "watchUser": { "rpc": "WatchUser" }
+      },
+      "connection": { "host": "grpc.api.example.com", "port": 443 }
+    }
+  ]
+}

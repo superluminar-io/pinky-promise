@@ -66,7 +66,7 @@ Write `api-dependencies.json` to the project root:
 
 Announce: "Created api-dependencies.json. Proceeding with contract check."
 
-### Step 3: Fetch pinned specs
+### Step 3: Fetch pinned specs and bindings
 
 For each entry in `api-dependencies.json`:
 
@@ -80,9 +80,14 @@ If the service directory does not exist:
 
 Continue to the next dependency.
 
-If the service exists, check for the pinned version:
+If the service exists, read the pinned contract:
 ```bash
 cat /tmp/api-registry-check/services/<service-name>/<pinned-version>.json
+```
+
+Also read the bindings if present (used to validate transport-level calls such as HTTP paths):
+```bash
+cat /tmp/api-registry-check/services/<service-name>/bindings.json 2>/dev/null || true
 ```
 
 If the file does not exist:

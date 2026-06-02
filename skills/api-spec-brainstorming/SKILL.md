@@ -71,29 +71,51 @@ Ask:
 
 For each binding:
 - Ask for the protocol-specific mapping of operations (e.g. HTTP method and path for REST, RPC name for gRPC)
-- Ask: "Is there a known connection URL to include?"
+- Ask: "Is there an optional path prefix? (e.g. `/v1`)"
+- Ask: "Is there a known connection URL?"
 
-`connection` is optional — if the URL varies by environment, omit it.
+`prefix` and `connection` are optional.
 
-### 7. Produce the draft IDL
+### 7. Produce the draft contract and bindings
 
-Synthesize all answers into a valid IDL JSON following the format in `docs/idl-reference.md`. Use version `1.0.0` for first-time specs. If this is a major version redesign (invoked alongside a planned major bump), use the new major version number from the guardian-recorded decision (e.g. `2.0.0`).
+**Contract** — synthesize operations, events, subscriptions, and types into a valid IDL JSON following `docs/idl-reference.md`. No bindings in this file. Use version `1.0.0` for first-time specs; use the guardian-recorded major version for redesigns.
 
-State it explicitly:
+**Bindings** — synthesize the protocol mappings and connection info into a `bindings.json` following `docs/idl-reference.md`.
 
-> "Draft spec for [service-name]:
+State both explicitly:
+
+> "Draft contract for [service-name]:
 >
 > ```json
 > { ... }
 > ```
 >
-> This draft will be published when api-spec-publish is invoked."
+> Draft bindings:
+>
+> ```json
+> { ... }
+> ```
+>
+> Both will be published when api-spec-publish is invoked."
+
+Persist both to disk so they survive across sessions:
+
+```bash
+mkdir -p .pinky-swear
+cat > .pinky-swear/draft-spec.json << 'SPEC'
+<full contract JSON>
+SPEC
+cat > .pinky-swear/bindings.json << 'BINDINGS'
+<full bindings JSON>
+BINDINGS
+```
+
+Announce: "Draft contract and bindings written to `.pinky-swear/`. They will be published when the branch is finished."
 
 ## Validation rules to enforce
 
 - No inline `enum`, `union`, or `object` — define them in the `types` map
 - All type references in `input`/`output`/`payload` are either inline type expressions or names defined in `types`
-- `bindings` must have at least one entry
 - Member names are camelCase
 - Type names are PascalCase
 - Service name is kebab-case

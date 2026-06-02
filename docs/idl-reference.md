@@ -13,7 +13,6 @@ API specs are JSON files. One file per service version, stored in the registry a
 | `events` | no | Array of fire-and-forget events |
 | `subscriptions` | no | Array of ongoing stream subscriptions |
 | `types` | no | Map of named type definitions |
-| `bindings` | yes | Array of transport binding declarations |
 
 ## Interface members
 
@@ -139,43 +138,6 @@ Used directly in `input`, `output`, `payload`, and object field definitions:
 
 Named types may reference other named types. Circular references are not allowed.
 
-## Bindings
-
-Each binding maps the abstract interface to a transport and optionally declares connection properties.
-
-```json
-{
-  "protocol": "http-json-rest",
-  "operations": {
-    "getUser": { "method": "GET", "path": "/users/{userId}" },
-    "createUser": { "method": "POST", "path": "/users" }
-  },
-  "connection": { "url": "https://api.example.com/v1" }
-}
-```
-
-| Field | Required | Description |
-|---|---|---|
-| `protocol` | yes | Transport identifier (e.g. `http-json-rest`, `grpc`, `graphql`) |
-| `operations` | no | Map of operation name → binding-specific config |
-| `events` | no | Map of event name → binding-specific config |
-| `subscriptions` | no | Map of subscription name → binding-specific config |
-| `connection` | no | Connection properties (URL, port, etc.) — omit when env-specific |
-
-Multiple bindings per service are allowed (e.g. `http-json-rest` and `grpc`).
-
-For gRPC bindings, a `service` field names the protobuf service:
-
-```json
-{
-  "protocol": "grpc",
-  "service": "UserService",
-  "operations": {
-    "getUser": { "rpc": "GetUser" }
-  }
-}
-```
-
 ## Semver rules
 
 | Change | Bump |
@@ -184,6 +146,73 @@ For gRPC bindings, a `service` field names the protobuf service:
 | Remove or change any operation, event, subscription, or type | major |
 | Add a required field to an existing type | major |
 | Deprecate any member | minor |
-| Change descriptions or connection properties | patch |
+| Change descriptions | patch |
 
 Major bumps have no constraints on shape — v2 is a clean slate with no obligations to v1.
+
+Binding changes (paths, URLs, protocols) are not subject to semver — they are managed in `bindings.json` independently of the contract version.
+
+## Registry layout
+
+Each service has two files in the registry:
+
+```
+services/
+  <name>/
+    <version>.json    ← abstract contract (versioned)
+    bindings.json     ← protocol mappings + connection URLs (not versioned)
+```
+
+The contract file contains `name`, `version`, and the abstract interface (`operations`, `events`, `subscriptions`, `types`). It never contains transport or connection details.
+
+The bindings file is always the current deployment state. It is updated independently of the contract version — adding a new protocol, changing a URL, or restructuring paths does not require a semver bump.
+
+## bindings.json
+
+Sits alongside the contract files at `services/<name>/bindings.json`.
+
+```json
+{
+  "service": "user-service",
+  "bindings": [
+    {
+      "protocol": "http-json-rest",
+      "prefix": "/v1",
+      "operations": {
+        "getUser": { "method": "GET", "path": "/users/{userId}" },
+        "createUser": { "method": "POST", "path": "/users" }
+      },
+      "events": {
+        "userCreated": { "method": "POST", "path": "/webhooks/user-created" }
+      },
+      "connection": { "url": "https://api.example.com" }
+    },
+    {
+      "protocol": "grpc",
+      "service": "UserService",
+      "operations": {
+        "getUser": { "rpc": "GetUser" },
+        "createUser": { "rpc": "CreateUser" }
+      },
+      "subscriptions": {
+        "watchUser": { "rpc": "WatchUser" }
+      },
+      "connection": { "host": "grpc.api.example.com", "port": 443 }
+    }
+  ]
+}
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `service` | yes | Service name, must match the contract file |
+| `bindings` | yes | Array of transport bindings |
+| `bindings[].protocol` | yes | Transport identifier (`http-json-rest`, `grpc`, `graphql`) |
+| `bindings[].prefix` | no | Path prefix prepended to all operation paths (e.g. `/v1`) |
+| `bindings[].operations` | no | Map of operation name → transport-specific config |
+| `bindings[].events` | no | Map of event name → transport-specific config |
+| `bindings[].subscriptions` | no | Map of subscription name → transport-specific config |
+| `bindings[].connection` | no | Connection properties — URL, host, port, etc. |
+| `bindings[].service` | no | gRPC only — protobuf service name |
+
+The effective path for an HTTP operation is `prefix + path` (e.g. `/v1` + `/users/{userId}` → `/v1/users/{userId}`).

@@ -101,36 +101,33 @@ Note the previously declared operations list — needed for re-import diff in st
 
 Convert the fetched spec to pinky-swear IDL JSON using the following mapping:
 
-| Format | → Operations | → Events | → Types | → Bindings |
+Produce two outputs — a contract and a bindings object — held in context until step 10.
+
+**Contract mapping:**
+
+| Format | → Operations | → Events | → Types |
+|---|---|---|---|
+| OpenAPI 3.x/2.x | paths + HTTP methods | webhooks section | $ref schemas |
+| gRPC (unary RPC) | RPC methods | — | message types |
+| gRPC (server-streaming) | server-streaming RPCs | — | message types |
+| gRPC (client-streaming) | — | client-streaming RPCs | message types |
+| GraphQL | queries + mutations | — | object types |
+| GraphQL subscriptions | — | subscriptions → IDL subscriptions | object types |
+
+**Bindings mapping:**
+
+| Format | protocol | operations | prefix | connection |
 |---|---|---|---|---|
-| OpenAPI 3.x/2.x | paths + HTTP methods | webhooks section | $ref schemas | http + environments from `servers` |
-| gRPC (unary RPC) | RPC methods | — | message types | grpc + environments |
-| gRPC (server-streaming) | server-streaming RPCs | — | message types | grpc + environments |
-| gRPC (client-streaming) | — | client-streaming RPCs | message types | grpc + environments |
-| GraphQL | queries + mutations | — | object types | graphql + environments |
-| GraphQL subscriptions | — | subscriptions → IDL subscriptions | object types | graphql + environments |
+| OpenAPI 3.x/2.x | `http-json-rest` | method + path per operation | common path prefix if present | first `servers[].url` stripped of any path prefix |
+| gRPC | `grpc` | rpc name per operation | — | first server address |
+| GraphQL | `graphql` | — | — | first server URL |
 
 Naming rules:
 - Member names (operation names, parameter names, field names): camelCase
 - Type names: PascalCase
 - Service name: kebab-case (already determined in step 5)
 
-Binding format — use named environments, populate `url` from the spec's server definitions, leave `auth` blocks empty:
-```json
-"bindings": [{
-  "protocol": "<http|grpc|graphql>",
-  "environments": {
-    "<env-name>": {
-      "url": "<server-url-from-spec>",
-      "auth": {}
-    }
-  }
-}]
-```
-
-If the source spec has only one server URL, use `"default"` as the environment name.
-
-Do **not** write anything yet — hold the converted IDL in context.
+Do **not** write anything yet — hold both outputs in context.
 
 ### 8. Apply mode
 
@@ -205,9 +202,9 @@ If the user types 'cancel' or 'quit', stop and run `rm -rf /tmp/api-registry-imp
 Propose to user:
 > "Proposed version: `<new-version>` (<bump-type> bump — <reason>). Press enter to confirm or type a different version."
 
-### 10. Assemble and write the IDL entry
+### 10. Assemble and write the registry entry
 
-Build the final IDL JSON:
+Build the contract JSON:
 ```json
 {
   "name": "<service-name>",
@@ -220,22 +217,32 @@ Build the final IDL JSON:
   "operations": [ ...confirmed operations only... ],
   "events": [ ...confirmed events only... ],
   "subscriptions": [ ...confirmed subscriptions only... ],
-  "types": { ...types referenced by confirmed members only... },
-  "bindings": [ ...with named environments, auth blocks empty... ]
+  "types": { ...types referenced by confirmed members only... }
 }
 ```
 
 Omit `events`, `subscriptions`, or `types` keys if empty.
 
-Write to registry:
+Build the bindings JSON:
+```json
+{
+  "service": "<service-name>",
+  "bindings": [ ...protocol mappings and connection from step 7... ]
+}
+```
+
+Write both to the registry:
 ```bash
 mkdir -p /tmp/api-registry-import/services/<service-name>
 ```
 
-Write the JSON to `/tmp/api-registry-import/services/<service-name>/<pinky-swear-version>.json`.
+Write the contract to `/tmp/api-registry-import/services/<service-name>/<pinky-swear-version>.json`.
+
+Write the bindings to `/tmp/api-registry-import/services/<service-name>/bindings.json`.
 
 ```bash
 git -C /tmp/api-registry-import add services/<service-name>/<version>.json
+git -C /tmp/api-registry-import add services/<service-name>/bindings.json
 git -C /tmp/api-registry-import commit -m "<service-name>: <version> (first-import|re-import) — imported from <source>"
 git -C /tmp/api-registry-import push
 rm -rf /tmp/api-registry-import

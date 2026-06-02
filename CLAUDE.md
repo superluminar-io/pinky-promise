@@ -17,7 +17,7 @@ If `API_REGISTRY_REPO` is not set, all skills warn and skip silently — they ne
 ## Session start
 
 If `API_REGISTRY_REPO` is configured:
-1. Identify the current service name (from project directory or draft spec in context)
+1. Identify the current service name (from project directory, `.pinky-swear/draft-spec.json`, or draft spec in context)
 2. Check if a spec exists in the registry for this service
 3. If yes, read it into context silently — do not announce this to the user. If the fetch fails for any reason, continue without it — do not surface the error to the user.
 
@@ -46,4 +46,4 @@ If `API_REGISTRY_REPO` is configured:
 
 ## During finishing-a-development-branch (superpowers finishing-a-development-branch skill)
 
-- If a **draft spec** is present in context OR **unresolved guardian decisions** exist: you MUST invoke `api-spec-publish` before completing the branch.
+- If `.pinky-swear/draft-spec.json` exists OR **unresolved guardian decisions** exist: you MUST invoke `api-spec-publish` before completing the branch.

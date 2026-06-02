@@ -16,12 +16,26 @@ Publish a service's API spec to the registry.
 
 Announce: "Running api-spec-publish to publish the API spec to the registry."
 
-### Step 1: Check for a draft spec
+### Step 1: Check for a draft spec and bindings
 
-Look for a draft IDL JSON in the conversation context — produced by `api-spec-brainstorming` or accumulated through guardian-approved changes.
+Check for `.pinky-swear/draft-spec.json`:
 
-If no draft is present:
-> "No draft spec found in context. Running api-spec-brainstorming first."
+```bash
+cat .pinky-swear/draft-spec.json 2>/dev/null
+```
+
+Check for `.pinky-swear/bindings.json`:
+
+```bash
+cat .pinky-swear/bindings.json 2>/dev/null
+```
+
+If `draft-spec.json` exists, use it as the contract. If `bindings.json` exists, use it as the bindings.
+
+If neither file exists, look for a draft contract and bindings in the conversation context — produced by `api-spec-brainstorming` or accumulated through guardian-approved changes.
+
+If no contract is found in either source:
+> "No draft spec found. Running api-spec-brainstorming first."
 
 Invoke `api-spec-brainstorming`, then continue.
 
@@ -83,34 +97,37 @@ Wait for confirmation before proceeding.
 
 ### Step 5: Write and publish
 
-Update the `version` field in the draft spec to `<new-version>`.
+Update the `version` field in the draft contract to `<new-version>`.
 
 Create the service directory if needed:
 ```bash
 mkdir -p /tmp/api-registry-publish/services/<service-name>
 ```
 
-Write the spec file:
+Write the contract file:
 ```bash
 cat > /tmp/api-registry-publish/services/<service-name>/<new-version>.json << 'SPEC'
-<full draft spec JSON>
+<full contract JSON — no bindings>
 SPEC
 ```
 
-Verify the file:
+If bindings are present, write `bindings.json` (always overwrites — not versioned):
 ```bash
-cat /tmp/api-registry-publish/services/<service-name>/<new-version>.json
+cat > /tmp/api-registry-publish/services/<service-name>/bindings.json << 'BINDINGS'
+<full bindings JSON>
+BINDINGS
 ```
 
 Commit and push:
 ```bash
 cd /tmp/api-registry-publish
 git add services/<service-name>/<new-version>.json
+git add services/<service-name>/bindings.json 2>/dev/null || true
 git commit -m "<service-name>: <new-version> (<bump>) — <one-line summary>"
 git push origin main
 ```
 
-The summary describes the most significant change (e.g. "added listUsers operation", "removed deprecated getUser", "updated connection URL").
+The summary describes the most significant change (e.g. "added listUsers operation", "removed deprecated getUser").
 
 ### Step 6: Announce and clean up
 
@@ -118,4 +135,5 @@ The summary describes the most significant change (e.g. "added listUsers operati
 
 ```bash
 rm -rf /tmp/api-registry-publish
+rm -f .pinky-swear/draft-spec.json .pinky-swear/bindings.json
 ```
