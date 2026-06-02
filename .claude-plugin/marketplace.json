@@ -1,0 +1,20 @@
+{
+  "name": "pinky-swear-local",
+  "description": "Local development marketplace for pinky-swear",
+  "owner": {
+    "name": "superluminar",
+    "email": "robert.von.massow@superluminar.io"
+  },
+  "plugins": [
+    {
+      "name": "pinky-swear",
+      "description": "API contract enforcement for producer and consumer services",
+      "version": "1.0.0",
+      "source": "./",
+      "author": {
+        "name": "superluminar",
+        "email": "robert.von.massow@superluminar.io"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "pinky-swear",
+  "description": "API contract enforcement for producer and consumer services — brainstorming, planning, and review hooks that catch breaking changes and missing specs before they ship",
+  "version": "1.0.0",
+  "author": {
+    "name": "superluminar",
+    "email": "robert.von.massow@superluminar.io"
+  },
+  "homepage": "https://github.com/superluminar-io/pinky-swear",
+  "repository": "https://github.com/superluminar-io/pinky-swear",
+  "license": "MIT",
+  "keywords": [
+    "api",
+    "contracts",
+    "specs",
+    "producer",
+    "consumer"
+  ]
+}
