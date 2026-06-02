@@ -4,12 +4,18 @@ set -euo pipefail
 PLUGIN_SRC="$(cd "$(dirname "$0")" && pwd)"
 MARKETPLACE_NAME="pinky-swear-local"
 
-PROJECT_PATH="${1:-}"
-if [[ -z "$PROJECT_PATH" ]]; then
-  echo "Usage: $0 <project-path>" >&2
-  echo "  Example: $0 ~/src/github.com/superluminar-io/pinky-swear-test-user" >&2
+usage() {
+  echo "Usage: $0 <project-path> [--update]" >&2
+  echo "  $0 ~/src/github.com/superluminar-io/pinky-swear-test-user          # first install" >&2
+  echo "  $0 ~/src/github.com/superluminar-io/pinky-swear-test-user --update  # sync changes" >&2
   exit 1
-fi
+}
+
+PROJECT_PATH="${1:-}"
+UPDATE=false
+[[ "${2:-}" == "--update" ]] && UPDATE=true
+
+[[ -z "$PROJECT_PATH" ]] && usage
 
 if [[ ! -d "$PROJECT_PATH" ]]; then
   echo "Error: directory does not exist: $PROJECT_PATH" >&2
@@ -24,13 +30,20 @@ fi
 
 cd "$PROJECT_PATH"
 
-echo "Registering pinky-swear marketplace..."
-claude plugin marketplace add "$PLUGIN_SRC" --scope project
+if [[ "$UPDATE" == "true" ]]; then
+  echo "Syncing pinky-swear changes..."
+  claude plugin uninstall "pinky-swear@$MARKETPLACE_NAME" --scope project 2>/dev/null || true
+  claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
+  echo "Done. Plugin updated in $PROJECT_PATH."
+else
+  echo "Registering pinky-swear marketplace..."
+  claude plugin marketplace add "$PLUGIN_SRC" --scope project
 
-echo "Installing pinky-swear..."
-claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
+  echo "Installing pinky-swear..."
+  claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
 
-echo "Done. Plugin installed for $PROJECT_PATH only."
-echo ""
-echo "To pick up changes after editing the plugin source, run from $PROJECT_PATH:"
-echo "  claude plugin update pinky-swear@$MARKETPLACE_NAME --scope project"
+  echo "Done. Plugin installed for $PROJECT_PATH only."
+  echo ""
+  echo "To pick up changes after editing the plugin source:"
+  echo "  $0 $PROJECT_PATH --update"
+fi
