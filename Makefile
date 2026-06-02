@@ -12,6 +12,9 @@ slow-test: test
 	@tests/notify-service/run-brainstorm-with-external.sh
 	@tests/import-external-spec/run-test.sh
 	@tests/import-external-spec/run-grpc-import.sh
+	@tests/api-spec-publish-integration/run-test.sh
+	@tests/api-change-guardian-integration/run-test.sh
+	@tests/api-contract-check-integration/run-test.sh
 	@echo ""
 	@echo "All integration tests passed."
 

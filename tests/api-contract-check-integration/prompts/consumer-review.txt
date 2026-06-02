@@ -1,0 +1,12 @@
+We are reviewing consumer code that calls user-service. Here is the implementation under review:
+
+```python
+# Look up user by email — primary lookup path
+response = client.getUserByEmail(email="alice@example.com")
+user_id = response["userId"]
+
+# Fetch full profile, including soft-deleted accounts
+profile = client.getUser(user_id=user_id, includeDeleted=True)
+```
+
+Please invoke api-contract-check to validate this code against the published user-service spec.

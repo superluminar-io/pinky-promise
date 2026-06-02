@@ -49,6 +49,7 @@ Qualitative checks that ask Claude questions about the loaded skills and assert 
 | `test-api-spec-import-version-bump` | semver bump rules including tie-break (add+remove → major wins) |
 | `test-api-change-guardian-triggers` | guardian fires on type changes, removals, response shape changes; not internal refactors |
 | `test-brainstorming-external-hook` | CLAUDE.md hooks surface import suggestion during brainstorming and planning |
+| `test-api-spec-publish` | no draft → falls back to brainstorming; unresolved deferred decisions block publish; missing registry config stops cleanly; first publish uses 1.0.0; confirmation required before push |
 
 ## Integration scenarios (`make slow-test`)
 
@@ -71,6 +72,36 @@ External API spec import via `/api-spec-import` slash command.
 |---|---|
 | `run-test.sh` | Skill executes steps (format detection + service name derivation) for a public OpenAPI URL |
 | `run-grpc-import.sh` | gRPC format detected, service name derived from proto package declaration |
+
+### api-spec-publish-integration
+
+Bare registry, no seed. Prompt provides a draft spec and pre-authorises the confirmation.
+
+| Script | Asserts |
+|---|---|
+| `run-test.sh` | `services/user-service/1.0.0.json` exists in the bare registry after the session |
+
+### api-change-guardian-integration
+
+Bare registry seeded with `user-service/1.0.0.json`. Prompt proposes removing `createUser`.
+
+| Script | Asserts |
+|---|---|
+| `run-test.sh` | `api-change-guardian` Skill tool invoked; result classifies change as major/breaking |
+
+### api-contract-check-integration
+
+Bare registry seeded with `user-service/1.0.0.json`. `api-dependencies.json` pre-created pinning `user-service@1.0.0`. Prompt reviews code that calls the non-existent `getUserByEmail` operation.
+
+| Script | Asserts |
+|---|---|
+| `run-test.sh` | `api-contract-check` Skill tool invoked; result surfaces violation for `getUserByEmail` |
+
+## Shared fixtures
+
+`tests/fixtures/user-service-1.0.0.json` — a minimal user-service spec used by guardian and contract-check integration tests.
+
+`tests/registry-helpers.sh` — `create_bare_registry` and `seed_registry_spec` bash functions used by all three registry-backed integration tests.
 
 ## Adding a new scenario
 

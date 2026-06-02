@@ -1,0 +1,50 @@
+I have a finalized draft API spec for user-service ready to publish. Here is the draft:
+
+{
+  "name": "user-service",
+  "version": "1.0.0",
+  "description": "Manages user accounts",
+  "operations": [
+    {
+      "name": "getUser",
+      "kind": "operation",
+      "input": { "userId": { "type": "string" } },
+      "output": { "type": "User" }
+    },
+    {
+      "name": "createUser",
+      "kind": "operation",
+      "input": { "name": { "type": "string" }, "email": { "type": "string" } },
+      "output": { "type": "User" }
+    }
+  ],
+  "types": {
+    "User": {
+      "kind": "object",
+      "fields": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    }
+  }
+}
+
+The bindings are:
+
+{
+  "service": "user-service",
+  "bindings": [
+    {
+      "protocol": "http-json-rest",
+      "prefix": "/v1",
+      "operations": {
+        "getUser": { "method": "GET", "path": "/users/{userId}" },
+        "createUser": { "method": "POST", "path": "/users" }
+      },
+      "connection": { "url": "https://api.example.com" }
+    }
+  ]
+}
+
+Please invoke api-spec-publish to publish both to the registry. This is the first publish — use version 1.0.0. I confirm the publish; proceed without asking for confirmation.

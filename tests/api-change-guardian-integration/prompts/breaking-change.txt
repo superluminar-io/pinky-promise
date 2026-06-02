@@ -1,0 +1,3 @@
+We are working on user-service. We want to simplify its API by removing the createUser operation — clients will use a separate onboarding service going forward.
+
+Please invoke api-change-guardian to assess this change.

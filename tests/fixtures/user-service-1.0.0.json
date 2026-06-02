@@ -1,0 +1,29 @@
+{
+  "name": "user-service",
+  "version": "1.0.0",
+  "description": "Manages user accounts",
+  "operations": [
+    {
+      "name": "getUser",
+      "kind": "operation",
+      "input": { "userId": { "type": "string" } },
+      "output": { "type": "User" }
+    },
+    {
+      "name": "createUser",
+      "kind": "operation",
+      "input": { "name": { "type": "string" }, "email": { "type": "string" } },
+      "output": { "type": "User" }
+    }
+  ],
+  "types": {
+    "User": {
+      "kind": "object",
+      "fields": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    }
+  }
+}
