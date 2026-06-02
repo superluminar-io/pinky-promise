@@ -75,7 +75,10 @@ If the user provides corrections, use their values as-is without re-deriving. Fo
 
 ### 6. Check for existing registry entry
 
+Always fetch fresh — remove any stale clone first:
+
 ```bash
+rm -rf /tmp/api-registry-import
 git clone --depth 1 "$API_REGISTRY_REPO" /tmp/api-registry-import
 ```
 

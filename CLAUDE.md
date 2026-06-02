@@ -18,8 +18,18 @@ If `API_REGISTRY_REPO` is not set, all skills warn and skip silently — they ne
 
 If `API_REGISTRY_REPO` is configured:
 1. Identify the current service name (from project directory, `.pinky-swear/draft-spec.json`, or draft spec in context)
-2. Check if a spec exists in the registry for this service
-3. If yes, read it into context silently — do not announce this to the user. If the fetch fails for any reason, continue without it — do not surface the error to the user.
+2. Fetch the registry fresh — always clone from `API_REGISTRY_REPO`, never read from local service directories:
+   ```bash
+   rm -rf /tmp/api-registry-session
+   git clone --depth 1 "$API_REGISTRY_REPO" /tmp/api-registry-session 2>/dev/null
+   ls /tmp/api-registry-session/services/<service-name>/ 2>/dev/null | sort -V | tail -1
+   ```
+3. If a spec version is found, read it into context silently:
+   ```bash
+   cat /tmp/api-registry-session/services/<service-name>/<latest-version>.json
+   rm -rf /tmp/api-registry-session
+   ```
+   Do not announce this to the user. If the fetch or clone fails for any reason, clean up and continue without it — do not surface the error to the user.
 
 ## During brainstorming (superpowers brainstorming skill)
 

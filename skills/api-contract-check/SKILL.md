@@ -29,7 +29,10 @@ If not found:
 
 Stop.
 
+Always fetch fresh — remove any stale clone first:
+
 ```bash
+rm -rf /tmp/api-registry-check
 git clone --depth 1 "$API_REGISTRY_REPO" /tmp/api-registry-check
 ```
 

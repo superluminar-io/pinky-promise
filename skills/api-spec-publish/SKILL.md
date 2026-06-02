@@ -64,8 +64,9 @@ If not found:
 
 Stop.
 
-Clone the registry (full clone — needed to push):
+Clone the registry (full clone — needed to push). Always fetch fresh:
 ```bash
+rm -rf /tmp/api-registry-publish
 git clone "$API_REGISTRY_REPO" /tmp/api-registry-publish
 ```
 
