@@ -4,11 +4,15 @@ This plugin manages API contracts between producer and consumer services. It int
 
 **Requires superpowers to be installed and active.**
 
-## Registry is the only source of truth for specs
+## Registry is the only source of truth for API contracts
 
-**NEVER** search the local filesystem for API spec files. This means no `find`, no `ls` on project or parent directories, no `cat` on any `.json` file outside of `/tmp/api-registry-*`. Do not look in `..`, `~`, or anywhere in the working tree.
+**NEVER** read another service's code, spec files, or any other files outside the current project to infer its API. This means:
 
-All spec data must come exclusively from a fresh `git clone` of `API_REGISTRY_REPO` into `/tmp`. If the registry is unreachable, say so and stop — do not fall back to local files under any circumstances.
+- No `find`, no directory traversal, no reading files from `..`, `~`, or any path outside the current working directory
+- No reading `.json`, `.proto`, `.yaml`, `.go`, `.ts`, or any other file from a sibling service directory to infer what that service provides
+- No assumptions based on what happens to be checked out locally
+
+When implementing a client or validating a consumer, the **only** permitted source of truth for what another service provides is its published spec in the registry — fetched via a fresh `git clone` of `API_REGISTRY_REPO` into `/tmp`. If the registry is unreachable or has no entry for the service, say so and stop.
 
 ## Configuration
 
