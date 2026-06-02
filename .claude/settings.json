@@ -1,5 +1,1 @@
-{
-  "env": {
-    "API_REGISTRY_REPO": "git@github.com:superluminar-io/pinky-swear-api-repo.git"
-  }
-}
+{}
