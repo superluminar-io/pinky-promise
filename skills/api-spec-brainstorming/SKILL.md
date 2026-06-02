@@ -12,6 +12,11 @@ Define the public API surface of a service in parallel with the superpowers brai
 - A new service is being brainstormed and has no published spec in the registry
 - A major version bump is being planned and the new API is being designed from scratch
 
+## How to ask questions
+
+- Use `AskUserQuestion` **only** for questions with a small, closed set of options (2–4 choices), such as "Which protocol?" or "Streaming or unary?".
+- Ask all open-ended questions — message shapes, field names, types, operation names — as plain text in your response. Do **not** force them into `AskUserQuestion`.
+
 ## What to do
 
 Announce: "Running api-spec-brainstorming to define the public API surface alongside the design brainstorm."
