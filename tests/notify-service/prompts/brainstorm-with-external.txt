@@ -1,0 +1,1 @@
+I'm starting a new service called notify-service. It will send notifications to users. To send SMS notifications it will call the Twilio API. Let's brainstorm the design.

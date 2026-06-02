@@ -1,51 +1,81 @@
 # Tests
 
-Integration tests that verify pinky-swear's skills trigger correctly in realistic service scenarios.
+Tests are split into two tiers, run via `make`:
+
+```bash
+make test        # fast qualitative tests (~3-5 min)
+make slow-test   # fast tests + full integration scenarios (~20-30 min)
+```
+
+## Requirements
+
+- Claude Code CLI in PATH (`claude --version`)
+- `python3` in PATH
 
 ## Structure
 
 ```
 tests/
-  <scenario-name>/
+  Makefile                          ← test runner (at repo root)
+  check-plugin-loaded.sh            ← sanity check: plugin loads correctly
+  claude-code/                      ← fast qualitative tests
+    test-helpers.sh                 ← shared run_claude / assert helpers
+    test-*.sh                       ← one file per skill behaviour tested
+    run-all.sh                      ← runs all fast tests, aggregates results
+  notify-service/                   ← integration scenario: producer+consumer service
     prompts/
-      <prompt-name>.txt    ← prompt text fed to claude -p
-    run-test.sh            ← runs the scenario and asserts skill invocations
+      initial-brainstorm.txt        ← triggers api-spec-brainstorming
+      brainstorm-with-external.txt  ← triggers import suggestion for Twilio
+    run-test.sh                     ← api-spec-brainstorming trigger
+    run-brainstorm-with-external.sh ← external service import suggestion
+  import-external-spec/             ← integration scenario: external spec import
+    fixtures/
+      echo-service.proto            ← gRPC fixture for format detection test
+    prompts/
+      import-openapi.txt            ← /api-spec-import with Petstore OpenAPI URL
+      import-grpc.txt               ← /api-spec-import with local .proto fixture
+    run-test.sh                     ← OpenAPI import skill execution
+    run-grpc-import.sh              ← gRPC format detection + service name derivation
 ```
 
-One subdirectory per scenario. Each `run-test.sh` invokes Claude Code headlessly via `claude -p`, loads pinky-swear via `--plugin-dir`, and greps the stream-json output for expected `Skill` tool invocations.
+## Fast tests (`make test`)
 
-## Requirements
+Qualitative checks that ask Claude questions about the loaded skills and assert on the answers. Each test takes ~15–30 seconds.
 
-- Claude Code CLI in PATH (`claude --version`)
-- `jq` in PATH
+| Test file | What it checks |
+|---|---|
+| `test-api-contract-check-import-hint` | api-contract-check surfaces `/api-spec-import` for unknown services |
+| `test-api-spec-import-modes` | --auto shows diff, --subset pre-selects, --full skips selection on re-import |
+| `test-api-spec-import-version-bump` | semver bump rules including tie-break (add+remove → major wins) |
+| `test-api-change-guardian-triggers` | guardian fires on type changes, removals, response shape changes; not internal refactors |
+| `test-brainstorming-external-hook` | CLAUDE.md hooks surface import suggestion during brainstorming and planning |
 
-## Running tests
+## Integration scenarios (`make slow-test`)
 
-```bash
-# Run a single scenario
-tests/notify-service/run-test.sh
-
-# With verbose output
-tests/notify-service/run-test.sh --verbose
-```
-
-## Scenarios
+Full headless Claude sessions exercising end-to-end skill behaviour.
 
 ### notify-service
 
-A notification service that is simultaneously a producer (public sendNotification / subscribeToDeliveryEvents API) and a consumer of its own API (dead-letter processor calls sendNotification to emit deliveryFailed system events — cron-driven, no recursion).
+A notification service that is simultaneously producer and consumer of its own API (dead-letter processor calls sendNotification — cron-driven, no recursion).
 
-**Asserts:** `api-spec-brainstorming` is invoked when brainstorming a service with no published spec.
+| Script | Asserts |
+|---|---|
+| `run-test.sh` | `api-spec-brainstorming` is invoked when brainstorming a service with no published spec |
+| `run-brainstorm-with-external.sh` | Import suggestion surfaces when the brainstorm mentions calling the Twilio API |
 
 ### import-external-spec
 
-A slash command invocation of `/api-spec-import` with a public OpenAPI spec URL.
+External API spec import via `/api-spec-import` slash command.
 
-**Asserts:** `api-spec-import` skill is invoked when the user requests an external spec import.
+| Script | Asserts |
+|---|---|
+| `run-test.sh` | Skill executes steps (format detection + service name derivation) for a public OpenAPI URL |
+| `run-grpc-import.sh` | gRPC format detected, service name derived from proto package declaration |
 
 ## Adding a new scenario
 
 1. Create `tests/<scenario-name>/prompts/<prompt>.txt`
-2. Create `tests/<scenario-name>/run-test.sh` (copy an existing one as a template)
-3. Make it executable: `chmod +x tests/<scenario-name>/run-test.sh`
-4. Add it to this README under Scenarios
+2. Create `tests/<scenario-name>/run-*.sh` (copy an existing runner as a template)
+3. Make it executable: `chmod +x tests/<scenario-name>/run-*.sh`
+4. Add the script to the `slow-test` target in `Makefile`
+5. Document it in this README
