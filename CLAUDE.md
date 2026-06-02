@@ -4,6 +4,12 @@ This plugin manages API contracts between producer and consumer services. It int
 
 **Requires superpowers to be installed and active.**
 
+## Registry is the only source of truth for specs
+
+**NEVER** search the local filesystem for API spec files. This means no `find`, no `ls` on project or parent directories, no `cat` on any `.json` file outside of `/tmp/api-registry-*`. Do not look in `..`, `~`, or anywhere in the working tree.
+
+All spec data must come exclusively from a fresh `git clone` of `API_REGISTRY_REPO` into `/tmp`. If the registry is unreachable, say so and stop — do not fall back to local files under any circumstances.
+
 ## Configuration
 
 Set the registry URL in this project's CLAUDE.md (below this file's content) or in `.claude/settings.json`:

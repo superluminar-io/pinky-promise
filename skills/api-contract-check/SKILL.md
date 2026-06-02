@@ -15,6 +15,8 @@ Validate the current implementation or plan against published API specs.
 
 ## What to do
 
+**Specs come exclusively from the registry. Never search the local filesystem — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read from `/tmp/api-registry-check/` after a fresh clone.**
+
 Announce: "Running api-contract-check to validate against published API specs."
 
 ### Step 1: Locate API_REGISTRY_REPO and clone

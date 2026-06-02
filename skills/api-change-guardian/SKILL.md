@@ -13,6 +13,8 @@ Any stage (brainstorming, planning, implementation, review) proposes a change th
 
 ## What to do
 
+**Specs come exclusively from the registry. Never search the local filesystem — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read from `/tmp/api-registry-check/` after a fresh clone.**
+
 Announce: "Running api-change-guardian to check for API contract changes."
 
 ### Step 1: Identify the service

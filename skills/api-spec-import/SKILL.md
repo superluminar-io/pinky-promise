@@ -16,6 +16,8 @@ Import an external API spec into the pinky-swear registry as a declared dependen
 
 ## Steps
 
+**Registry data comes exclusively from a fresh clone. Never search the local filesystem for existing registry entries — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read registry data from `/tmp/api-registry-import/` after a fresh clone.**
+
 ### 1. Announce
 
 > "Running api-spec-import to register external API spec."

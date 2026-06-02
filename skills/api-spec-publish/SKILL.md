@@ -14,6 +14,8 @@ Publish a service's API spec to the registry.
 
 ## What to do
 
+**Published specs come exclusively from the registry. Never search the local filesystem for existing specs — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read registry data from `/tmp/api-registry-publish/` after a fresh clone.**
+
 Announce: "Running api-spec-publish to publish the API spec to the registry."
 
 ### Step 1: Check for a draft spec and bindings
