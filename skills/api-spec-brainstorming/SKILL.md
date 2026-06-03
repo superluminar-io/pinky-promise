@@ -90,9 +90,66 @@ Set `contractVersion` on the binding entry accordingly. Omit the field if the bi
 
 ### 7. Produce the draft contract and bindings
 
-**Contract** — synthesize operations, events, subscriptions, and types into a valid IDL JSON following `docs/idl-reference.md`. Set `pinkySwearVersion: 1` as the first field. No bindings in this file. Use version `1.0.0` for first-time specs; use the guardian-recorded major version for redesigns.
+**Contract** — use this exact shape. `pinkySwearVersion: 1` always first. Version `1.0.0` for first-time specs; guardian-recorded major for redesigns. No bindings in this file.
 
-**Bindings** — synthesize the protocol mappings and connection info into a `bindings.json` following `docs/idl-reference.md`. Set `pinkySwearVersion: 1` as the first field.
+```json
+{
+  "pinkySwearVersion": 1,
+  "name": "kebab-case-service-name",
+  "version": "1.0.0",
+  "description": "optional",
+  "operations": [
+    { "name": "camelCase", "kind": "operation", "description": "caller-perspective", "input": { "fieldName": { "type": "string" } }, "output": { "type": "TypeName" } }
+  ],
+  "events": [
+    { "name": "camelCase", "kind": "event", "description": "caller-perspective", "payload": { "type": "TypeName" } }
+  ],
+  "subscriptions": [
+    { "name": "camelCase", "kind": "subscription", "description": "caller-perspective", "input": { "fieldName": { "type": "string" } }, "output": { "type": "TypeName" } }
+  ],
+  "types": {
+    "PascalCase": { "kind": "object", "fields": { "id": { "type": "string" }, "optional": { "optional": true, "type": "number" } } },
+    "MyEnum": { "kind": "enum", "values": ["a", "b"] },
+    "MyUnion": { "kind": "union", "variants": [{ "type": "string" }, { "type": "number" }] }
+  }
+}
+```
+
+Inline type expressions: `{ "type": "string|number|boolean|null|TypeName" }`, `{ "type": "array", "items": { "type": "string" } }`, `{ "optional": true, "type": "string" }`. `object`, `enum`, `union` must be named types — never inline.
+
+**Bindings** — use this exact shape. `pinkySwearVersion: 1` always first.
+
+```json
+{
+  "pinkySwearVersion": 1,
+  "service": "kebab-case-service-name",
+  "bindings": [
+    {
+      "contractVersion": "1.*",
+      "protocol": "http-json-rest",
+      "prefix": "/v1",
+      "operations": { "operationName": { "method": "GET", "path": "/resource/{id}" } },
+      "events": { "eventName": { "method": "POST", "path": "/webhooks/event" } },
+      "subscriptions": { "subName": { "path": "/resource/{id}/watch" } },
+      "connection": {
+        "url": "https://api.example.com",
+        "auth": { "type": "oauth2", "flow": "client_credentials", "tokenUrl": "https://auth.example.com/token", "scopes": ["api:read"] }
+      }
+    },
+    {
+      "contractVersion": "1.*",
+      "protocol": "grpc",
+      "package": "proto_package",
+      "service": "ProtoServiceName",
+      "operations": { "operationName": { "rpc": "RpcName" } },
+      "subscriptions": { "subName": { "rpc": "RpcName" } },
+      "connection": { "host": "service.internal", "port": 443 }
+    }
+  ]
+}
+```
+
+Auth types: `bearer` (consumer provides `token`), `basic` (`username`/`password`), `api_key` (add `"in": "header"`, `"name": "X-Key"`, consumer provides `key`), `oauth2` with `client_credentials` or `password` flow. Omit `auth` if none required.
 
 State both explicitly:
 
