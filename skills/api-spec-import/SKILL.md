@@ -121,11 +121,13 @@ Produce two outputs — a contract and a bindings object — held in context unt
 
 **Bindings mapping:**
 
-| Format | protocol | operations | prefix | connection |
-|---|---|---|---|---|
-| OpenAPI 3.x/2.x | `http-json-rest` | method + path per operation | common path prefix if present | first `servers[].url` stripped of any path prefix |
-| gRPC | `grpc` | rpc name per operation | — | first server address |
-| GraphQL | `graphql` | — | — | first server URL |
+| Format | protocol | package | service | operations | prefix | connection |
+|---|---|---|---|---|---|---|
+| OpenAPI 3.x/2.x | `http-json-rest` | — | — | method + path per operation | common path prefix if present | first `servers[].url` stripped of any path prefix |
+| gRPC | `grpc` | proto `package` declaration | proto `service` name | rpc name per operation | — | first server address |
+| GraphQL | `graphql` | — | — | — | — | first server URL |
+
+For gRPC, `package` is extracted from the `package <name>;` declaration at the top of the proto file. It is required — without it the client cannot construct the correct fully-qualified RPC path `/<package>.<service>/<rpc>`. If no package is declared in the proto, ask the user to provide one.
 
 **Description mapping** — populate `description` on each operation, event, and subscription:
 

@@ -80,8 +80,9 @@ Ask:
 
 For each binding:
 - Ask for the protocol-specific mapping of operations (e.g. HTTP method and path for REST, RPC name for gRPC)
-- Ask: "Is there an optional path prefix? (e.g. `/v1`)"
-- Ask: "Is there a known connection URL?"
+- For gRPC: ask for the proto `package` name (e.g. `audit`) — this is required to construct the fully-qualified service path `/<package>.<service>/<rpc>`
+- Ask: "Is there an optional path prefix? (e.g. `/v1`)" (HTTP only)
+- Ask: "Is there a known connection URL or host?"
 
 `prefix` and `connection` are optional.
 

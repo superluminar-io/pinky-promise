@@ -194,6 +194,7 @@ Sits alongside the contract files at `services/<name>/bindings.json`.
     },
     {
       "protocol": "grpc",
+      "package": "user",
       "service": "UserService",
       "operations": {
         "getUser": { "rpc": "GetUser" },
@@ -219,5 +220,8 @@ Sits alongside the contract files at `services/<name>/bindings.json`.
 | `bindings[].subscriptions` | no | Map of subscription name → transport-specific config |
 | `bindings[].connection` | no | Connection properties — URL, host, port, etc. |
 | `bindings[].service` | no | gRPC only — protobuf service name |
+| `bindings[].package` | no | gRPC only — proto package name; combined with `service` to form the fully-qualified name `<package>.<service>` used in RPC paths |
 
 The effective path for an HTTP operation is `prefix + path` (e.g. `/v1` + `/users/{userId}` → `/v1/users/{userId}`).
+
+The effective gRPC path for an RPC is `/<package>.<service>/<rpc>` (e.g. package `user`, service `UserService`, rpc `GetUser` → `/user.UserService/GetUser`). If `package` is omitted, the path is `/<service>/<rpc>`.

@@ -18,6 +18,7 @@
     },
     {
       "protocol": "grpc",
+      "package": "user",
       "service": "UserService",
       "operations": {
         "getUser": { "rpc": "GetUser" },
