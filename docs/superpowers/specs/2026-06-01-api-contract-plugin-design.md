@@ -313,7 +313,7 @@ Version number is determined from the guardian decisions accumulated during the 
 
 The plugin's CLAUDE.md injects trigger instructions into every session:
 
-- **Session start** — if `API_REGISTRY_REPO` is configured: infer the current service name from the project directory, `.pinky-swear/draft-spec.json`, or draft spec in context; clone the registry fresh to `/tmp/api-registry-session`; if a published spec exists for the service, read it into context silently; clean up the clone. Any failure is silent — never surfaced to the user
+- **Session start** — if `API_REGISTRY_REPO` is configured: infer the current service name from the project directory, `.pinky-swear/draft-spec.json`, or draft spec in context; sparse-clone the registry to `.pinky-swear/registry/`; if a published spec exists for the service, read it into context silently; clean up the clone. If `API_REGISTRY_REPO` is not set, skip silently. If it is set but the clone fails, warn the user once that contract checks are disabled for the session — do not block work
 - **Brainstorming** — if no spec exists: invoke `api-spec-brainstorming` in parallel; if spec exists: invoke `api-change-guardian` when interface changes are proposed
 - **writing-plans** — invoke `api-contract-check` before finalizing any plan that consumes another service; invoke `api-change-guardian` if the plan changes the current service's interface
 - **subagent-driven-development** — invoke `api-change-guardian` when subagent code would alter a published interface

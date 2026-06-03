@@ -66,7 +66,7 @@ If `API_REGISTRY_REPO` is configured:
 ## During requesting-code-review (superpowers requesting-code-review skill)
 
 - For **consumer code** (code that calls another service): you MUST invoke `api-contract-check` as part of the review. If `api-contract-check` encounters a service with no registry entry, surface the import suggestion:
-  > "No registry entry for `<service-name>`. Run `/api-spec-import <url>` to register it before finalizing this review."
+  > "Warning: **`<service-name>`** has no entry in the registry. Run `/api-spec-import <url-to-spec>` to register it and enable contract checking."
 - For **producer code** (code that implements a service interface): you MUST invoke `api-change-guardian` as part of the review.
 
 ## During finishing-a-development-branch (superpowers finishing-a-development-branch skill)
