@@ -8,7 +8,9 @@ When you build a service that other services call, you make a promise about its 
 - **Consumers** pin to a specific version and get their implementation validated against the published spec at every code review.
 - **Breaking changes** are caught before they're planned, not after they're deployed.
 
-Everything lives in a git registry you control. No external services.
+pinky-swear is also flexible about where specs come from. Use `/api-spec-import` to register any external API — Stripe, Twilio, an internal platform service — directly from its OpenAPI, gRPC, or GraphQL spec. Once imported, consumer code calling that API gets the same contract validation as internally-owned services.
+
+Everything lives in a git registry you control. No external services required.
 
 ## Requirements
 
@@ -54,7 +56,9 @@ To sync changes after editing the plugin source:
 
 ## Getting started
 
-**1. Create a registry**
+### First: set up the registry
+
+The registry is a plain git repository shared across all your services. Create it once per organisation.
 
 ```bash
 mkdir api-registry && cd api-registry
@@ -65,7 +69,11 @@ git remote add origin git@github.com:yourorg/api-registry.git
 git push -u origin main
 ```
 
-**2. Configure the registry URL** in your project's `.claude/settings.json`:
+### As a service producer
+
+**1. Install pinky-swear** in your service repo (see [Installation](#installation))
+
+**2. Configure the registry URL** in `.claude/settings.json`:
 
 ```json
 {
@@ -75,11 +83,37 @@ git push -u origin main
 }
 ```
 
-**3. Start a brainstorm** — open a Claude Code session in a new service project and describe what you're building. pinky-swear interleaves API surface questions with the design discussion and writes the draft spec to `.pinky-swear/`.
+**3. Start a brainstorm** — open a Claude Code session and describe what you're building. pinky-swear interleaves API surface questions with the design discussion and writes the draft to `.pinky-swear/`.
 
-**4. Finish the branch** — when you complete the branch, pinky-swear publishes the spec to the registry automatically.
+**4. Finish the branch** — pinky-swear publishes the spec to the registry automatically when the branch is completed.
 
-That's it. Consumer projects point at the same registry and get their calls validated on every code review.
+### As a service consumer
+
+You only need access to the registry — not to the producer's codebase.
+
+**1. Install pinky-swear** in your consumer repo (see [Installation](#installation))
+
+**2. Configure the same registry URL** in `.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "API_REGISTRY_REPO": "git@github.com:yourorg/api-registry.git"
+  }
+}
+```
+
+**3. Start implementing** — when your code calls another service, pinky-swear prompts you to declare the dependency in `api-dependencies.json` and validates every call against the published spec at planning, implementation, and code review.
+
+### Consuming an external API
+
+If you're calling a third-party API (Stripe, Twilio, etc.) run `/api-spec-import` with its spec URL:
+
+```
+/api-spec-import https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json
+```
+
+pinky-swear converts and imports it into the registry. From that point, your calls to that API are validated the same way as internally-owned services.
 
 ## How it works
 
