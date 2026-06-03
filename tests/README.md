@@ -47,6 +47,7 @@ Qualitative checks that ask Claude questions about the loaded skills and assert 
 | `test-api-contract-check-import-hint` | api-contract-check surfaces `/api-spec-import` for unknown services |
 | `test-api-spec-import-modes` | --auto shows diff, --subset pre-selects, --full skips selection on re-import |
 | `test-api-spec-import-version-bump` | semver bump rules including tie-break (add+remove → major wins) |
+| `test-api-spec-brainstorming` | contract has pinkySwearVersion first; no bindings in contract; bindings go to separate file; draft persisted to .pinky-swear/; object/enum/union must be named types |
 | `test-api-change-guardian-triggers` | guardian fires on type changes, removals, response shape changes; not internal refactors |
 | `test-brainstorming-external-hook` | CLAUDE.md hooks surface import suggestion during brainstorming and planning |
 | `test-api-spec-publish` | no draft → falls back to brainstorming; unresolved deferred decisions block publish; missing registry config stops cleanly; first publish uses 1.0.0; confirmation required before push |
