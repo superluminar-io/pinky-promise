@@ -155,6 +155,7 @@ services/
 
 ```json
 {
+  "pinkySwearVersion": 1,
   "name": "user-service",
   "version": "1.0.0",
   "operations": [
@@ -183,6 +184,7 @@ services/
 
 ```json
 {
+  "pinkySwearVersion": 1,
   "service": "user-service",
   "bindings": [
     {
