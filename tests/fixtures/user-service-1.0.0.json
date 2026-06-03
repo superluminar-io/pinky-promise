@@ -1,4 +1,5 @@
 {
+  "pinkySwearVersion": 1,
   "name": "user-service",
   "version": "1.0.0",
   "description": "Manages user accounts",

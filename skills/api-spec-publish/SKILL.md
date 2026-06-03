@@ -108,10 +108,10 @@ Create the service directory if needed:
 mkdir -p .pinky-swear/registry/services/<service-name>
 ```
 
-Write the contract file:
+Write the contract file (always include `pinkySwearVersion: 1`):
 ```bash
 cat > .pinky-swear/registry/services/<service-name>/<new-version>.json << 'SPEC'
-<full contract JSON — no bindings>
+<full contract JSON — no bindings, pinkySwearVersion: 1 at top level>
 SPEC
 ```
 
@@ -124,7 +124,7 @@ If bindings are present, update `bindings.json`:
 
 ```bash
 cat > .pinky-swear/registry/services/<service-name>/bindings.json << 'BINDINGS'
-<full merged bindings JSON>
+<full merged bindings JSON — pinkySwearVersion: 1 at top level>
 BINDINGS
 ```
 

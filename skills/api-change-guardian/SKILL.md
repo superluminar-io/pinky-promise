@@ -67,6 +67,11 @@ Read the spec:
 cat .pinky-swear/registry/services/<service-name>/<current-version>.json
 ```
 
+Check `pinkySwearVersion`. If it is higher than `1`:
+> "This registry entry was written by a newer version of pinky-swear (format version [n]). Update the plugin before proceeding."
+
+Stop.
+
 ### Step 5: Identify proposed changes
 
 From the conversation context, determine exactly what is changing:

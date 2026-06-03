@@ -6,6 +6,7 @@ API specs are JSON files. One file per service version, stored in the registry a
 
 | Field | Required | Description |
 |---|---|---|
+| `pinkySwearVersion` | yes | Format version — currently `1`. Skills warn and stop if they encounter a value higher than they support. |
 | `name` | yes | Service name, kebab-case (e.g. `user-service`) |
 | `version` | yes | Semver string (e.g. `1.2.0`) |
 | `description` | no | Human-readable description |
@@ -211,6 +212,7 @@ Sits alongside the contract files at `services/<name>/bindings.json`.
 
 | Field | Required | Description |
 |---|---|---|
+| `pinkySwearVersion` | yes | Format version — currently `1`. Skills warn and stop if they encounter a value higher than they support. |
 | `service` | yes | Service name, must match the contract file |
 | `bindings` | yes | Array of transport bindings |
 | `bindings[].protocol` | yes | Transport identifier (`http-json-rest`, `grpc`, `graphql`) |

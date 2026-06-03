@@ -21,6 +21,10 @@ When building systems with superpowers, the workflow focuses on internal service
 - An MCP server or hosted registry (git repo only for v1)
 - Per-environment config management beyond optional connection properties in bindings
 
+## Plugin versioning
+
+The plugin itself follows semantic versioning: patch = bug fixes/clarifications, minor = additive changes (new optional fields, new skills), major = breaking format or behaviour changes. Registry files carry a `pinkySwearVersion` integer field so skills can detect and refuse to process files written by a newer format version than they support.
+
 ## Design
 
 ### Plugin structure
@@ -77,7 +81,9 @@ api-registry/
       1.0.0.json
 ```
 
-Two files per service: a versioned contract file (`<version>.json`) and a non-versioned `bindings.json`. The highest semver in a service directory is the latest contract. Published contract versions are immutable — `api-spec-publish` never overwrites an existing versioned file. `bindings.json` is always overwritten on publish. All commits are automated; no human commits. Commit message format:
+Two files per service: a versioned contract file (`<version>.json`) and a non-versioned `bindings.json`. The highest semver in a service directory is the latest contract. Published contract versions are immutable — `api-spec-publish` never overwrites an existing versioned file. `bindings.json` is always overwritten on publish. All commits are automated; no human commits.
+
+Both files carry a `pinkySwearVersion` integer field (currently `1`). Skills check this on read: if the value is higher than the plugin supports, they warn and stop rather than silently misparsing. This allows the plugin to evolve the format without breaking consumers on older plugin versions. Commit message format:
 
 ```
 user-service: 1.1.0 (minor) — added getUsers operation

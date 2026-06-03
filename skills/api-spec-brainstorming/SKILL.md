@@ -92,9 +92,9 @@ Set `contractVersion` on the binding entry accordingly. Omit the field if the bi
 
 ### 7. Produce the draft contract and bindings
 
-**Contract** — synthesize operations, events, subscriptions, and types into a valid IDL JSON following `docs/idl-reference.md`. No bindings in this file. Use version `1.0.0` for first-time specs; use the guardian-recorded major version for redesigns.
+**Contract** — synthesize operations, events, subscriptions, and types into a valid IDL JSON following `docs/idl-reference.md`. Set `pinkySwearVersion: 1` as the first field. No bindings in this file. Use version `1.0.0` for first-time specs; use the guardian-recorded major version for redesigns.
 
-**Bindings** — synthesize the protocol mappings and connection info into a `bindings.json` following `docs/idl-reference.md`.
+**Bindings** — synthesize the protocol mappings and connection info into a `bindings.json` following `docs/idl-reference.md`. Set `pinkySwearVersion: 1` as the first field.
 
 State both explicitly:
 

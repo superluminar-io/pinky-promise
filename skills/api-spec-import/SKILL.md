@@ -239,6 +239,7 @@ Propose to user:
 Build the contract JSON:
 ```json
 {
+  "pinkySwearVersion": 1,
   "name": "<service-name>",
   "version": "<pinky-swear-version>",
   "_source": {
@@ -258,6 +259,7 @@ Omit `events`, `subscriptions`, or `types` keys if empty.
 Build the bindings JSON:
 ```json
 {
+  "pinkySwearVersion": 1,
   "service": "<service-name>",
   "bindings": [ ...protocol mappings and connection from step 7... ]
 }

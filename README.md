@@ -220,6 +220,29 @@ If a service requires authentication, add a `.pinky-swear/credentials.json` (git
 
 The producer's `bindings.json` declares the auth flow (type, token endpoint, scopes). Your `credentials.json` maps your own env vars to the standard protocol parameters — the producer has no say in your variable naming.
 
+## Versioning
+
+pinky-swear follows semantic versioning:
+
+| Bump | What changes |
+|---|---|
+| **patch** | Bug fixes, skill clarifications — no format changes |
+| **minor** | Additive: new optional fields, new skills, new auth types |
+| **major** | Breaking: IDL format, bindings schema, or skill behaviour |
+
+Registry files carry a `pinkySwearVersion` field. If a skill encounters a file written by a newer format version than it supports, it warns and stops rather than silently misparsing.
+
+### Pinning to a release
+
+By default `marketplace add` tracks `main`. To pin to a specific release:
+
+```bash
+claude plugin marketplace add git@github.com:superluminar-io/pinky-swear.git@v1.0.0 --scope project
+claude plugin install pinky-swear@pinky-swear-local --scope project
+```
+
+Check the [releases page](https://github.com/superluminar-io/pinky-swear/releases) for available tags.
+
 ## Registry setup
 
 See [`docs/registry-setup.md`](docs/registry-setup.md) for registry layout, commit format, and SSH access configuration.

@@ -90,6 +90,11 @@ If the service exists, read the pinned contract:
 cat .pinky-swear/registry/services/<service-name>/<pinned-version>.json
 ```
 
+Check `pinkySwearVersion` in the contract. If it is higher than `1`:
+> "Warning: **[service-name]** v[pinned-version] was written by a newer version of pinky-swear (format version [n]). Update the plugin to validate correctly. Skipping contract check for this service."
+
+Continue to the next dependency.
+
 Also read the bindings if present:
 ```bash
 cat .pinky-swear/registry/services/<service-name>/bindings.json 2>/dev/null || true
