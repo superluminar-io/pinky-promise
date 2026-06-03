@@ -40,14 +40,16 @@ Or in `.claude/settings.json`:
 api-registry/
   services/
     user-service/
-      1.0.0.json
+      1.0.0.json      ← abstract contract (versioned, immutable)
       1.1.0.json
       2.0.0.json
+      bindings.json   ← protocol mappings + auth (not versioned, overwritten on publish)
     payment-service/
       1.0.0.json
+      bindings.json
 ```
 
-One JSON file per service version, named by semver. The highest semver in a directory is the latest version. Published versions are immutable.
+Each service has versioned contract files (named by semver) and a single `bindings.json`. Contract files are immutable once published. `bindings.json` is always overwritten on publish and tracks the current deployment state across all active contract versions.
 
 ## Commit format
 
