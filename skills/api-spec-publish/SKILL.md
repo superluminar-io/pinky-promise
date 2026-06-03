@@ -114,10 +114,16 @@ cat > /tmp/api-registry-publish/services/<service-name>/<new-version>.json << 'S
 SPEC
 ```
 
-If bindings are present, write `bindings.json` (always overwrites — not versioned):
+If bindings are present, update `bindings.json`:
+
+- **Minor or patch bump**: overwrite `bindings.json` with the draft bindings.
+- **Major bump**: read the existing `bindings.json` from the registry, keep all entries whose `contractVersion` does not match the new major, then append the new major's entries. This preserves reachability of older versions.
+
+  Ask the user: "This is a major bump to [new-version]. The new binding will be added for `[new-major].*`. Clients on v[old-major] will continue using the existing binding. Confirm?"
+
 ```bash
 cat > /tmp/api-registry-publish/services/<service-name>/bindings.json << 'BINDINGS'
-<full bindings JSON>
+<full merged bindings JSON>
 BINDINGS
 ```
 

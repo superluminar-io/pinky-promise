@@ -90,10 +90,17 @@ If the service exists, read the pinned contract:
 cat /tmp/api-registry-check/services/<service-name>/<pinned-version>.json
 ```
 
-Also read the bindings if present (used to validate transport-level calls such as HTTP paths):
+Also read the bindings if present:
 ```bash
 cat /tmp/api-registry-check/services/<service-name>/bindings.json 2>/dev/null || true
 ```
+
+Select the binding entries that apply to the pinned version using this priority order:
+1. Exact `contractVersion` match (e.g. `"1.5.0"` for pinned version `1.5.0`)
+2. Major wildcard match (e.g. `"1.*"` for any `1.x.y`)
+3. Entries with no `contractVersion` (fallback)
+
+Use only the selected entries for transport-level validation (HTTP paths, gRPC RPC names, connection URLs).
 
 If the file does not exist:
 > "Error: [service-name] version [pinned-version] not found in registry ([API_REGISTRY_REPO]). Check api-dependencies.json."

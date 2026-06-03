@@ -219,8 +219,46 @@ Sits alongside the contract files at `services/<name>/bindings.json`.
 | `bindings[].events` | no | Map of event name → transport-specific config |
 | `bindings[].subscriptions` | no | Map of subscription name → transport-specific config |
 | `bindings[].connection` | no | Connection properties — URL, host, port, etc. |
+| `bindings[].contractVersion` | no | Semver range this binding applies to: exact (`"1.5.0"`), major wildcard (`"1.*"`), or omitted to match all versions |
 | `bindings[].service` | no | gRPC only — protobuf service name |
 | `bindings[].package` | no | gRPC only — proto package name; combined with `service` to form the fully-qualified name `<package>.<service>` used in RPC paths |
+
+### contractVersion matching
+
+When a consumer is pinned to a specific version, the binding selected is the most specific match:
+
+1. Exact version match (`"1.5.0"`) — highest priority
+2. Major wildcard match (`"1.*"`) — matches any `1.x.y`
+3. No `contractVersion` — matches all versions (fallback)
+
+If multiple bindings match at the same specificity (e.g. two `"1.*"` entries for different protocols), all are used.
+
+Example — v1 and v2 served from different endpoints:
+
+```json
+{
+  "service": "user-service",
+  "bindings": [
+    {
+      "contractVersion": "1.*",
+      "protocol": "http-json-rest",
+      "prefix": "/v1",
+      "connection": { "url": "https://api.example.com" }
+    },
+    {
+      "contractVersion": "2.*",
+      "protocol": "http-json-rest",
+      "prefix": "/v2",
+      "connection": { "url": "https://api.example.com" }
+    },
+    {
+      "contractVersion": "1.5.0",
+      "protocol": "http-json-rest",
+      "connection": { "url": "https://legacy.api.example.com" }
+    }
+  ]
+}
+```
 
 The effective path for an HTTP operation is `prefix + path` (e.g. `/v1` + `/users/{userId}` → `/v1/users/{userId}`).
 

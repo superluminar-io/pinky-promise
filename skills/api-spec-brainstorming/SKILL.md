@@ -83,6 +83,9 @@ For each binding:
 - For gRPC: ask for the proto `package` name (e.g. `audit`) — this is required to construct the fully-qualified service path `/<package>.<service>/<rpc>`
 - Ask: "Is there an optional path prefix? (e.g. `/v1`)" (HTTP only)
 - Ask: "Is there a known connection URL or host?"
+- Ask: "Does this binding apply to all versions, or a specific major version? (e.g. `1.*`, `2.*`, or leave blank for all)"
+
+Set `contractVersion` on the binding entry accordingly. Omit the field if the binding applies to all versions.
 
 `prefix` and `connection` are optional.
 
