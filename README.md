@@ -12,6 +12,11 @@ pinky-swear is also flexible about where specs come from. Use `/api-spec-import`
 
 Everything lives in a git registry you control. No external services required.
 
+## See it in action
+
+**Catching a breaking change before it's planned:**
+![api-change-guardian detecting a method removal](docs/assets/guardian.gif)
+
 ## Requirements
 
 - Claude Code with the [superpowers](https://github.com/obra/superpowers) plugin installed
