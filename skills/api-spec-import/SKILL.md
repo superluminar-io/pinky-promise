@@ -204,7 +204,7 @@ Present as a selection list:
 
 Wait for 'done' before proceeding.
 
-If the user types 'cancel' or 'quit', stop and run `rm -rf /tmp/api-registry-import`.
+If the user types 'cancel' or 'quit', stop and run `rm -rf .pinky-swear/registry`.
 
 ### 9. Determine pinky-swear version
 
@@ -251,7 +251,7 @@ Build the bindings JSON:
 
 Write both to the registry:
 ```bash
-mkdir -p /tmp/api-registry-import/services/<service-name>
+mkdir -p .pinky-swear/registry/services/<service-name>
 ```
 
 Write the contract to `.pinky-swear/registry/services/<service-name>/<pinky-swear-version>.json`.
@@ -280,5 +280,5 @@ Display the full JSON. Do not stop the session.
 
 > "Imported `<service-name>` v<pinky-swear-version> (external: <external-version>) into the registry. `api-contract-check` will now validate calls against this spec."
 
-If any `auth` blocks are present and empty:
-> "Note: `auth` blocks in bindings are empty. Edit the registry entry directly to add authentication configuration once the binding-spec-extension design is implemented."
+If the source spec declares authentication that could not be mapped to the `connection` block:
+> "Note: authentication configuration from the source spec was not imported. For an **external service** (imported via this skill), add auth config to `.pinky-swear/bindings.json` in the project that owns this registry entry and re-run `/api-spec-import` — do not edit the registry directly, as the next re-import will overwrite manual changes. For a **producer service** using pinky-swear, ask the service owner to add the auth config to their `.pinky-swear/bindings.json` and republish."
