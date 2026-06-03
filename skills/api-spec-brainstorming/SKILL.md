@@ -19,9 +19,16 @@ Define the public API surface of a service in parallel with the superpowers brai
 
 ## What to do
 
-Announce: "Running api-spec-brainstorming to define the public API surface alongside the design brainstorm."
+Output this block verbatim — it must be visually distinct so the user knows pinky-swear is active:
 
-Work through these questions one at a time. Use the answers to build toward the draft IDL.
+```
+---
+📌 pinky-swear: capturing the public API surface for [service-name]
+   Any service that calls [service-name] will be validated against this spec.
+---
+```
+
+Then work through the questions below one at a time. Use the answers to build toward the draft IDL.
 
 ### 1. Identify the service name
 
