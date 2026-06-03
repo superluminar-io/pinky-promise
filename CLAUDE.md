@@ -6,7 +6,7 @@ This plugin manages API contracts between producer and consumer services. It int
 
 ## Working on this plugin
 
-These rules apply when making changes to pinky-swear itself (this repo). They override the superpowers defaults where they conflict.
+**These rules apply only when the current project IS the pinky-swear plugin repository** — i.e. the working directory contains `skills/api-spec-brainstorming/`. In all other projects, skip this entire section. It is included here so it ships with the plugin and is available to contributors working on the plugin itself.
 
 ### Semver commitment
 
