@@ -1,6 +1,6 @@
 ---
 name: api-spec-brainstorming
-description: "Invoke during any brainstorm that defines or changes a service's public API — whether designing a brand-new service or adding, removing, or reshaping operations on an existing one. Typical triggers: 'I'm starting a new service', 'what operations should this expose?', 'add a new endpoint', 'change how clients call this', 'redesign the API'."
+description: "Invoke at the START of any brainstorm for a service with no published spec — runs alongside superpowers:brainstorming, not after it. Triggers: user is designing, building, or starting a new service; 'what operations should this expose?'; 'let's brainstorm'; 'I'm starting a new service'; redesigning an existing API."
 ---
 
 # API Spec Brainstorming

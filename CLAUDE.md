@@ -84,13 +84,15 @@ If `API_REGISTRY_REPO` is configured:
 
    Do not block the session — continue without registry data, but make sure the user knows the safety net is off.
 
-## When about to invoke superpowers:brainstorming
+## When the user is designing or building a service
 
-**Before invoking `superpowers:brainstorming` — check these first, in the same turn:**
+This check fires at the same time as the initial skill scan — on the user message, before any other skill is invoked.
 
-- If the current service has **no published spec**: you MUST invoke `pinky-swear:api-spec-brainstorming` IMMEDIATELY — in the same response where you would start the brainstorm, before the first brainstorming question. Do not wait until later in the session.
-- If the current service **has a published spec** and the brainstorm proposes changes to the public interface: you MUST invoke `pinky-swear:api-change-guardian` before those changes are adopted into the design.
-- If the brainstorm mentions **calling an external service** (a service not developed in this repo) and no registry entry exists for it: you MUST surface this before the brainstorm concludes:
+If the user's message is about designing, starting, building, or brainstorming a service AND the current service has **no published spec**: `pinky-swear:api-spec-brainstorming` is an applicable skill. It MUST appear in the Skill tool invocations alongside `superpowers:brainstorming` — not after, not later in the session. Both skills run together in the same turn.
+
+If the current service **has a published spec** and the user's message proposes changes to the public interface: `pinky-swear:api-change-guardian` is an applicable skill and must be invoked before those changes are adopted.
+
+If the user's message mentions **calling an external service** with no registry entry: surface this before concluding:
   > "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
 
 ## During writing-plans (superpowers writing-plans skill)
