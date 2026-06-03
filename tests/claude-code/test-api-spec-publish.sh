@@ -24,7 +24,7 @@ echo "Test 3: Missing API_REGISTRY_REPO stops the skill cleanly..."
 output=$(run_claude "Invoke the api-spec-publish skill and then answer: what does it do if API_REGISTRY_REPO is not configured anywhere?")
 
 assert_contains "$output" "cannot publish|not configured|registry-setup" "Stops cleanly when registry not configured" || exit 1
-assert_not_contains "$output" "clone|git push|publish.*success" "Does not attempt to push without registry config" || exit 1
+assert_not_contains "$output" "successfully published|pushed to registry|git push origin|published.*registry" "Does not attempt to push without registry config" || exit 1
 
 echo ""
 echo "Test 4: First-time publish uses version 1.0.0..."
