@@ -66,14 +66,15 @@ If `API_REGISTRY_REPO` is not set, all skills warn and skip silently — they ne
 
 If `API_REGISTRY_REPO` is configured:
 1. Identify the current service name (from project directory, `.pinky-swear/draft-spec.json`, or draft spec in context)
-2. Fetch the registry fresh — always clone from `API_REGISTRY_REPO`, never read from local service directories:
+2. Resolve `API_REGISTRY_REPO`: read `.claude/settings.json` (check `env.API_REGISTRY_REPO`) then project `CLAUDE.md` (line matching `API_REGISTRY_REPO=`). Use the Read tool — no shell execution. If not found, skip silently.
+3. Fetch the registry fresh — always clone from `API_REGISTRY_REPO`, never read from local service directories:
    ```bash
    rm -rf .pinky-swear/registry
    git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry 2>/dev/null
    git -C .pinky-swear/registry sparse-checkout set "services/<service-name>" 2>/dev/null
    ls .pinky-swear/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
    ```
-3. If a spec version is found, read it into context silently:
+4. If a spec version is found, read it into context silently:
    ```bash
    cat .pinky-swear/registry/services/<service-name>/<latest-version>.json
    rm -rf .pinky-swear/registry

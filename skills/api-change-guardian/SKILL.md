@@ -23,12 +23,11 @@ Infer the service name from the draft spec in context or the project directory n
 
 ### Step 2: Locate API_REGISTRY_REPO
 
-Check in order:
-1. `echo $API_REGISTRY_REPO`
-2. Grep project CLAUDE.md for `API_REGISTRY_REPO=`
-3. Read `.claude/settings.json` for `API_REGISTRY_REPO`
+Read in order (no shell execution needed — use the Read tool):
+1. `.claude/settings.json` → `env.API_REGISTRY_REPO`
+2. Project `CLAUDE.md` → line matching `API_REGISTRY_REPO=`
 
-If not found:
+If not found in either:
 > "API_REGISTRY_REPO is not configured. Skipping contract check. See docs/registry-setup.md."
 
 Stop.
