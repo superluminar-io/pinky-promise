@@ -4,6 +4,44 @@ This plugin manages API contracts between producer and consumer services. It int
 
 **Requires superpowers to be installed and active.**
 
+## Working on this plugin
+
+These rules apply when making changes to pinky-swear itself (this repo). They override the superpowers defaults where they conflict.
+
+### Semver commitment
+
+| Change | Bump |
+|---|---|
+| Bug fix, skill clarification, improved wording | patch |
+| New optional IDL/bindings field, new skill, new auth type, new CLAUDE.md hook | minor |
+| Rename or remove any field in contract files or `bindings.json` | **major** |
+| Change the semantics of an existing field | **major** |
+| Change the registry layout (where files live, naming) | **major** |
+| Change `credentials.json` structure | **major** |
+| Remove or rename a skill | **major** |
+| Change a CLAUDE.md hook in a way that stops it from firing | **major** |
+
+### Before making any change
+
+Check whether it is breaking. If you are unsure, assume it is.
+
+**For non-breaking changes:** proceed normally.
+
+**For breaking changes:** stop and tell the user:
+> "This change is breaking — it requires a major version bump. It will invalidate existing registry files / consumer workflows for anyone on the current version. Do you want to proceed?"
+
+Wait for explicit approval before continuing.
+
+### When a breaking change is approved
+
+1. Bump `pinkySwearVersion` in all skills that write registry files (brainstorming, import, publish) from the current value to the next integer.
+2. Update the version check threshold in all skills that read registry files (guardian, contract-check) to match.
+3. Update `plugin.json` and `marketplace.json` version fields.
+4. Propose building a migration skill:
+   > "Should I add an `/api-spec-migrate` skill that reads v[old] registry files and rewrites them to v[new] format? This lets existing users upgrade their registries without re-publishing every service."
+
+Wait for the user's decision before implementing the migration skill.
+
 ## Registry is the only source of truth for API contracts
 
 **NEVER** read another service's code, spec files, or any other files outside the current project to infer its API. This means:
