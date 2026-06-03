@@ -102,6 +102,14 @@ Select the binding entries that apply to the pinned version using this priority 
 
 Use only the selected entries for transport-level validation (HTTP paths, gRPC RPC names, connection URLs).
 
+Also read the consumer's credential mapping if present:
+```bash
+cat .pinky-swear/credentials.json 2>/dev/null || true
+```
+
+If `connection.auth` is declared in the binding but `.pinky-swear/credentials.json` has no entry for this service, warn:
+> "Warning: **[service-name]** requires `[auth.type]` authentication but no credentials are configured. Add an entry for `[service-name]` to `.pinky-swear/credentials.json`."
+
 If the file does not exist:
 > "Error: [service-name] version [pinned-version] not found in registry ([API_REGISTRY_REPO]). Check api-dependencies.json."
 

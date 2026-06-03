@@ -130,6 +130,20 @@ Produce two outputs — a contract and a bindings object — held in context unt
 
 For gRPC, `package` is extracted from the `package <name>;` declaration at the top of the proto file. It is required — without it the client cannot construct the correct fully-qualified RPC path `/<package>.<service>/<rpc>`. If no package is declared in the proto, ask the user to provide one.
 
+**Auth mapping** — populate `connection.auth` from the source spec's security scheme. Map to the closest pinky-swear auth type:
+
+| Source | Mapped `auth` |
+|---|---|
+| OpenAPI `http` / `bearer` | `{ "type": "bearer" }` |
+| OpenAPI `http` / `basic` | `{ "type": "basic" }` |
+| OpenAPI `apiKey` | `{ "type": "api_key", "in": "<in>", "name": "<name>" }` |
+| OpenAPI `oauth2` / `clientCredentials` | `{ "type": "oauth2", "flow": "client_credentials", "tokenUrl": "<tokenUrl>", "scopes": [...] }` |
+| OpenAPI `oauth2` / `password` | `{ "type": "oauth2", "flow": "password", "tokenUrl": "<tokenUrl>", "scopes": [...] }` |
+| gRPC (no standard auth) | omit `auth` |
+| Unrecognised / `openIdConnect` | omit `auth`, note in step 11 |
+
+Never populate credential values — only the auth flow structure. If no security scheme is declared in the source spec, omit `auth` entirely.
+
 **Description mapping** — populate `description` on each operation, event, and subscription:
 
 | Format | Source for `description` |
@@ -280,5 +294,5 @@ Display the full JSON. Do not stop the session.
 
 > "Imported `<service-name>` v<pinky-swear-version> (external: <external-version>) into the registry. `api-contract-check` will now validate calls against this spec."
 
-If the source spec declares authentication that could not be mapped to the `connection` block:
-> "Note: authentication configuration from the source spec was not imported. For an **external service** (imported via this skill), add auth config to `.pinky-swear/bindings.json` in the project that owns this registry entry and re-run `/api-spec-import` — do not edit the registry directly, as the next re-import will overwrite manual changes. For a **producer service** using pinky-swear, ask the service owner to add the auth config to their `.pinky-swear/bindings.json` and republish."
+If the source spec declares an auth scheme that could not be mapped (e.g. `openIdConnect`):
+> "Note: the auth scheme `<scheme>` could not be automatically mapped. Add an `auth` block to the binding entry in `.pinky-swear/bindings.json` and re-run `/api-spec-import` to republish — do not edit the registry directly as a re-import will overwrite it. See `docs/idl-reference.md` for supported auth types."

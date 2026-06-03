@@ -263,3 +263,62 @@ Example — v1 and v2 served from different endpoints:
 The effective path for an HTTP operation is `prefix + path` (e.g. `/v1` + `/users/{userId}` → `/v1/users/{userId}`).
 
 The effective gRPC path for an RPC is `/<package>.<service>/<rpc>` (e.g. package `user`, service `UserService`, rpc `GetUser` → `/user.UserService/GetUser`). If `package` is omitted, the path is `/<service>/<rpc>`.
+
+### Auth
+
+The producer declares the auth flow in `connection.auth`. This is a machine-readable specification — structured enough for a client or MCP server to execute the flow automatically. No prose, no external links. Credential values are never stored here; they come from the consumer's local `credentials.json` (see below).
+
+| `type` | Producer fields | Consumer provides |
+|---|---|---|
+| `bearer` | — | `token` |
+| `basic` | — | `username`, `password` |
+| `api_key` | `in` (`header` or `query`), `name` (e.g. `X-API-Key`) | `key` |
+| `oauth2` + `client_credentials` | `tokenUrl`, `scopes` | `client_id`, `client_secret` |
+| `oauth2` + `password` | `tokenUrl`, `scopes` | `username`, `password` |
+
+Examples:
+
+```json
+"auth": { "type": "bearer" }
+
+"auth": { "type": "basic" }
+
+"auth": { "type": "api_key", "in": "header", "name": "X-API-Key" }
+
+"auth": {
+  "type": "oauth2",
+  "flow": "client_credentials",
+  "tokenUrl": "https://auth.example.com/oauth/token",
+  "scopes": ["api:read", "api:write"]
+}
+
+"auth": {
+  "type": "oauth2",
+  "flow": "password",
+  "tokenUrl": "https://auth.example.com/oauth/token",
+  "scopes": ["api:read"]
+}
+```
+
+## credentials.json
+
+Stored at `.pinky-swear/credentials.json` in the consumer's project. **Never committed — add `.pinky-swear/credentials.json` to `.gitignore`.** Provides the credential values for each consumed service. The consumer names their env vars however they like and maps them here.
+
+```json
+{
+  "user-service": {
+    "token": "${MY_TOKEN_VAR}"
+  },
+  "payment-service": {
+    "client_id": "${PAYMENT_CLIENT_ID}",
+    "client_secret": "${PAYMENT_CLIENT_SECRET}"
+  },
+  "analytics-service": {
+    "key": "${ANALYTICS_KEY}"
+  }
+}
+```
+
+Each key under a service name corresponds to a parameter in the "Consumer provides" column above for that service's auth type. Values may be literal strings or `${ENV_VAR}` references expanded at runtime.
+
+The `${...}` expansion is the consumer's responsibility — values come from shell environment, a `.env` file, a secrets manager, or any other mechanism the team uses. The producer never sees or controls the variable names.

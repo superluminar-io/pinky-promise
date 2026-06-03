@@ -83,6 +83,7 @@ For each binding:
 - For gRPC: ask for the proto `package` name (e.g. `audit`) — this is required to construct the fully-qualified service path `/<package>.<service>/<rpc>`
 - Ask: "Is there an optional path prefix? (e.g. `/v1`)" (HTTP only)
 - Ask: "Is there a known connection URL or host?"
+- Ask: "Does this service require authentication?" If yes, ask which type (`bearer`, `basic`, `api_key`, `oauth2`) and collect the protocol-specific fields (e.g. `tokenUrl` and `scopes` for oauth2, `in` and `name` for api_key). Do **not** ask for credential values — those are the consumer's concern.
 - Ask: "Does this binding apply to all versions, or a specific major version? (e.g. `1.*`, `2.*`, or leave blank for all)"
 
 Set `contractVersion` on the binding entry accordingly. Omit the field if the binding applies to all versions.
@@ -116,6 +117,7 @@ Persist both to disk so they survive across sessions:
 ```bash
 mkdir -p .pinky-swear
 grep -qxF '.pinky-swear/registry/' .gitignore 2>/dev/null || echo '.pinky-swear/registry/' >> .gitignore
+grep -qxF '.pinky-swear/credentials.json' .gitignore 2>/dev/null || echo '.pinky-swear/credentials.json' >> .gitignore
 cat > .pinky-swear/draft-spec.json << 'SPEC'
 <full contract JSON>
 SPEC
