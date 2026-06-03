@@ -84,9 +84,23 @@ Member names are converted to camelCase. Type names are converted to PascalCase.
 
 Operation, event, and subscription `description` fields are populated from the source spec: OpenAPI `summary` (falling back to `description`), proto leading comments, GraphQL field descriptions.
 
+**Auth mapping** — `connection.auth` is populated from the source spec's security scheme:
+
+| Source | Mapped `auth` |
+|---|---|
+| OpenAPI `http` / `bearer` | `{ "type": "bearer" }` |
+| OpenAPI `http` / `basic` | `{ "type": "basic" }` |
+| OpenAPI `apiKey` | `{ "type": "api_key", "in": "<in>", "name": "<name>" }` |
+| OpenAPI `oauth2` / `clientCredentials` | `{ "type": "oauth2", "flow": "client_credentials", "tokenUrl": "...", "scopes": [...] }` |
+| OpenAPI `oauth2` / `password` | `{ "type": "oauth2", "flow": "password", "tokenUrl": "...", "scopes": [...] }` |
+| gRPC (no standard auth) | omit `auth` |
+| `openIdConnect` or unrecognised | omit `auth`, note in confirmation step |
+
+Credential values are never imported — only the auth flow structure. The consumer provides values in their own `.pinky-swear/credentials.json` using their own variable naming.
+
 The import skill writes two files to the registry:
 - `services/<name>/<version>.json` — abstract contract (operations, events, subscriptions, types)
-- `services/<name>/bindings.json` — protocol mappings and connection URLs
+- `services/<name>/bindings.json` — protocol mappings, connection URLs, and auth flow structure
 
 ## Modes
 

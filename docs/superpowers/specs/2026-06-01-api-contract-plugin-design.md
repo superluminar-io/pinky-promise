@@ -226,7 +226,13 @@ Variants in a union and items in an array are inline type expressions. Named typ
 
 #### Bindings
 
-Bindings live in `bindings.json` alongside the contract files, not inside the contract itself. They map the abstract interface to a transport and declare connection URLs. Multiple bindings per service are allowed. The `prefix` field is an optional path prefix prepended to all HTTP operation paths (e.g. `/v1`). See `docs/idl-reference.md` for the full schema.
+Bindings live in `bindings.json` alongside the contract files, not inside the contract itself. They map the abstract interface to a transport and declare connection URLs. Multiple bindings per service are allowed. The `prefix` field is an optional path prefix prepended to all HTTP operation paths (e.g. `/v1`).
+
+**Auth** — the producer declares the auth flow in `connection.auth`. This is a machine-readable specification of the protocol; credential values are never stored here. Supported types: `bearer`, `basic`, `api_key`, `oauth2` (flows: `client_credentials`, `password`). The consumer provides credential values in their own `.pinky-swear/credentials.json` (gitignored), mapping their own env vars to the standard protocol parameter names. The producer has no say in the consumer's variable naming.
+
+**Versioning** — each binding entry carries an optional `contractVersion` field (`"1.*"`, `"2.*"`, or an exact version like `"1.5.0"`) so multiple deployed versions of the same service can coexist in the registry with different endpoints. A client pinned to `1.2.0` resolves the most specific matching binding.
+
+See `docs/idl-reference.md` for the full schema including auth types, `credentials.json` format, and `contractVersion` matching rules.
 
 #### Deprecation
 
