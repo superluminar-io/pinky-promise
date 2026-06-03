@@ -84,10 +84,12 @@ If `API_REGISTRY_REPO` is configured:
 
    Do not block the session — continue without registry data, but make sure the user knows the safety net is off.
 
-## During brainstorming (superpowers brainstorming skill)
+## When about to invoke superpowers:brainstorming
 
-- If the current service has **no published spec**: you MUST invoke `api-spec-brainstorming` as part of the brainstorming session, interleaving its questions with the design brainstorm rather than treating them as two separate sequential conversations.
-- If the current service **has a published spec** and the brainstorm proposes changes to the public interface: you MUST invoke `api-change-guardian` before those changes are adopted into the design.
+**Before invoking `superpowers:brainstorming` — check these first, in the same turn:**
+
+- If the current service has **no published spec**: you MUST invoke `pinky-swear:api-spec-brainstorming` IMMEDIATELY — in the same response where you would start the brainstorm, before the first brainstorming question. Do not wait until later in the session.
+- If the current service **has a published spec** and the brainstorm proposes changes to the public interface: you MUST invoke `pinky-swear:api-change-guardian` before those changes are adopted into the design.
 - If the brainstorm mentions **calling an external service** (a service not developed in this repo) and no registry entry exists for it: you MUST surface this before the brainstorm concludes:
   > "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
 
