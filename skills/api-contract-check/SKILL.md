@@ -15,7 +15,7 @@ Validate the current implementation or plan against published API specs.
 
 ## What to do
 
-**Specs come exclusively from the registry. Never read another service's code or files — no `find`, no reading from `..` or sibling directories, no inferring the API from `.go`, `.ts`, `.proto`, or any other source files. Only read from `/tmp/api-registry-check/` after a fresh clone.**
+**Specs come exclusively from the registry. Never read another service's code or files — no `find`, no reading from `..` or sibling directories, no inferring the API from `.go`, `.ts`, `.proto`, or any other source files. Only read from `.pinky-swear/registry/` after a fresh clone.**
 
 Announce: "Running api-contract-check to validate against published API specs."
 
@@ -31,11 +31,11 @@ If not found:
 
 Stop.
 
-Always fetch fresh — remove any stale clone first:
+Clone with `--filter=blob:none --sparse` — no blobs are fetched yet:
 
 ```bash
-rm -rf /tmp/api-registry-check
-git clone --depth 1 "$API_REGISTRY_REPO" /tmp/api-registry-check
+rm -rf .pinky-swear/registry
+git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry
 ```
 
 If clone fails:
@@ -52,14 +52,15 @@ cat api-dependencies.json
 If the file does not exist, prompt to create it:
 > "No api-dependencies.json found. Which services does this project consume?"
 
-List available services:
+List available services using the tree index (no blobs downloaded):
 ```bash
-ls /tmp/api-registry-check/services/
+git -C .pinky-swear/registry ls-tree HEAD services/
 ```
 
-For each service the user names, list available versions and ask which to pin:
+For each service the user names (resolve partial names against the listing), list available versions and ask which to pin:
 ```bash
-ls /tmp/api-registry-check/services/<service-name>/ | sort -V
+git -C .pinky-swear/registry sparse-checkout set "services/<service-name>"
+ls .pinky-swear/registry/services/<service-name>/ | sort -V
 ```
 
 Write `api-dependencies.json` to the project root:
@@ -73,26 +74,25 @@ Announce: "Created api-dependencies.json. Proceeding with contract check."
 
 ### Step 3: Fetch pinned specs and bindings
 
-For each entry in `api-dependencies.json`:
+For each entry in `api-dependencies.json`, sparse-checkout that service (adding to any already checked out):
 
-First check whether the service exists in the registry at all:
 ```bash
-ls /tmp/api-registry-check/services/<service-name>/ 2>/dev/null
+git -C .pinky-swear/registry sparse-checkout add "services/<service-name>"
 ```
 
-If the service directory does not exist:
+If the service directory does not exist after checkout:
 > "Warning: **[service-name]** has no entry in the registry. Run `/api-spec-import <url-to-spec>` to register it and enable contract checking. Skipping contract check for this service."
 
 Continue to the next dependency.
 
 If the service exists, read the pinned contract:
 ```bash
-cat /tmp/api-registry-check/services/<service-name>/<pinned-version>.json
+cat .pinky-swear/registry/services/<service-name>/<pinned-version>.json
 ```
 
 Also read the bindings if present:
 ```bash
-cat /tmp/api-registry-check/services/<service-name>/bindings.json 2>/dev/null || true
+cat .pinky-swear/registry/services/<service-name>/bindings.json 2>/dev/null || true
 ```
 
 Select the binding entries that apply to the pinned version using this priority order:
@@ -106,7 +106,7 @@ If the file does not exist:
 > "Error: [service-name] version [pinned-version] not found in registry ([API_REGISTRY_REPO]). Check api-dependencies.json."
 
 ```bash
-rm -rf /tmp/api-registry-check
+rm -rf .pinky-swear/registry
 ```
 
 Stop on this error.
@@ -141,7 +141,7 @@ For each deprecated member in use:
 For each pinned service, find the highest version within the same major:
 ```bash
 MAJOR=$(echo "<pinned-version>" | cut -d. -f1)
-ls /tmp/api-registry-check/services/<service-name>/ | sort -V | grep "^${MAJOR}\." | tail -1
+ls .pinky-swear/registry/services/<service-name>/ | sort -V | grep "^${MAJOR}\." | tail -1
 ```
 
 If a newer compatible version exists:
@@ -150,5 +150,5 @@ If a newer compatible version exists:
 ### Clean up
 
 ```bash
-rm -rf /tmp/api-registry-check
+rm -rf .pinky-swear/registry
 ```

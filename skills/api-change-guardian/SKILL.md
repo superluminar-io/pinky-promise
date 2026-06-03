@@ -13,7 +13,7 @@ Any stage (brainstorming, planning, implementation, review) proposes a change th
 
 ## What to do
 
-**Specs come exclusively from the registry. Never search the local filesystem — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read from `/tmp/api-registry-check/` after a fresh clone.**
+**Specs come exclusively from the registry. Never search the local filesystem — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read from `.pinky-swear/registry/` after a fresh clone.**
 
 Announce: "Running api-change-guardian to check for API contract changes."
 
@@ -35,11 +35,12 @@ Stop.
 
 ### Step 3: Clone the registry
 
-Always fetch fresh — remove any stale clone first:
+Always fetch fresh — sparse-checkout to only the current service:
 
 ```bash
-rm -rf /tmp/api-registry-check
-git clone --depth 1 "$API_REGISTRY_REPO" /tmp/api-registry-check
+rm -rf .pinky-swear/registry
+git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry
+git -C .pinky-swear/registry sparse-checkout set "services/<service-name>"
 ```
 
 If clone fails:
@@ -50,20 +51,20 @@ Stop.
 ### Step 4: Find the current published spec
 
 ```bash
-ls /tmp/api-registry-check/services/<service-name>/ 2>/dev/null | sort -V | tail -1
+ls .pinky-swear/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
 ```
 
 If no versions exist, this is a new service — no published contract to check.
 
 ```bash
-rm -rf /tmp/api-registry-check
+rm -rf .pinky-swear/registry
 ```
 
 Stop.
 
 Read the spec:
 ```bash
-cat /tmp/api-registry-check/services/<service-name>/<current-version>.json
+cat .pinky-swear/registry/services/<service-name>/<current-version>.json
 ```
 
 ### Step 5: Identify proposed changes
@@ -125,5 +126,5 @@ Accumulate deferred decisions across multiple guardian runs in the same session.
 ### Clean up
 
 ```bash
-rm -rf /tmp/api-registry-check
+rm -rf .pinky-swear/registry
 ```

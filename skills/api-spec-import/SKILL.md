@@ -16,7 +16,7 @@ Import an external API spec into the pinky-swear registry as a declared dependen
 
 ## Steps
 
-**Registry data comes exclusively from a fresh clone. Never search the local filesystem for existing registry entries — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read registry data from `/tmp/api-registry-import/` after a fresh clone.**
+**Registry data comes exclusively from a fresh clone. Never search the local filesystem for existing registry entries — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read registry data from `.pinky-swear/registry/` after a fresh clone.**
 
 ### 1. Announce
 
@@ -77,11 +77,12 @@ If the user provides corrections, use their values as-is without re-deriving. Fo
 
 ### 6. Check for existing registry entry
 
-Always fetch fresh — remove any stale clone first:
+Always fetch fresh — sparse-checkout to only this service (name confirmed in step 5):
 
 ```bash
-rm -rf /tmp/api-registry-import
-git clone --depth 1 "$API_REGISTRY_REPO" /tmp/api-registry-import
+rm -rf .pinky-swear/registry
+git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry
+git -C .pinky-swear/registry sparse-checkout set "services/<service-name>"
 ```
 
 If clone fails:
@@ -89,15 +90,15 @@ If clone fails:
 
 Stop.
 
-**Note:** From this point on, if execution stops for any reason, run `rm -rf /tmp/api-registry-import` before stopping.
+**Note:** From this point on, if execution stops for any reason, run `rm -rf .pinky-swear/registry` before stopping.
 
 ```bash
-ls /tmp/api-registry-import/services/<service-name>/ 2>/dev/null | sort -V | tail -1
+ls .pinky-swear/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
 ```
 
 If a previous entry exists, read it:
 ```bash
-cat /tmp/api-registry-import/services/<service-name>/<latest-version>.json
+cat .pinky-swear/registry/services/<service-name>/<latest-version>.json
 ```
 
 Note the previously declared operations list — needed for re-import diff in step 8.
@@ -253,23 +254,23 @@ Write both to the registry:
 mkdir -p /tmp/api-registry-import/services/<service-name>
 ```
 
-Write the contract to `/tmp/api-registry-import/services/<service-name>/<pinky-swear-version>.json`.
+Write the contract to `.pinky-swear/registry/services/<service-name>/<pinky-swear-version>.json`.
 
-Write the bindings to `/tmp/api-registry-import/services/<service-name>/bindings.json`.
+Write the bindings to `.pinky-swear/registry/services/<service-name>/bindings.json`.
 
 ```bash
-git -C /tmp/api-registry-import add services/<service-name>/<version>.json
-git -C /tmp/api-registry-import add services/<service-name>/bindings.json
-git -C /tmp/api-registry-import commit -m "<service-name>: <version> (first-import|re-import) — imported from <source>"
-git -C /tmp/api-registry-import push
-rm -rf /tmp/api-registry-import
+git -C .pinky-swear/registry add services/<service-name>/<version>.json
+git -C .pinky-swear/registry add services/<service-name>/bindings.json
+git -C .pinky-swear/registry commit -m "<service-name>: <version> (first-import|re-import) — imported from <source>"
+git -C .pinky-swear/registry push
+rm -rf .pinky-swear/registry
 ```
 
 Use `first-import` for first imports and `re-import` for subsequent ones.
 
 If `git push` fails:
 ```bash
-rm -rf /tmp/api-registry-import
+rm -rf .pinky-swear/registry
 ```
 > "Registry write failed (git push error). The converted IDL is shown below — copy it and push manually."
 

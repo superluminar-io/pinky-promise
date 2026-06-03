@@ -115,6 +115,7 @@ Persist both to disk so they survive across sessions:
 
 ```bash
 mkdir -p .pinky-swear
+grep -qxF '.pinky-swear/registry/' .gitignore 2>/dev/null || echo '.pinky-swear/registry/' >> .gitignore
 cat > .pinky-swear/draft-spec.json << 'SPEC'
 <full contract JSON>
 SPEC

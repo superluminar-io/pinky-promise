@@ -12,7 +12,7 @@ This plugin manages API contracts between producer and consumer services. It int
 - No reading `.json`, `.proto`, `.yaml`, `.go`, `.ts`, or any other file from a sibling service directory to infer what that service provides
 - No assumptions based on what happens to be checked out locally
 
-When implementing a client or validating a consumer, the **only** permitted source of truth for what another service provides is its published spec in the registry — fetched via a fresh `git clone` of `API_REGISTRY_REPO` into `/tmp`. If the registry is unreachable or has no entry for the service, say so and stop.
+When implementing a client or validating a consumer, the **only** permitted source of truth for what another service provides is its published spec in the registry — fetched via a fresh `git clone` of `API_REGISTRY_REPO` into `.pinky-swear/registry/`. If the registry is unreachable or has no entry for the service, say so and stop.
 
 ## Configuration
 
@@ -30,14 +30,15 @@ If `API_REGISTRY_REPO` is configured:
 1. Identify the current service name (from project directory, `.pinky-swear/draft-spec.json`, or draft spec in context)
 2. Fetch the registry fresh — always clone from `API_REGISTRY_REPO`, never read from local service directories:
    ```bash
-   rm -rf /tmp/api-registry-session
-   git clone --depth 1 "$API_REGISTRY_REPO" /tmp/api-registry-session 2>/dev/null
-   ls /tmp/api-registry-session/services/<service-name>/ 2>/dev/null | sort -V | tail -1
+   rm -rf .pinky-swear/registry
+   git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry 2>/dev/null
+   git -C .pinky-swear/registry sparse-checkout set "services/<service-name>" 2>/dev/null
+   ls .pinky-swear/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
    ```
 3. If a spec version is found, read it into context silently:
    ```bash
-   cat /tmp/api-registry-session/services/<service-name>/<latest-version>.json
-   rm -rf /tmp/api-registry-session
+   cat .pinky-swear/registry/services/<service-name>/<latest-version>.json
+   rm -rf .pinky-swear/registry
    ```
    Do not announce this to the user. If the fetch or clone fails for any reason, clean up and continue without it — do not surface the error to the user.
 
