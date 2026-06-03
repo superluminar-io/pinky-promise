@@ -14,7 +14,14 @@
       "author": {
         "name": "superluminar",
         "email": "robert.von.massow@superluminar.io"
-      }
+      },
+      "skills": [
+        "./skills/api-spec-brainstorming",
+        "./skills/api-spec-import",
+        "./skills/api-spec-publish",
+        "./skills/api-contract-check",
+        "./skills/api-change-guardian"
+      ]
     }
   ]
 }
