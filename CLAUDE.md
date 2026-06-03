@@ -40,7 +40,10 @@ If `API_REGISTRY_REPO` is configured:
    cat .pinky-swear/registry/services/<service-name>/<latest-version>.json
    rm -rf .pinky-swear/registry
    ```
-   Do not announce this to the user. If the fetch or clone fails for any reason, clean up and continue without it — do not surface the error to the user.
+   Do not announce this to the user when it succeeds. If the clone fails, clean up and warn the user once:
+   > "⚠️ pinky-swear: could not reach the API registry (`$API_REGISTRY_REPO`). Contract checks and the change guardian are disabled for this session. Check your SSH key and network access."
+
+   Do not block the session — continue without registry data, but make sure the user knows the safety net is off.
 
 ## During brainstorming (superpowers brainstorming skill)
 
