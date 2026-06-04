@@ -21,7 +21,14 @@ Define the public API surface of a service in parallel with the superpowers brai
 
 Work through the questions below one at a time. Use the answers to build toward the draft IDL.
 
-### 0. Check for external service dependencies
+### 0. Check registry configuration
+
+Read `.claude/settings.json` and the project `CLAUDE.md` for `API_REGISTRY_REPO`. If not found in either:
+> "⚠️ pinky-swear: `API_REGISTRY_REPO` is not configured. The draft spec will be written locally but cannot be published to a registry or validated by consumers until you set this up. See `docs/registry-setup.md`."
+
+Do not block — continue with the brainstorm.
+
+### 0b. Check for external service dependencies
 
 Scan the conversation context for any mention of calling an external service (a service not being built in this repo — e.g. Stripe, Twilio, a third-party API). For each one with no registry entry, surface this immediately before continuing:
 > "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."

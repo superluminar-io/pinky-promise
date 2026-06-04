@@ -38,4 +38,11 @@ output=$(run_claude "Invoke the api-spec-brainstorming skill and then answer: ca
 assert_contains "$output" "no|cannot|must.*named|named.*types|not.*inline" "object/enum/union must be named types" || exit 1
 
 echo ""
+echo "Test 6: Warns when API_REGISTRY_REPO is not configured..."
+output=$(run_claude "Invoke the api-spec-brainstorming skill and then answer: what does it do if API_REGISTRY_REPO is not configured?")
+
+assert_contains "$output" "warn|registry.*not configured|not configured.*registry|API_REGISTRY_REPO" "Warns about missing registry config" || exit 1
+assert_contains "$output" "registry-setup|docs/registry|continue|not block" "Does not block the brainstorm" || exit 1
+
+echo ""
 echo "=== All api-spec-brainstorming tests passed ==="
