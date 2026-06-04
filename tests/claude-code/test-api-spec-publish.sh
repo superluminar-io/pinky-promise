@@ -37,7 +37,7 @@ echo "Test 5: User confirmation required before pushing..."
 output=$(run_claude "Invoke the api-spec-publish skill and then answer: does it push to the registry immediately, or does it ask for confirmation first?")
 
 assert_contains "$output" "confirm|yes.*no|ask|prompt" "Asks for confirmation before pushing" || exit 1
-assert_not_contains "$output" "push.*immediately|without.*confirm" "Does not push without confirmation" || exit 1
+assert_not_contains "$output" "push.*immediately|pushes.*directly|no confirmation needed" "Does not push without confirmation" || exit 1
 
 echo ""
 echo "=== All api-spec-publish tests passed ==="
