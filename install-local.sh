@@ -18,8 +18,18 @@ register_skills() {
   for skill in "${SKILLS[@]}"; do
     rm -rf "$SKILLS_DIR/$skill"
     cp -r "$PLUGIN_SRC/skills/$skill" "$SKILLS_DIR/$skill"
+    # skills-dir requires a .claude-plugin/plugin.json alongside SKILL.md
+    mkdir -p "$SKILLS_DIR/$skill/.claude-plugin"
+    cat > "$SKILLS_DIR/$skill/.claude-plugin/plugin.json" << EOF
+{
+  "\$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "$skill",
+  "version": "1.0.0",
+  "skills": ["./"]
+}
+EOF
   done
-  echo "Skills copied to $SKILLS_DIR/ — run /reload-plugins or start a new session."
+  echo "Skills registered in $SKILLS_DIR/ — run /reload-plugins or start a new session."
 }
 
 PROJECT_PATH="${1:-}"
