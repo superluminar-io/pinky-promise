@@ -10,6 +10,7 @@ integration-test: check-plugin
 	@echo "=== Integration tests ==="
 	@tests/notify-service/run-test.sh
 	@tests/notify-service/run-implicit-brainstorm.sh
+	@tests/notify-service/run-implicit-brainstorm-rich.sh
 	@tests/notify-service/run-brainstorm-with-external.sh
 	@tests/notify-service/run-implicit-external.sh
 	@tests/import-external-spec/run-test.sh

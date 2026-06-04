@@ -1,0 +1,1 @@
+i want to build a url shortener service. it shall shorten urls, resolve short codes and send a notification via webhook when a url expires. it shall run serverless with an on demand billing model on aws. build it in go.

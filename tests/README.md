@@ -65,6 +65,7 @@ A notification service that is simultaneously producer and consumer of its own A
 |---|---|---|
 | `run-test.sh` | Explicitly names the service and its operations | `api-spec-brainstorming` is invoked |
 | `run-implicit-brainstorm.sh` | Natural service description, no pinky-swear mention | `api-spec-brainstorming` fires without explicit instruction |
+| `run-implicit-brainstorm-rich.sh` | Rich prompt with tech choices (Go, AWS, serverless), no pinky-swear mention | `api-spec-brainstorming` fires — **currently failing**, tracks known gap** |
 | `run-brainstorm-with-external.sh` | Explicitly mentions Twilio | Import suggestion surfaces |
 | `run-implicit-external.sh` | Natural prompt mentioning Twilio, no pinky-swear mention | Import suggestion fires without explicit instruction |
 
