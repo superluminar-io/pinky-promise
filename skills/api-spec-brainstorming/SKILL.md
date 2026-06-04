@@ -21,6 +21,11 @@ Define the public API surface of a service in parallel with the superpowers brai
 
 Work through the questions below one at a time. Use the answers to build toward the draft IDL.
 
+### 0. Check for external service dependencies
+
+Scan the conversation context for any mention of calling an external service (a service not being built in this repo — e.g. Stripe, Twilio, a third-party API). For each one with no registry entry, surface this immediately before continuing:
+> "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
+
 ### 1. Identify the service name
 
 Infer from the project directory name or any draft content in context. If ambiguous:

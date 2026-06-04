@@ -21,14 +21,11 @@ Announce: "Running api-contract-check to validate against published API specs."
 
 ### Step 1: Locate API_REGISTRY_REPO and clone
 
-Read in order (no shell execution needed — use the Read tool):
-1. `.claude/settings.json` → `env.API_REGISTRY_REPO`
-2. Project `CLAUDE.md` → line matching `API_REGISTRY_REPO=`
+Resolve API_REGISTRY_REPO — use the Read tool, no shell execution:
+- Read `.claude/settings.json` → check `env.API_REGISTRY_REPO`
+- Read project `CLAUDE.md` → line matching `API_REGISTRY_REPO=`
 
-If not found in either:
-> "API_REGISTRY_REPO is not configured. Cannot run contract check. See docs/registry-setup.md."
-
-Stop.
+If not found in either, `$API_REGISTRY_REPO` may still be set in the session environment and will be used directly by the clone command below. Only stop if the clone itself fails.
 
 Clone with `--filter=blob:none --sparse` — no blobs are fetched yet:
 

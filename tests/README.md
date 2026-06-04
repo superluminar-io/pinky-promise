@@ -3,8 +3,9 @@
 Tests are split into two tiers, run via `make`:
 
 ```bash
-make test        # fast qualitative tests (~3-5 min)
-make slow-test   # fast tests + full integration scenarios (~20-30 min)
+make test             # fast qualitative tests (~3-5 min)
+make integration-test # integration scenarios only (~10-15 min)
+make slow-test        # fast + integration tests
 ```
 
 ## Requirements

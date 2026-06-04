@@ -90,6 +90,8 @@ This check fires on the user message, before any other skill is invoked.
 
 If the user's message is about designing, starting, building, or brainstorming a service AND the current service has **no published spec**: invoke `pinky-swear:api-spec-brainstorming` if available. If the skill is not available, execute the following steps directly as part of the brainstorm — do not skip them:
 
+0. If the design mentions calling an external service (not developed in this repo) with no registry entry, surface this immediately:
+   > "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
 1. For each operation, event, and subscription identified: ask "When should a caller use this — and when should they prefer something else?" Use the answer as the `description` field.
 2. Ask about the transport binding: protocol (HTTP, gRPC, GraphQL), path prefix, connection URL, and auth type if any.
 3. Ask for the proto package name if the protocol is gRPC.
