@@ -2,7 +2,7 @@
 # Test: brainstorming a service that calls an external API surfaces import suggestion
 #
 # Verifies that when a brainstorm mentions calling an unregistered external
-# service (Twilio), pinky-swear surfaces the /api-spec-import suggestion.
+# service (Twilio), pinky-promise surfaces the /api-spec-import suggestion.
 #
 # Usage: ./run-brainstorm-with-external.sh [--verbose]
 
@@ -21,7 +21,7 @@ for arg in "$@"; do
 done
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/notify-service-external"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/notify-service-external"
 mkdir -p "$OUTPUT_DIR"
 
 LOG_FILE="$OUTPUT_DIR/claude-output.json"

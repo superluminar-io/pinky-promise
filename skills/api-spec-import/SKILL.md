@@ -1,12 +1,12 @@
 ---
 name: api-spec-import
-description: "Import an external API spec (OpenAPI, gRPC, GraphQL) into the pinky-swear registry as a declared dependency. Typical triggers: '/api-spec-import <url>', 'import the stripe spec', 'register this external API', 'add twilio to the registry'."
+description: "Import an external API spec (OpenAPI, gRPC, GraphQL) into the pinky-promise registry as a declared dependency. Typical triggers: '/api-spec-import <url>', 'import the stripe spec', 'register this external API', 'add twilio to the registry'."
 argument-hint: <url-or-file> [--full|--subset|--auto]
 ---
 
 # API Spec Import
 
-Import an external API spec into the pinky-swear registry as a declared dependency, so `api-contract-check` can validate consumer code against it.
+Import an external API spec into the pinky-promise registry as a declared dependency, so `api-contract-check` can validate consumer code against it.
 
 ## When invoked
 
@@ -16,7 +16,7 @@ Import an external API spec into the pinky-swear registry as a declared dependen
 
 ## Steps
 
-**Registry data comes exclusively from a fresh clone. Never search the local filesystem for existing registry entries — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read registry data from `.pinky-swear/registry/` after a fresh clone.**
+**Registry data comes exclusively from a fresh clone. Never search the local filesystem for existing registry entries — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read registry data from `.pinky-promise/registry/` after a fresh clone.**
 
 ### 1. Announce
 
@@ -76,9 +76,9 @@ If the user provides corrections, use their values as-is without re-deriving. Fo
 Always fetch fresh — sparse-checkout to only this service (name confirmed in step 5):
 
 ```bash
-rm -rf .pinky-swear/registry
-git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry
-git -C .pinky-swear/registry sparse-checkout set "services/<service-name>"
+rm -rf .pinky-promise/registry
+git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-promise/registry
+git -C .pinky-promise/registry sparse-checkout set "services/<service-name>"
 ```
 
 If clone fails:
@@ -86,22 +86,22 @@ If clone fails:
 
 Stop.
 
-**Note:** From this point on, if execution stops for any reason, run `rm -rf .pinky-swear/registry` before stopping.
+**Note:** From this point on, if execution stops for any reason, run `rm -rf .pinky-promise/registry` before stopping.
 
 ```bash
-ls .pinky-swear/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
+ls .pinky-promise/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
 ```
 
 If a previous entry exists, read it:
 ```bash
-cat .pinky-swear/registry/services/<service-name>/<latest-version>.json
+cat .pinky-promise/registry/services/<service-name>/<latest-version>.json
 ```
 
 Note the previously declared operations list — needed for re-import diff in step 8.
 
 ### 7. Convert to IDL
 
-Convert the fetched spec to pinky-swear IDL JSON using the following mapping:
+Convert the fetched spec to pinky-promise IDL JSON using the following mapping:
 
 Produce two outputs — a contract and a bindings object — held in context until step 10.
 
@@ -126,7 +126,7 @@ Produce two outputs — a contract and a bindings object — held in context unt
 
 For gRPC, `package` is extracted from the `package <name>;` declaration at the top of the proto file. It is required — without it the client cannot construct the correct fully-qualified RPC path `/<package>.<service>/<rpc>`. If no package is declared in the proto, ask the user to provide one.
 
-**Auth mapping** — populate `connection.auth` from the source spec's security scheme. Map to the closest pinky-swear auth type:
+**Auth mapping** — populate `connection.auth` from the source spec's security scheme. Map to the closest pinky-promise auth type:
 
 | Source | Mapped `auth` |
 |---|---|
@@ -214,9 +214,9 @@ Present as a selection list:
 
 Wait for 'done' before proceeding.
 
-If the user types 'cancel' or 'quit', stop and run `rm -rf .pinky-swear/registry`.
+If the user types 'cancel' or 'quit', stop and run `rm -rf .pinky-promise/registry`.
 
-### 9. Determine pinky-swear version
+### 9. Determine pinky-promise version
 
 **First import:** version is `1.0.0`.
 
@@ -235,9 +235,9 @@ Propose to user:
 Build the contract JSON:
 ```json
 {
-  "pinkySwearVersion": 1,
+  "pinkyPromiseVersion": 1,
   "name": "<service-name>",
-  "version": "<pinky-swear-version>",
+  "version": "<pinky-promise-version>",
   "_source": {
     "url": "<source>",
     "external_version": "<external-version>",
@@ -255,7 +255,7 @@ Omit `events`, `subscriptions`, or `types` keys if empty.
 Build the bindings JSON:
 ```json
 {
-  "pinkySwearVersion": 1,
+  "pinkyPromiseVersion": 1,
   "service": "<service-name>",
   "bindings": [ ...protocol mappings and connection from step 7... ]
 }
@@ -263,26 +263,26 @@ Build the bindings JSON:
 
 Write both to the registry:
 ```bash
-mkdir -p .pinky-swear/registry/services/<service-name>
+mkdir -p .pinky-promise/registry/services/<service-name>
 ```
 
-Write the contract to `.pinky-swear/registry/services/<service-name>/<pinky-swear-version>.json`.
+Write the contract to `.pinky-promise/registry/services/<service-name>/<pinky-promise-version>.json`.
 
-Write the bindings to `.pinky-swear/registry/services/<service-name>/bindings.json`.
+Write the bindings to `.pinky-promise/registry/services/<service-name>/bindings.json`.
 
 ```bash
-git -C .pinky-swear/registry add services/<service-name>/<version>.json
-git -C .pinky-swear/registry add services/<service-name>/bindings.json
-git -C .pinky-swear/registry commit -m "<service-name>: <version> (first-import|re-import) — imported from <source>"
-git -C .pinky-swear/registry push
-rm -rf .pinky-swear/registry
+git -C .pinky-promise/registry add services/<service-name>/<version>.json
+git -C .pinky-promise/registry add services/<service-name>/bindings.json
+git -C .pinky-promise/registry commit -m "<service-name>: <version> (first-import|re-import) — imported from <source>"
+git -C .pinky-promise/registry push
+rm -rf .pinky-promise/registry
 ```
 
 Use `first-import` for first imports and `re-import` for subsequent ones.
 
 If `git push` fails:
 ```bash
-rm -rf .pinky-swear/registry
+rm -rf .pinky-promise/registry
 ```
 > "Registry write failed (git push error). The converted IDL is shown below — copy it and push manually."
 
@@ -290,7 +290,7 @@ Display the full JSON. Do not stop the session.
 
 ### 11. Confirm
 
-> "Imported `<service-name>` v<pinky-swear-version> (external: <external-version>) into the registry. `api-contract-check` will now validate calls against this spec."
+> "Imported `<service-name>` v<pinky-promise-version> (external: <external-version>) into the registry. `api-contract-check` will now validate calls against this spec."
 
 If the source spec declares an auth scheme that could not be mapped (e.g. `openIdConnect`):
-> "Note: the auth scheme `<scheme>` could not be automatically mapped. Add an `auth` block to the binding entry in `.pinky-swear/bindings.json` and re-run `/api-spec-import` to republish — do not edit the registry directly as a re-import will overwrite it. See `docs/idl-reference.md` for supported auth types."
+> "Note: the auth scheme `<scheme>` could not be automatically mapped. Add an `auth` block to the binding entry in `.pinky-promise/bindings.json` and re-run `/api-spec-import` to republish — do not edit the registry directly as a re-import will overwrite it. See `docs/idl-reference.md` for supported auth types."

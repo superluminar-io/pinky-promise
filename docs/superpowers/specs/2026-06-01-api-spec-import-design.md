@@ -2,7 +2,7 @@
 
 ## Goal
 
-Allow developers to register external third-party API specs (OpenAPI, gRPC, GraphQL) in the pinky-swear registry so that `api-contract-check` can validate consumer code against those external interfaces — catching hallucinated parameters and incorrect types introduced by the coding agent.
+Allow developers to register external third-party API specs (OpenAPI, gRPC, GraphQL) in the pinky-promise registry so that `api-contract-check` can validate consumer code against those external interfaces — catching hallucinated parameters and incorrect types introduced by the coding agent.
 
 Secondary goals enabled by having accurate external specs in the registry:
 - **Client codegen**: generate type-safe client code for an external service directly from its registry entry
@@ -27,7 +27,7 @@ User-invocable slash command:
 
 ## Versioning model
 
-The registry stores your **declared dependency**, not a mirror of the external API. The pinky-swear version key is managed independently of the external API's own version:
+The registry stores your **declared dependency**, not a mirror of the external API. The pinky-promise version key is managed independently of the external API's own version:
 
 ```
 stripe-api/1.0.0.json   ← first import (subset of Stripe 3.1.0)
@@ -96,7 +96,7 @@ Operation, event, and subscription `description` fields are populated from the s
 | gRPC (no standard auth) | omit `auth` |
 | `openIdConnect` or unrecognised | omit `auth`, note in confirmation step |
 
-Credential values are never imported — only the auth flow structure. The consumer provides values in their own `.pinky-swear/credentials.json` using their own variable naming.
+Credential values are never imported — only the auth flow structure. The consumer provides values in their own `.pinky-promise/credentials.json` using their own variable naming.
 
 The import skill writes two files to the registry:
 - `services/<name>/<version>.json` — abstract contract (operations, events, subscriptions, types)

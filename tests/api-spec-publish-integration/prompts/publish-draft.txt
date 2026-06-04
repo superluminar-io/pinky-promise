@@ -1,7 +1,7 @@
 I have a finalized draft API spec for user-service ready to publish. Here is the draft:
 
 {
-  "pinkySwearVersion": 1,
+  "pinkyPromiseVersion": 1,
   "name": "user-service",
   "version": "1.0.0",
   "description": "Manages user accounts",

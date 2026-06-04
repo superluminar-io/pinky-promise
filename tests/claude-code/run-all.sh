@@ -24,7 +24,7 @@ run_test() {
   fi
 }
 
-echo "=== pinky-swear fast qualitative tests ==="
+echo "=== pinky-promise fast qualitative tests ==="
 
 run_test "$SCRIPT_DIR/test-api-contract-check-import-hint.sh"
 run_test "$SCRIPT_DIR/test-api-spec-import-modes.sh"

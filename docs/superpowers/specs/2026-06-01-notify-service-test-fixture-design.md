@@ -2,7 +2,7 @@
 
 ## Goal
 
-Add a test scenario that exercises pinky-swear's brainstorming integration on a service that is simultaneously a producer and a consumer of its own API — without recursion.
+Add a test scenario that exercises pinky-promise's brainstorming integration on a service that is simultaneously a producer and a consumer of its own API — without recursion.
 
 ## Service scenario
 
@@ -32,7 +32,7 @@ tests/
   README.md
 ```
 
-`run-test.sh` loads pinky-swear via `--plugin-dir`, runs the prompt headlessly with `--max-turns 3`, and greps the stream-json output for a `Skill` tool invocation with `"skill":"api-spec-brainstorming"`.
+`run-test.sh` loads pinky-promise via `--plugin-dir`, runs the prompt headlessly with `--max-turns 3`, and greps the stream-json output for a `Skill` tool invocation with `"skill":"api-spec-brainstorming"`.
 
 ## Skills exercised
 

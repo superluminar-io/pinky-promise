@@ -1,14 +1,14 @@
-# pinky-swear
+# pinky-promise
 
 API contract enforcement for Claude Code. Keeps producer and consumer services in sync by hooking into every stage of the [superpowers](https://github.com/obra/superpowers) development workflow — brainstorming, planning, implementation, review, and branch completion.
 
-When you build a service that other services call, you make a promise about its interface. pinky-swear makes that promise explicit, versioned, and enforced:
+When you build a service that other services call, you make a promise about its interface. pinky-promise makes that promise explicit, versioned, and enforced:
 
 - **Producers** define their public API surface during brainstorming and publish it to a shared registry when the branch is complete.
 - **Consumers** pin to a specific version and get their implementation validated against the published spec at every code review.
 - **Breaking changes** are caught before they're planned, not after they're deployed.
 
-pinky-swear is also flexible about where specs come from. Use `/api-spec-import` to register any external API — Stripe, Twilio, an internal platform service — directly from its OpenAPI, gRPC, or GraphQL spec. Once imported, consumer code calling that API gets the same contract validation as internally-owned services.
+pinky-promise is also flexible about where specs come from. Use `/api-spec-import` to register any external API — Stripe, Twilio, an internal platform service — directly from its OpenAPI, gRPC, or GraphQL spec. Once imported, consumer code calling that API gets the same contract validation as internally-owned services.
 
 Everything lives in a git registry you control. No external services required.
 
@@ -25,7 +25,7 @@ Everything lives in a git registry you control. No external services required.
 
 ## Installation
 
-pinky-swear is not listed in the official Anthropic marketplace. Install it via the superluminar-io marketplace.
+pinky-promise is not listed in the official Anthropic marketplace. Install it via the superluminar-io marketplace.
 
 **First, install superpowers if you haven't already:**
 
@@ -33,36 +33,36 @@ pinky-swear is not listed in the official Anthropic marketplace. Install it via 
 /plugin install superpowers@claude-plugins-official
 ```
 
-**Add the pinky-swear marketplace** (once per machine):
+**Add the pinky-promise marketplace** (once per machine):
 
 ```bash
-claude plugin marketplace add superluminar-io/pinky-swear
+claude plugin marketplace add superluminar-io/pinky-promise
 ```
 
 **Then install** (run from your project directory):
 
 ```bash
-claude plugin install pinky-swear@superluminar-io --scope project
+claude plugin install pinky-promise@superluminar-io --scope project
 ```
 
 To update after new releases:
 
 ```bash
 claude plugin marketplace update superluminar-io
-claude plugin update pinky-swear@superluminar-io --scope project
+claude plugin update pinky-promise@superluminar-io --scope project
 ```
 
 **From a local checkout** (for development or contributing):
 
 ```bash
-git clone git@github.com:superluminar-io/pinky-swear.git
-./pinky-swear/install-local.sh /path/to/your/project
+git clone git@github.com:superluminar-io/pinky-promise.git
+./pinky-promise/install-local.sh /path/to/your/project
 ```
 
 To sync changes after editing the plugin source:
 
 ```bash
-./pinky-swear/install-local.sh /path/to/your/project --update
+./pinky-promise/install-local.sh /path/to/your/project --update
 ```
 
 ## Getting started
@@ -82,7 +82,7 @@ git push -u origin main
 
 ### As a service producer
 
-**1. Install pinky-swear** in your service repo (see [Installation](#installation))
+**1. Install pinky-promise** in your service repo (see [Installation](#installation))
 
 **2. Configure the registry URL** in `.claude/settings.json`:
 
@@ -94,15 +94,15 @@ git push -u origin main
 }
 ```
 
-**3. Start a brainstorm** — open a Claude Code session and describe what you're building. pinky-swear interleaves API surface questions with the design discussion and writes the draft to `.pinky-swear/`.
+**3. Start a brainstorm** — open a Claude Code session and describe what you're building. pinky-promise interleaves API surface questions with the design discussion and writes the draft to `.pinky-promise/`.
 
-**4. Finish the branch** — pinky-swear publishes the spec to the registry automatically when the branch is completed.
+**4. Finish the branch** — pinky-promise publishes the spec to the registry automatically when the branch is completed.
 
 ### As a service consumer
 
 You only need access to the registry — not to the producer's codebase.
 
-**1. Install pinky-swear** in your consumer repo (see [Installation](#installation))
+**1. Install pinky-promise** in your consumer repo (see [Installation](#installation))
 
 **2. Configure the same registry URL** in `.claude/settings.json`:
 
@@ -114,7 +114,7 @@ You only need access to the registry — not to the producer's codebase.
 }
 ```
 
-**3. Start implementing** — when your code calls another service, pinky-swear prompts you to declare the dependency in `api-dependencies.json` and validates every call against the published spec at planning, implementation, and code review.
+**3. Start implementing** — when your code calls another service, pinky-promise prompts you to declare the dependency in `api-dependencies.json` and validates every call against the published spec at planning, implementation, and code review.
 
 ### Consuming an external API
 
@@ -124,11 +124,11 @@ If you're calling a third-party API (Stripe, Twilio, etc.) run `/api-spec-import
 /api-spec-import https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json
 ```
 
-pinky-swear converts and imports it into the registry. From that point, your calls to that API are validated the same way as internally-owned services.
+pinky-promise converts and imports it into the registry. From that point, your calls to that API are validated the same way as internally-owned services.
 
 ## How it works
 
-Once installed, pinky-swear injects checks at six points in the superpowers workflow:
+Once installed, pinky-promise injects checks at six points in the superpowers workflow:
 
 | Stage | What happens |
 |---|---|
@@ -139,13 +139,13 @@ Once installed, pinky-swear injects checks at six points in the superpowers work
 | **Code review** | Checks consumer code against pinned specs; flags interface changes in producer code |
 | **Branch completion** | Publishes the draft spec to the registry |
 
-If `API_REGISTRY_REPO` is not set, all checks skip silently — pinky-swear never blocks work on unconfigured projects.
+If `API_REGISTRY_REPO` is not set, all checks skip silently — pinky-promise never blocks work on unconfigured projects.
 
 ## Skills
 
 | Skill | Trigger | What it does |
 |---|---|---|
-| `api-spec-brainstorming` | New service with no published spec | Elicits operations, types, events, subscriptions, and bindings; writes draft to `.pinky-swear/` |
+| `api-spec-brainstorming` | New service with no published spec | Elicits operations, types, events, subscriptions, and bindings; writes draft to `.pinky-promise/` |
 | `api-change-guardian` | Proposed change to a published interface | Classifies the change (major/minor/patch), records the decision, blocks unresolved deferrals at publish time |
 | `api-contract-check` | Consumer code or plan calls another service | Validates calls against the pinned spec; warns about missing credentials, deprecated usage, and available updates |
 | `api-spec-publish` | Branch completion with a draft spec present | Resolves guardian decisions, bumps the version, pushes contract and bindings to the registry |
@@ -166,7 +166,7 @@ services/
 
 ```json
 {
-  "pinkySwearVersion": 1,
+  "pinkyPromiseVersion": 1,
   "name": "user-service",
   "version": "1.0.0",
   "operations": [
@@ -195,7 +195,7 @@ services/
 
 ```json
 {
-  "pinkySwearVersion": 1,
+  "pinkyPromiseVersion": 1,
   "service": "user-service",
   "bindings": [
     {
@@ -254,7 +254,7 @@ Declare which service versions you depend on in `api-dependencies.json` at the p
 
 ### Credentials
 
-If a service requires authentication, add a `.pinky-swear/credentials.json` (gitignored) with your credential values:
+If a service requires authentication, add a `.pinky-promise/credentials.json` (gitignored) with your credential values:
 
 ```json
 {
@@ -269,7 +269,7 @@ The producer's `bindings.json` declares the auth flow (type, token endpoint, sco
 
 ## Versioning
 
-pinky-swear follows semantic versioning:
+pinky-promise follows semantic versioning:
 
 | Bump | What changes |
 |---|---|
@@ -277,18 +277,18 @@ pinky-swear follows semantic versioning:
 | **minor** | Additive: new optional fields, new skills, new auth types |
 | **major** | Breaking: IDL format, bindings schema, or skill behaviour |
 
-Registry files carry a `pinkySwearVersion` field. If a skill encounters a file written by a newer format version than it supports, it warns and stops rather than silently misparsing.
+Registry files carry a `pinkyPromiseVersion` field. If a skill encounters a file written by a newer format version than it supports, it warns and stops rather than silently misparsing.
 
 ### Pinning to a release
 
 By default `marketplace add` tracks `main`. To pin to a specific release:
 
 ```bash
-claude plugin marketplace add git@github.com:superluminar-io/pinky-swear.git@v1.0.0 --scope project
-claude plugin install pinky-swear@pinky-swear-local --scope project
+claude plugin marketplace add git@github.com:superluminar-io/pinky-promise.git@v1.0.0 --scope project
+claude plugin install pinky-promise@pinky-promise-local --scope project
 ```
 
-Check the [releases page](https://github.com/superluminar-io/pinky-swear/releases) for available tags.
+Check the [releases page](https://github.com/superluminar-io/pinky-promise/releases) for available tags.
 
 ## Registry setup
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for pinky-swear fast qualitative tests.
+# Shared helpers for pinky-promise fast qualitative tests.
 # Source this file; do not run it directly.
 
 HELPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

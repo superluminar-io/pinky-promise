@@ -2,7 +2,7 @@
 # Test: api-spec-brainstorming fires on a rich, opinionated brainstorm prompt.
 #
 # Reproduces the case where a user gives a detailed service description with
-# tech choices (Go, serverless, AWS) and no mention of pinky-swear. Asserts
+# tech choices (Go, serverless, AWS) and no mention of pinky-promise. Asserts
 # that Claude still recognises api-spec-brainstorming is applicable and invokes
 # it alongside superpowers:brainstorming.
 #
@@ -26,7 +26,7 @@ for arg in "$@"; do
 done
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/implicit-brainstorm-rich"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/implicit-brainstorm-rich"
 mkdir -p "$OUTPUT_DIR"
 
 LOG_FILE="$OUTPUT_DIR/claude-output.json"

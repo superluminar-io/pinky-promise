@@ -1,4 +1,4 @@
-# pinky-swear
+# pinky-promise
 
 This plugin manages API contracts between producer and consumer services. It integrates with the superpowers development workflow.
 
@@ -6,7 +6,7 @@ This plugin manages API contracts between producer and consumer services. It int
 
 ## Working on this plugin
 
-**These rules apply only when the current project IS the pinky-swear plugin repository** — i.e. the working directory contains `skills/api-spec-brainstorming/`. In all other projects, skip this entire section. It is included here so it ships with the plugin and is available to contributors working on the plugin itself.
+**These rules apply only when the current project IS the pinky-promise plugin repository** — i.e. the working directory contains `skills/api-spec-brainstorming/`. In all other projects, skip this entire section. It is included here so it ships with the plugin and is available to contributors working on the plugin itself.
 
 ### Semver commitment
 
@@ -34,7 +34,7 @@ Wait for explicit approval before continuing.
 
 ### When a breaking change is approved
 
-1. Bump `pinkySwearVersion` in all skills that write registry files (brainstorming, import, publish) from the current value to the next integer.
+1. Bump `pinkyPromiseVersion` in all skills that write registry files (brainstorming, import, publish) from the current value to the next integer.
 2. Update the version check threshold in all skills that read registry files (guardian, contract-check) to match.
 3. Update `plugin.json` and `marketplace.json` version fields.
 4. Propose building a migration skill:
@@ -50,7 +50,7 @@ Wait for the user's decision before implementing the migration skill.
 - No reading `.json`, `.proto`, `.yaml`, `.go`, `.ts`, or any other file from a sibling service directory to infer what that service provides
 - No assumptions based on what happens to be checked out locally
 
-When implementing a client or validating a consumer, the **only** permitted source of truth for what another service provides is its published spec in the registry — fetched via a fresh `git clone` of `API_REGISTRY_REPO` into `.pinky-swear/registry/`. If the registry is unreachable or has no entry for the service, say so and stop.
+When implementing a client or validating a consumer, the **only** permitted source of truth for what another service provides is its published spec in the registry — fetched via a fresh `git clone` of `API_REGISTRY_REPO` into `.pinky-promise/registry/`. If the registry is unreachable or has no entry for the service, say so and stop.
 
 ## Configuration
 
@@ -65,22 +65,22 @@ If `API_REGISTRY_REPO` is not set, all skills warn and skip silently — they ne
 ## Session start
 
 If `API_REGISTRY_REPO` is configured:
-1. Identify the current service name (from project directory, `.pinky-swear/draft-spec.json`, or draft spec in context)
+1. Identify the current service name (from project directory, `.pinky-promise/draft-spec.json`, or draft spec in context)
 2. Resolve `API_REGISTRY_REPO`: read `.claude/settings.json` (check `env.API_REGISTRY_REPO`) then project `CLAUDE.md` (line matching `API_REGISTRY_REPO=`). Use the Read tool — no shell execution. If not found, skip silently.
 3. Fetch the registry fresh — always clone from `API_REGISTRY_REPO`, never read from local service directories:
    ```bash
-   rm -rf .pinky-swear/registry
-   git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry 2>/dev/null
-   git -C .pinky-swear/registry sparse-checkout set "services/<service-name>" 2>/dev/null
-   ls .pinky-swear/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
+   rm -rf .pinky-promise/registry
+   git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-promise/registry 2>/dev/null
+   git -C .pinky-promise/registry sparse-checkout set "services/<service-name>" 2>/dev/null
+   ls .pinky-promise/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
    ```
 4. If a spec version is found, read it into context silently:
    ```bash
-   cat .pinky-swear/registry/services/<service-name>/<latest-version>.json
-   rm -rf .pinky-swear/registry
+   cat .pinky-promise/registry/services/<service-name>/<latest-version>.json
+   rm -rf .pinky-promise/registry
    ```
    Do not announce this to the user when it succeeds. If the clone fails, clean up and warn the user once:
-   > "⚠️ pinky-swear: could not reach the API registry (`$API_REGISTRY_REPO`). Contract checks and the change guardian are disabled for this session. Check your SSH key and network access."
+   > "⚠️ pinky-promise: could not reach the API registry (`$API_REGISTRY_REPO`). Contract checks and the change guardian are disabled for this session. Check your SSH key and network access."
 
    Do not block the session — continue without registry data, but make sure the user knows the safety net is off.
 
@@ -88,9 +88,9 @@ If `API_REGISTRY_REPO` is configured:
 
 This check fires on the user message, before any other skill is invoked.
 
-If the user's message is about designing, starting, building, or brainstorming a service AND the current service has **no published spec**: `pinky-swear:api-spec-brainstorming` is an applicable skill and MUST be invoked alongside `superpowers:brainstorming` in the same turn.
+If the user's message is about designing, starting, building, or brainstorming a service AND the current service has **no published spec**: `pinky-promise:api-spec-brainstorming` is an applicable skill and MUST be invoked alongside `superpowers:brainstorming` in the same turn.
 
-If the current service **has a published spec** and the user's message proposes changes to the public interface: `pinky-swear:api-change-guardian` is an applicable skill and MUST be invoked before those changes are adopted.
+If the current service **has a published spec** and the user's message proposes changes to the public interface: `pinky-promise:api-change-guardian` is an applicable skill and MUST be invoked before those changes are adopted.
 
 If the user's message mentions **calling an external service** with no registry entry: surface this before concluding:
   > "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
@@ -114,4 +114,4 @@ If the user's message mentions **calling an external service** with no registry 
 
 ## During finishing-a-development-branch (superpowers finishing-a-development-branch skill)
 
-- If `.pinky-swear/draft-spec.json` exists OR **unresolved guardian decisions** exist: you MUST invoke `api-spec-publish` before completing the branch.
+- If `.pinky-promise/draft-spec.json` exists OR **unresolved guardian decisions** exist: you MUST invoke `api-spec-publish` before completing the branch.

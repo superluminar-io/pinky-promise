@@ -2,7 +2,7 @@
 # Test: notify-service brainstorming triggers api-spec-brainstorming
 #
 # Verifies that starting a brainstorm for a service with no published spec
-# causes pinky-swear to invoke the api-spec-brainstorming skill.
+# causes pinky-promise to invoke the api-spec-brainstorming skill.
 #
 # Usage: ./run-test.sh [--verbose]
 
@@ -21,7 +21,7 @@ for arg in "$@"; do
 done
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/notify-service"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/notify-service"
 mkdir -p "$OUTPUT_DIR"
 
 LOG_FILE="$OUTPUT_DIR/claude-output.json"
@@ -34,8 +34,8 @@ echo ""
 
 cp "$PROMPT_FILE" "$OUTPUT_DIR/prompt.txt"
 
-# Run Claude headlessly with pinky-swear loaded.
-# API_REGISTRY_REPO must be set (any value) — without it, pinky-swear skips all
+# Run Claude headlessly with pinky-promise loaded.
+# API_REGISTRY_REPO must be set (any value) — without it, pinky-promise skips all
 # skill invocations silently per its CLAUDE.md configuration guard.
 cd "$OUTPUT_DIR"
 API_REGISTRY_REPO="${API_REGISTRY_REPO:-git@github.com:test/api-registry.git}" \
@@ -52,7 +52,7 @@ echo "=== Results ==="
 PASS=true
 
 # Assert api-spec-brainstorming was invoked.
-# Match bare name or namespace-prefixed form (e.g. pinky-swear:api-spec-brainstorming).
+# Match bare name or namespace-prefixed form (e.g. pinky-promise:api-spec-brainstorming).
 SKILL_PATTERN='"skill":"([^"]*:)?api-spec-brainstorming"'
 if grep -q '"name":"Skill"' "$LOG_FILE" && grep -qE "$SKILL_PATTERN" "$LOG_FILE"; then
   echo "PASS: api-spec-brainstorming was triggered"

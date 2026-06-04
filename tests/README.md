@@ -48,7 +48,7 @@ Qualitative checks that ask Claude questions about the loaded skills and assert 
 | `test-api-contract-check-import-hint` | api-contract-check surfaces `/api-spec-import` for unknown services |
 | `test-api-spec-import-modes` | --auto shows diff, --subset pre-selects, --full skips selection on re-import |
 | `test-api-spec-import-version-bump` | semver bump rules including tie-break (add+remove → major wins) |
-| `test-api-spec-brainstorming` | contract has pinkySwearVersion first; no bindings in contract; bindings go to separate file; draft persisted to .pinky-swear/; object/enum/union must be named types |
+| `test-api-spec-brainstorming` | contract has pinkyPromiseVersion first; no bindings in contract; bindings go to separate file; draft persisted to .pinky-promise/; object/enum/union must be named types |
 | `test-api-change-guardian-triggers` | guardian fires on type changes, removals, response shape changes; not internal refactors |
 | `test-brainstorming-external-hook` | CLAUDE.md hooks surface import suggestion during brainstorming and planning |
 | `test-api-spec-publish` | no draft → falls back to brainstorming; unresolved deferred decisions block publish; missing registry config stops cleanly; first publish uses 1.0.0; confirmation required before push |
@@ -64,10 +64,10 @@ A notification service that is simultaneously producer and consumer of its own A
 | Script | Prompt | Asserts |
 |---|---|---|
 | `run-test.sh` | Explicitly names the service and its operations | `api-spec-brainstorming` is invoked |
-| `run-implicit-brainstorm.sh` | Natural service description, no pinky-swear mention | `api-spec-brainstorming` fires without explicit instruction |
-| `run-implicit-brainstorm-rich.sh` | Rich prompt with tech choices (Go, AWS, serverless), no pinky-swear mention | `api-spec-brainstorming` fires — **currently failing**, tracks known gap** |
+| `run-implicit-brainstorm.sh` | Natural service description, no pinky-promise mention | `api-spec-brainstorming` fires without explicit instruction |
+| `run-implicit-brainstorm-rich.sh` | Rich prompt with tech choices (Go, AWS, serverless), no pinky-promise mention | `api-spec-brainstorming` fires — **currently failing**, tracks known gap** |
 | `run-brainstorm-with-external.sh` | Explicitly mentions Twilio | Import suggestion surfaces |
-| `run-implicit-external.sh` | Natural prompt mentioning Twilio, no pinky-swear mention | Import suggestion fires without explicit instruction |
+| `run-implicit-external.sh` | Natural prompt mentioning Twilio, no pinky-promise mention | Import suggestion fires without explicit instruction |
 
 ### import-external-spec
 

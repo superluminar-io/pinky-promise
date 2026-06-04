@@ -8,8 +8,8 @@ SKILLS=(api-spec-brainstorming api-spec-import api-spec-publish api-contract-che
 
 usage() {
   echo "Usage: $0 <project-path> [--update]" >&2
-  echo "  $0 ~/src/github.com/superluminar-io/pinky-swear-test-user          # first install" >&2
-  echo "  $0 ~/src/github.com/superluminar-io/pinky-swear-test-user --update  # sync changes" >&2
+  echo "  $0 ~/src/github.com/superluminar-io/pinky-promise-test-user          # first install" >&2
+  echo "  $0 ~/src/github.com/superluminar-io/pinky-promise-test-user --update  # sync changes" >&2
   exit 1
 }
 
@@ -52,22 +52,22 @@ fi
 cd "$PROJECT_PATH"
 
 if [[ "$UPDATE" == "true" ]]; then
-  echo "Syncing pinky-swear changes..."
-  claude plugin uninstall "pinky-swear@$MARKETPLACE_NAME" --scope project 2>/dev/null || true
+  echo "Syncing pinky-promise changes..."
+  claude plugin uninstall "pinky-promise@$MARKETPLACE_NAME" --scope project 2>/dev/null || true
   # Re-register and refresh marketplace from local source
   claude plugin marketplace add "$PLUGIN_SRC" --scope project 2>/dev/null || true
   claude plugin marketplace update "$MARKETPLACE_NAME" 2>/dev/null || true
   # Wipe the cache so the reinstall copies fresh files rather than reusing the old 1.0.0 directory
   rm -rf "$HOME/.claude/plugins/cache/$MARKETPLACE_NAME"
-  claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
+  claude plugin install "pinky-promise@$MARKETPLACE_NAME" --scope project
   register_skills
   echo "Done. Plugin updated in $PROJECT_PATH."
 else
-  echo "Registering pinky-swear marketplace..."
+  echo "Registering pinky-promise marketplace..."
   claude plugin marketplace add "$PLUGIN_SRC" --scope project
 
-  echo "Installing pinky-swear..."
-  claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
+  echo "Installing pinky-promise..."
+  claude plugin install "pinky-promise@$MARKETPLACE_NAME" --scope project
 
   register_skills
 

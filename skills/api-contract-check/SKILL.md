@@ -15,7 +15,7 @@ Validate the current implementation or plan against published API specs.
 
 ## What to do
 
-**Specs come exclusively from the registry. Never read another service's code or files — no `find`, no reading from `..` or sibling directories, no inferring the API from `.go`, `.ts`, `.proto`, or any other source files. Only read from `.pinky-swear/registry/` after a fresh clone.**
+**Specs come exclusively from the registry. Never read another service's code or files — no `find`, no reading from `..` or sibling directories, no inferring the API from `.go`, `.ts`, `.proto`, or any other source files. Only read from `.pinky-promise/registry/` after a fresh clone.**
 
 Announce: "Running api-contract-check to validate against published API specs."
 
@@ -30,8 +30,8 @@ If not found in either, `$API_REGISTRY_REPO` may still be set in the session env
 Clone with `--filter=blob:none --sparse` — no blobs are fetched yet:
 
 ```bash
-rm -rf .pinky-swear/registry
-git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry
+rm -rf .pinky-promise/registry
+git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-promise/registry
 ```
 
 If clone fails:
@@ -50,13 +50,13 @@ If the file does not exist, prompt to create it:
 
 List available services using the tree index (no blobs downloaded):
 ```bash
-git -C .pinky-swear/registry ls-tree HEAD services/
+git -C .pinky-promise/registry ls-tree HEAD services/
 ```
 
 For each service the user names (resolve partial names against the listing), list available versions and ask which to pin:
 ```bash
-git -C .pinky-swear/registry sparse-checkout set "services/<service-name>"
-ls .pinky-swear/registry/services/<service-name>/ | sort -V
+git -C .pinky-promise/registry sparse-checkout set "services/<service-name>"
+ls .pinky-promise/registry/services/<service-name>/ | sort -V
 ```
 
 Write `api-dependencies.json` to the project root:
@@ -73,7 +73,7 @@ Announce: "Created api-dependencies.json. Proceeding with contract check."
 For each entry in `api-dependencies.json`, sparse-checkout that service (adding to any already checked out):
 
 ```bash
-git -C .pinky-swear/registry sparse-checkout add "services/<service-name>"
+git -C .pinky-promise/registry sparse-checkout add "services/<service-name>"
 ```
 
 If the service directory does not exist after checkout:
@@ -83,17 +83,17 @@ Continue to the next dependency.
 
 If the service exists, read the pinned contract:
 ```bash
-cat .pinky-swear/registry/services/<service-name>/<pinned-version>.json
+cat .pinky-promise/registry/services/<service-name>/<pinned-version>.json
 ```
 
-Check `pinkySwearVersion` in the contract. If it is higher than `1`:
-> "Warning: **[service-name]** v[pinned-version] was written by a newer version of pinky-swear (format version [n]). Update the plugin to validate correctly. Skipping contract check for this service."
+Check `pinkyPromiseVersion` in the contract. If it is higher than `1`:
+> "Warning: **[service-name]** v[pinned-version] was written by a newer version of pinky-promise (format version [n]). Update the plugin to validate correctly. Skipping contract check for this service."
 
 Continue to the next dependency.
 
 Also read the bindings if present:
 ```bash
-cat .pinky-swear/registry/services/<service-name>/bindings.json 2>/dev/null || true
+cat .pinky-promise/registry/services/<service-name>/bindings.json 2>/dev/null || true
 ```
 
 Select the binding entries that apply to the pinned version using this priority order:
@@ -105,17 +105,17 @@ Use only the selected entries for transport-level validation (HTTP paths, gRPC R
 
 Also read the consumer's credential mapping if present:
 ```bash
-cat .pinky-swear/credentials.json 2>/dev/null || true
+cat .pinky-promise/credentials.json 2>/dev/null || true
 ```
 
-If `connection.auth` is declared in the binding but `.pinky-swear/credentials.json` has no entry for this service, warn:
-> "Warning: **[service-name]** requires `[auth.type]` authentication but no credentials are configured. Add an entry for `[service-name]` to `.pinky-swear/credentials.json`."
+If `connection.auth` is declared in the binding but `.pinky-promise/credentials.json` has no entry for this service, warn:
+> "Warning: **[service-name]** requires `[auth.type]` authentication but no credentials are configured. Add an entry for `[service-name]` to `.pinky-promise/credentials.json`."
 
 If the file does not exist:
 > "Error: [service-name] version [pinned-version] not found in registry ([API_REGISTRY_REPO]). Check api-dependencies.json."
 
 ```bash
-rm -rf .pinky-swear/registry
+rm -rf .pinky-promise/registry
 ```
 
 Stop on this error.
@@ -150,7 +150,7 @@ For each deprecated member in use:
 For each pinned service, find the highest version within the same major:
 ```bash
 MAJOR=$(echo "<pinned-version>" | cut -d. -f1)
-ls .pinky-swear/registry/services/<service-name>/ | sort -V | grep "^${MAJOR}\." | tail -1
+ls .pinky-promise/registry/services/<service-name>/ | sort -V | grep "^${MAJOR}\." | tail -1
 ```
 
 If a newer compatible version exists:
@@ -159,5 +159,5 @@ If a newer compatible version exists:
 ### Clean up
 
 ```bash
-rm -rf .pinky-swear/registry
+rm -rf .pinky-promise/registry
 ```

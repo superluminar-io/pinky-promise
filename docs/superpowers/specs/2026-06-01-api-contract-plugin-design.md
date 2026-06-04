@@ -1,4 +1,4 @@
-# pinky-swear Design
+# pinky-promise Design
 
 **Date:** 2026-06-01
 **Status:** Draft
@@ -23,7 +23,7 @@ When building systems with superpowers, the workflow focuses on internal service
 
 ## Plugin versioning
 
-The plugin itself follows semantic versioning: patch = bug fixes/clarifications, minor = additive changes (new optional fields, new skills), major = breaking format or behaviour changes. Registry files carry a `pinkySwearVersion` integer field so skills can detect and refuse to process files written by a newer format version than they support.
+The plugin itself follows semantic versioning: patch = bug fixes/clarifications, minor = additive changes (new optional fields, new skills), major = breaking format or behaviour changes. Registry files carry a `pinkyPromiseVersion` integer field so skills can detect and refuse to process files written by a newer format version than they support.
 
 ## Design
 
@@ -83,7 +83,7 @@ api-registry/
 
 Two files per service: a versioned contract file (`<version>.json`) and a non-versioned `bindings.json`. The highest semver in a service directory is the latest contract. Published contract versions are immutable — `api-spec-publish` never overwrites an existing versioned file. `bindings.json` is always overwritten on publish. All commits are automated; no human commits.
 
-Both files carry a `pinkySwearVersion` integer field (currently `1`). Skills check this on read: if the value is higher than the plugin supports, they warn and stop rather than silently misparsing. This allows the plugin to evolve the format without breaking consumers on older plugin versions. Commit message format:
+Both files carry a `pinkyPromiseVersion` integer field (currently `1`). Skills check this on read: if the value is higher than the plugin supports, they warn and stop rather than silently misparsing. This allows the plugin to evolve the format without breaking consumers on older plugin versions. Commit message format:
 
 ```
 user-service: 1.1.0 (minor) — added getUsers operation
@@ -234,7 +234,7 @@ Variants in a union and items in an array are inline type expressions. Named typ
 
 Bindings live in `bindings.json` alongside the contract files, not inside the contract itself. They map the abstract interface to a transport and declare connection URLs. Multiple bindings per service are allowed. The `prefix` field is an optional path prefix prepended to all HTTP operation paths (e.g. `/v1`).
 
-**Auth** — the producer declares the auth flow in `connection.auth`. This is a machine-readable specification of the protocol; credential values are never stored here. Supported types: `bearer`, `basic`, `api_key`, `oauth2` (flows: `client_credentials`, `password`). The consumer provides credential values in their own `.pinky-swear/credentials.json` (gitignored), mapping their own env vars to the standard protocol parameter names. The producer has no say in the consumer's variable naming.
+**Auth** — the producer declares the auth flow in `connection.auth`. This is a machine-readable specification of the protocol; credential values are never stored here. Supported types: `bearer`, `basic`, `api_key`, `oauth2` (flows: `client_credentials`, `password`). The consumer provides credential values in their own `.pinky-promise/credentials.json` (gitignored), mapping their own env vars to the standard protocol parameter names. The producer has no say in the consumer's variable naming.
 
 **Versioning** — each binding entry carries an optional `contractVersion` field (`"1.*"`, `"2.*"`, or an exact version like `"1.5.0"`) so multiple deployed versions of the same service can coexist in the registry with different endpoints. A client pinned to `1.2.0` resolves the most specific matching binding.
 
@@ -290,8 +290,8 @@ Each consumer project declares pinned versions in `api-dependencies.json` at the
 
 Triggered in parallel with superpowers brainstorming when a service has no published spec yet. Runs a focused sub-conversation to identify the public API surface: which operations to expose, inputs and outputs, event types, subscription streams. Produces two artefacts persisted to disk so they survive across sessions:
 
-- `.pinky-swear/draft-spec.json` — abstract contract (operations, events, subscriptions, types)
-- `.pinky-swear/bindings.json` — protocol mappings and connection URLs (see IDL reference)
+- `.pinky-promise/draft-spec.json` — abstract contract (operations, events, subscriptions, types)
+- `.pinky-promise/bindings.json` — protocol mappings and connection URLs (see IDL reference)
 
 Neither is published until `api-spec-publish` runs.
 
@@ -311,7 +311,7 @@ For consumers. Fetches the target service's contract at the pinned version and `
 
 #### `api-spec-publish`
 
-Final step for producers. Reads `.pinky-swear/draft-spec.json` and `.pinky-swear/bindings.json` from disk (falling back to context if the files are absent), resolves any deferred guardian decisions (blocking if unresolved), determines the new version number, clones the registry, writes both the versioned contract file and `bindings.json`, commits with a descriptive message, and pushes. Deletes the `.pinky-swear/` draft files on success. If no draft exists, runs `api-spec-brainstorming` first. Fails hard if the registry is unreachable.
+Final step for producers. Reads `.pinky-promise/draft-spec.json` and `.pinky-promise/bindings.json` from disk (falling back to context if the files are absent), resolves any deferred guardian decisions (blocking if unresolved), determines the new version number, clones the registry, writes both the versioned contract file and `bindings.json`, commits with a descriptive message, and pushes. Deletes the `.pinky-promise/` draft files on success. If no draft exists, runs `api-spec-brainstorming` first. Fails hard if the registry is unreachable.
 
 Version number is determined from the guardian decisions accumulated during the session: the highest classification across all resolved changes (major > minor > patch) sets the bump. If no guardian decisions exist (first publish), the version is `1.0.0`. On subsequent publishes with no guardian decisions, a patch bump is applied.
 
@@ -319,12 +319,12 @@ Version number is determined from the guardian decisions accumulated during the 
 
 The plugin's CLAUDE.md injects trigger instructions into every session:
 
-- **Session start** — if `API_REGISTRY_REPO` is configured: infer the current service name from the project directory, `.pinky-swear/draft-spec.json`, or draft spec in context; sparse-clone the registry to `.pinky-swear/registry/`; if a published spec exists for the service, read it into context silently; clean up the clone. If `API_REGISTRY_REPO` is not set, skip silently. If it is set but the clone fails, warn the user once that contract checks are disabled for the session — do not block work
+- **Session start** — if `API_REGISTRY_REPO` is configured: infer the current service name from the project directory, `.pinky-promise/draft-spec.json`, or draft spec in context; sparse-clone the registry to `.pinky-promise/registry/`; if a published spec exists for the service, read it into context silently; clean up the clone. If `API_REGISTRY_REPO` is not set, skip silently. If it is set but the clone fails, warn the user once that contract checks are disabled for the session — do not block work
 - **Brainstorming** — if no spec exists: invoke `api-spec-brainstorming` in parallel; if spec exists: invoke `api-change-guardian` when interface changes are proposed
 - **writing-plans** — invoke `api-contract-check` before finalizing any plan that consumes another service; invoke `api-change-guardian` if the plan changes the current service's interface
 - **subagent-driven-development** — invoke `api-change-guardian` when subagent code would alter a published interface
 - **requesting-code-review** — invoke `api-contract-check` for consumer code; invoke `api-change-guardian` for producer code
-- **finishing-a-development-branch** — invoke `api-spec-publish` if `.pinky-swear/draft-spec.json` exists or unresolved guardian decisions exist
+- **finishing-a-development-branch** — invoke `api-spec-publish` if `.pinky-promise/draft-spec.json` exists or unresolved guardian decisions exist
 
 ### Error handling
 

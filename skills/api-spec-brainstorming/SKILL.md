@@ -24,7 +24,7 @@ Work through the questions below one at a time. Use the answers to build toward 
 ### 0. Check registry configuration
 
 Read `.claude/settings.json` and the project `CLAUDE.md` for `API_REGISTRY_REPO`. If not found in either:
-> "⚠️ pinky-swear: `API_REGISTRY_REPO` is not configured. The draft spec will be written locally but cannot be published to a registry or validated by consumers until you set this up. See `docs/registry-setup.md`."
+> "⚠️ pinky-promise: `API_REGISTRY_REPO` is not configured. The draft spec will be written locally but cannot be published to a registry or validated by consumers until you set this up. See `docs/registry-setup.md`."
 
 Do not block — continue with the brainstorm.
 
@@ -102,11 +102,11 @@ Set `contractVersion` on the binding entry accordingly. Omit the field if the bi
 
 ### 7. Produce the draft contract and bindings
 
-**Contract** — use this exact shape. `pinkySwearVersion: 1` always first. Version `1.0.0` for first-time specs; guardian-recorded major for redesigns. No bindings in this file.
+**Contract** — use this exact shape. `pinkyPromiseVersion: 1` always first. Version `1.0.0` for first-time specs; guardian-recorded major for redesigns. No bindings in this file.
 
 ```json
 {
-  "pinkySwearVersion": 1,
+  "pinkyPromiseVersion": 1,
   "name": "kebab-case-service-name",
   "version": "1.0.0",
   "description": "optional",
@@ -129,11 +129,11 @@ Set `contractVersion` on the binding entry accordingly. Omit the field if the bi
 
 Inline type expressions: `{ "type": "string|number|boolean|null|TypeName" }`, `{ "type": "array", "items": { "type": "string" } }`, `{ "optional": true, "type": "string" }`. `object`, `enum`, `union` must be named types — never inline.
 
-**Bindings** — use this exact shape. `pinkySwearVersion: 1` always first.
+**Bindings** — use this exact shape. `pinkyPromiseVersion: 1` always first.
 
 ```json
 {
-  "pinkySwearVersion": 1,
+  "pinkyPromiseVersion": 1,
   "service": "kebab-case-service-name",
   "bindings": [
     {
@@ -182,18 +182,18 @@ State both explicitly:
 Persist both to disk so they survive across sessions:
 
 ```bash
-mkdir -p .pinky-swear
-grep -qxF '.pinky-swear/registry/' .gitignore 2>/dev/null || echo '.pinky-swear/registry/' >> .gitignore
-grep -qxF '.pinky-swear/credentials.json' .gitignore 2>/dev/null || echo '.pinky-swear/credentials.json' >> .gitignore
-cat > .pinky-swear/draft-spec.json << 'SPEC'
+mkdir -p .pinky-promise
+grep -qxF '.pinky-promise/registry/' .gitignore 2>/dev/null || echo '.pinky-promise/registry/' >> .gitignore
+grep -qxF '.pinky-promise/credentials.json' .gitignore 2>/dev/null || echo '.pinky-promise/credentials.json' >> .gitignore
+cat > .pinky-promise/draft-spec.json << 'SPEC'
 <full contract JSON>
 SPEC
-cat > .pinky-swear/bindings.json << 'BINDINGS'
+cat > .pinky-promise/bindings.json << 'BINDINGS'
 <full bindings JSON>
 BINDINGS
 ```
 
-Announce: "Draft contract and bindings written to `.pinky-swear/`. They will be published when the branch is finished."
+Announce: "Draft contract and bindings written to `.pinky-promise/`. They will be published when the branch is finished."
 
 ## Validation rules to enforce
 

@@ -7,7 +7,7 @@
   },
   "plugins": [
     {
-      "name": "pinky-swear",
+      "name": "pinky-promise",
       "description": "API contract enforcement for producer and consumer services",
       "version": "1.0.0",
       "source": "./",

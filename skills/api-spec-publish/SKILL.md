@@ -14,22 +14,22 @@ Publish a service's API spec to the registry.
 
 ## What to do
 
-**Published specs come exclusively from the registry. Never search the local filesystem for existing specs — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read registry data from `.pinky-swear/registry/` after a fresh clone.**
+**Published specs come exclusively from the registry. Never search the local filesystem for existing specs — no `find`, no directory traversal, no reading `.json` files from the project tree. Only read registry data from `.pinky-promise/registry/` after a fresh clone.**
 
 Announce: "Running api-spec-publish to publish the API spec to the registry."
 
 ### Step 1: Check for a draft spec and bindings
 
-Check for `.pinky-swear/draft-spec.json`:
+Check for `.pinky-promise/draft-spec.json`:
 
 ```bash
-cat .pinky-swear/draft-spec.json 2>/dev/null
+cat .pinky-promise/draft-spec.json 2>/dev/null
 ```
 
-Check for `.pinky-swear/bindings.json`:
+Check for `.pinky-promise/bindings.json`:
 
 ```bash
-cat .pinky-swear/bindings.json 2>/dev/null
+cat .pinky-promise/bindings.json 2>/dev/null
 ```
 
 If `draft-spec.json` exists, use it as the contract. If `bindings.json` exists, use it as the bindings.
@@ -64,9 +64,9 @@ If not found in either, `$API_REGISTRY_REPO` may still be set in the session env
 
 Clone with sparse-checkout to the current service only. Always fetch fresh:
 ```bash
-rm -rf .pinky-swear/registry
-git clone --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swear/registry
-git -C .pinky-swear/registry sparse-checkout set "services/<service-name>"
+rm -rf .pinky-promise/registry
+git clone --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-promise/registry
+git -C .pinky-promise/registry sparse-checkout set "services/<service-name>"
 ```
 
 If clone fails:
@@ -78,7 +78,7 @@ Stop.
 
 Check whether this service has been published before:
 ```bash
-ls .pinky-swear/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
+ls .pinky-promise/registry/services/<service-name>/ 2>/dev/null | sort -V | tail -1
 ```
 
 **First publish:** No versions found → version is `1.0.0`.
@@ -101,13 +101,13 @@ Update the `version` field in the draft contract to `<new-version>`.
 
 Create the service directory if needed:
 ```bash
-mkdir -p .pinky-swear/registry/services/<service-name>
+mkdir -p .pinky-promise/registry/services/<service-name>
 ```
 
-Write the contract file (always include `pinkySwearVersion: 1`):
+Write the contract file (always include `pinkyPromiseVersion: 1`):
 ```bash
-cat > .pinky-swear/registry/services/<service-name>/<new-version>.json << 'SPEC'
-<full contract JSON — no bindings, pinkySwearVersion: 1 at top level>
+cat > .pinky-promise/registry/services/<service-name>/<new-version>.json << 'SPEC'
+<full contract JSON — no bindings, pinkyPromiseVersion: 1 at top level>
 SPEC
 ```
 
@@ -119,14 +119,14 @@ If bindings are present, update `bindings.json`:
   Ask the user: "This is a major bump to [new-version]. The new binding will be added for `[new-major].*`. Clients on v[old-major] will continue using the existing binding. Confirm?"
 
 ```bash
-cat > .pinky-swear/registry/services/<service-name>/bindings.json << 'BINDINGS'
-<full merged bindings JSON — pinkySwearVersion: 1 at top level>
+cat > .pinky-promise/registry/services/<service-name>/bindings.json << 'BINDINGS'
+<full merged bindings JSON — pinkyPromiseVersion: 1 at top level>
 BINDINGS
 ```
 
 Commit and push:
 ```bash
-cd .pinky-swear/registry
+cd .pinky-promise/registry
 git add services/<service-name>/<new-version>.json
 git add services/<service-name>/bindings.json 2>/dev/null || true
 git commit -m "<service-name>: <new-version> (<bump>) — <one-line summary>"
@@ -140,6 +140,6 @@ The summary describes the most significant change (e.g. "added listUsers operati
 > "Published [service-name] v[new-version] to the registry."
 
 ```bash
-rm -rf .pinky-swear/registry
-rm -f .pinky-swear/draft-spec.json .pinky-swear/bindings.json
+rm -rf .pinky-promise/registry
+rm -f .pinky-promise/draft-spec.json .pinky-promise/bindings.json
 ```

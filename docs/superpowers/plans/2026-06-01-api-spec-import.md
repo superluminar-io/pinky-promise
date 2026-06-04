@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a `/api-spec-import` slash command that converts external API specs (OpenAPI, gRPC, GraphQL) into pinky-swear IDL entries in the registry, and wire import suggestions into the brainstorming, writing-plans, and api-contract-check hooks.
+**Goal:** Add a `/api-spec-import` slash command that converts external API specs (OpenAPI, gRPC, GraphQL) into pinky-promise IDL entries in the registry, and wire import suggestions into the brainstorming, writing-plans, and api-contract-check hooks.
 
 **Architecture:** Three SKILL.md files change (new `api-spec-import`, updated `api-contract-check`, updated `CLAUDE.md`) plus a new test scenario. The import skill fetches the source spec, detects format, converts to IDL JSON, applies the selected mode (full/auto/subset), proposes a semver bump, and writes to the registry via git. No code — all Claude skill instructions.
 
@@ -91,13 +91,13 @@
   ````markdown
   ---
   name: api-spec-import
-  description: "Import an external API spec (OpenAPI, gRPC, GraphQL) into the pinky-swear registry as a declared dependency. Typical triggers: '/api-spec-import <url>', 'import the stripe spec', 'register this external API', 'add twilio to the registry'."
+  description: "Import an external API spec (OpenAPI, gRPC, GraphQL) into the pinky-promise registry as a declared dependency. Typical triggers: '/api-spec-import <url>', 'import the stripe spec', 'register this external API', 'add twilio to the registry'."
   argument-hint: <url-or-file> [--full|--subset|--auto]
   ---
 
   # API Spec Import
 
-  Import an external API spec into the pinky-swear registry as a declared dependency, so `api-contract-check` can validate consumer code against it.
+  Import an external API spec into the pinky-promise registry as a declared dependency, so `api-contract-check` can validate consumer code against it.
 
   ## When invoked
 
@@ -185,7 +185,7 @@
 
   ### 7. Convert to IDL
 
-  Convert the fetched spec to pinky-swear IDL JSON using the following mapping:
+  Convert the fetched spec to pinky-promise IDL JSON using the following mapping:
 
   | Format | → Operations | → Events | → Types | → Bindings |
   |---|---|---|---|---|
@@ -272,7 +272,7 @@
 
   Wait for 'done' before proceeding.
 
-  ### 9. Determine pinky-swear version
+  ### 9. Determine pinky-promise version
 
   **First import:** version is `1.0.0`.
 
@@ -290,7 +290,7 @@
   ```json
   {
     "name": "<service-name>",
-    "version": "<pinky-swear-version>",
+    "version": "<pinky-promise-version>",
     "_source": {
       "url": "<source>",
       "external_version": "<external-version>",
@@ -311,7 +311,7 @@
   mkdir -p /tmp/api-registry-import/services/<service-name>
   ```
 
-  Write the JSON to `/tmp/api-registry-import/services/<service-name>/<pinky-swear-version>.json`.
+  Write the JSON to `/tmp/api-registry-import/services/<service-name>/<pinky-promise-version>.json`.
 
   ```bash
   cd /tmp/api-registry-import
@@ -329,7 +329,7 @@
 
   ### 11. Confirm
 
-  > "Imported `<service-name>` v<pinky-swear-version> (external: <external-version>) into the registry. `api-contract-check` will now validate calls against this spec."
+  > "Imported `<service-name>` v<pinky-promise-version> (external: <external-version>) into the registry. `api-contract-check` will now validate calls against this spec."
 
   If any `auth` blocks are present and empty:
   > "Note: `auth` blocks in bindings are empty. Edit the registry entry directly to add authentication configuration once the binding-spec-extension design is implemented."
@@ -368,7 +368,7 @@ The test verifies that invoking `/api-spec-import` causes the `api-spec-import` 
   #!/usr/bin/env bash
   # Test: /api-spec-import triggers api-spec-import skill
   #
-  # Verifies that the api-spec-import slash command causes pinky-swear to
+  # Verifies that the api-spec-import slash command causes pinky-promise to
   # invoke the api-spec-import skill.
   #
   # Usage: ./run-test.sh [--verbose]
@@ -388,7 +388,7 @@ The test verifies that invoking `/api-spec-import` causes the `api-spec-import` 
   done
 
   TIMESTAMP=$(date +%s)
-  OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/import-external-spec"
+  OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/import-external-spec"
   mkdir -p "$OUTPUT_DIR"
 
   LOG_FILE="$OUTPUT_DIR/claude-output.json"
@@ -475,7 +475,7 @@ The test verifies that invoking `/api-spec-import` causes the `api-spec-import` 
   ```
   PASS: api-spec-import was triggered
   Skills triggered:
-  "skill":"pinky-swear:api-spec-import"
+  "skill":"pinky-promise:api-spec-import"
   All tests passed.
   ```
 

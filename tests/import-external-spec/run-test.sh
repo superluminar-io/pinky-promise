@@ -23,7 +23,7 @@ for arg in "$@"; do
 done
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/import-external-spec"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/import-external-spec"
 mkdir -p "$OUTPUT_DIR"
 
 LOG_FILE="$OUTPUT_DIR/claude-output.json"

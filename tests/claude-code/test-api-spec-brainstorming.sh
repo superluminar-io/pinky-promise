@@ -8,10 +8,10 @@ source "$SCRIPT_DIR/test-helpers.sh"
 echo "=== Test: api-spec-brainstorming ==="
 echo ""
 
-echo "Test 1: Contract output includes pinkySwearVersion..."
+echo "Test 1: Contract output includes pinkyPromiseVersion..."
 output=$(run_claude "Invoke the api-spec-brainstorming skill and then answer: what is the first field in the contract JSON it produces?")
 
-assert_contains "$output" "pinkySwearVersion" "Contract includes pinkySwearVersion field" || exit 1
+assert_contains "$output" "pinkyPromiseVersion" "Contract includes pinkyPromiseVersion field" || exit 1
 
 echo ""
 echo "Test 2: Contract has no bindings field..."
@@ -26,10 +26,10 @@ output=$(run_claude "Invoke the api-spec-brainstorming skill and then answer: wh
 assert_contains "$output" "separate|bindings\.json|different file" "Bindings are in a separate file" || exit 1
 
 echo ""
-echo "Test 4: Draft is persisted to .pinky-swear/..."
+echo "Test 4: Draft is persisted to .pinky-promise/..."
 output=$(run_claude "Invoke the api-spec-brainstorming skill and then answer: where does it write the draft contract and bindings to disk?")
 
-assert_contains "$output" "\.pinky-swear" "Draft written to .pinky-swear/ directory" || exit 1
+assert_contains "$output" "\.pinky-promise" "Draft written to .pinky-promise/ directory" || exit 1
 
 echo ""
 echo "Test 5: object/enum/union must be named types, not inline..."

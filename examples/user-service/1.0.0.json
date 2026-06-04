@@ -1,5 +1,5 @@
 {
-  "pinkySwearVersion": 1,
+  "pinkyPromiseVersion": 1,
   "name": "user-service",
   "version": "1.0.0",
   "description": "Manages users and authentication",

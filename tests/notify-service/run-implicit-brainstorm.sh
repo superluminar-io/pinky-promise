@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Test: pinky-swear:api-spec-brainstorming fires without being explicitly requested.
+# Test: pinky-promise:api-spec-brainstorming fires without being explicitly requested.
 #
-# The prompt describes a service design naturally — no mention of pinky-swear,
+# The prompt describes a service design naturally — no mention of pinky-promise,
 # no instruction to invoke any skill. Asserts that Claude discovers on its own
 # that api-spec-brainstorming is applicable and invokes it.
 #
@@ -22,7 +22,7 @@ for arg in "$@"; do
 done
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/implicit-brainstorm"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/implicit-brainstorm"
 mkdir -p "$OUTPUT_DIR"
 
 LOG_FILE="$OUTPUT_DIR/claude-output.json"

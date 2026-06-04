@@ -2,7 +2,7 @@
 # Test: import suggestion surfaces without explicit instruction when design mentions
 # an unregistered external service.
 #
-# The prompt mentions Twilio naturally. Asserts pinky-swear surfaces the
+# The prompt mentions Twilio naturally. Asserts pinky-promise surfaces the
 # /api-spec-import suggestion on its own.
 #
 # Usage: ./run-implicit-external.sh [--verbose]
@@ -22,7 +22,7 @@ for arg in "$@"; do
 done
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/implicit-external"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/implicit-external"
 mkdir -p "$OUTPUT_DIR"
 
 LOG_FILE="$OUTPUT_DIR/claude-output.json"

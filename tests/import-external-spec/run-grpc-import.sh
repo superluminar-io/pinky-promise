@@ -24,7 +24,7 @@ for arg in "$@"; do
 done
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/import-grpc"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/import-grpc"
 mkdir -p "$OUTPUT_DIR"
 
 # Copy fixture to the output dir so the skill can read it via relative path

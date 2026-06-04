@@ -3,7 +3,7 @@
 #
 # Uses --plugin-dir to load the plugin, then checks that a brainstorm
 # prompt triggers BOTH superpowers:brainstorming AND
-# pinky-swear:api-spec-brainstorming in the same response.
+# pinky-promise:api-spec-brainstorming in the same response.
 #
 # Note: --plugin-dir bypasses the system-reminder skill-discovery path, so
 # these tests cannot validate whether the skill description alone is sufficient
@@ -42,9 +42,9 @@ run_brainstorm_test() {
   fi
 
   if grep -q '"name":"Skill"' "$output_file" && grep -qE '"skill":"([^"]*:)?api-spec-brainstorming"' "$output_file"; then
-    echo "  [PASS] pinky-swear:api-spec-brainstorming triggered"
+    echo "  [PASS] pinky-promise:api-spec-brainstorming triggered"
   else
-    echo "  [FAIL] pinky-swear:api-spec-brainstorming NOT triggered ($label)"
+    echo "  [FAIL] pinky-promise:api-spec-brainstorming NOT triggered ($label)"
     pass=false
   fi
 

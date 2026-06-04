@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sanity check: verify pinky-swear plugin loads and its CLAUDE.md is visible.
+# Sanity check: verify pinky-promise plugin loads and its CLAUDE.md is visible.
 # Run this before the scenario tests to confirm the plugin wiring is correct.
 #
 # Usage: ./tests/check-plugin-loaded.sh [--verbose]
@@ -18,7 +18,7 @@ for arg in "$@"; do
 done
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/check-plugin-loaded"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/check-plugin-loaded"
 mkdir -p "$OUTPUT_DIR"
 LOG_FILE="$OUTPUT_DIR/claude-output.json"
 PROMPT=$(cat "$PROMPT_FILE")
@@ -49,9 +49,9 @@ if [ -z "$RESPONSE" ]; then
   exit 1
 fi
 
-# Check that the response mentions pinky-swear or api-spec-brainstorming
-if echo "$RESPONSE" | grep -qi "pinky-swear\|api-spec-brainstorming\|api-contract-check\|api-change-guardian\|api-spec-publish"; then
-  echo "PASS: plugin is loaded — response references pinky-swear skills"
+# Check that the response mentions pinky-promise or api-spec-brainstorming
+if echo "$RESPONSE" | grep -qi "pinky-promise\|api-spec-brainstorming\|api-contract-check\|api-change-guardian\|api-spec-publish"; then
+  echo "PASS: plugin is loaded — response references pinky-promise skills"
 else
   echo "FAIL: plugin does not appear to be loaded"
   echo ""

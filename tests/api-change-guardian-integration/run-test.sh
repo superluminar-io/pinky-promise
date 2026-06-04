@@ -25,7 +25,7 @@ done
 source "$PLUGIN_DIR/tests/registry-helpers.sh"
 
 TIMESTAMP=$(date +%s)
-OUTPUT_DIR="/tmp/pinky-swear-tests/${TIMESTAMP}/api-change-guardian"
+OUTPUT_DIR="/tmp/pinky-promise-tests/${TIMESTAMP}/api-change-guardian"
 mkdir -p "$OUTPUT_DIR"
 
 REGISTRY=$(create_bare_registry)
