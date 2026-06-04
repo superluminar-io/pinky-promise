@@ -3,12 +3,22 @@ set -euo pipefail
 
 PLUGIN_SRC="$(cd "$(dirname "$0")" && pwd)"
 MARKETPLACE_NAME="superluminar-io"
+SKILLS_DIR="$HOME/.claude/skills"
+SKILLS=(api-spec-brainstorming api-spec-import api-spec-publish api-contract-check api-change-guardian)
 
 usage() {
   echo "Usage: $0 <project-path> [--update]" >&2
   echo "  $0 ~/src/github.com/superluminar-io/pinky-swear-test-user          # first install" >&2
   echo "  $0 ~/src/github.com/superluminar-io/pinky-swear-test-user --update  # sync changes" >&2
   exit 1
+}
+
+register_skills() {
+  mkdir -p "$SKILLS_DIR"
+  for skill in "${SKILLS[@]}"; do
+    ln -sfn "$PLUGIN_SRC/skills/$skill" "$SKILLS_DIR/$skill"
+  done
+  echo "Skills registered in $SKILLS_DIR/ (session restart required to pick them up)."
 }
 
 PROJECT_PATH="${1:-}"
@@ -36,6 +46,7 @@ if [[ "$UPDATE" == "true" ]]; then
   # Wipe the cache so the reinstall copies fresh files rather than reusing the old 1.0.0 directory
   rm -rf "$HOME/.claude/plugins/cache/$MARKETPLACE_NAME"
   claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
+  register_skills
   echo "Done. Plugin updated in $PROJECT_PATH."
 else
   echo "Registering pinky-swear marketplace..."
@@ -43,6 +54,8 @@ else
 
   echo "Installing pinky-swear..."
   claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
+
+  register_skills
 
   echo "Done. Plugin installed for $PROJECT_PATH only."
   echo ""
