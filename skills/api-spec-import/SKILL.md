@@ -82,7 +82,7 @@ git -C .pinky-swear/registry sparse-checkout set "services/<service-name>"
 ```
 
 If clone fails:
-> "Registry unreachable. Check your SSH key and API_REGISTRY_REPO value."
+> "Registry unreachable or not configured (`API_REGISTRY_REPO` is not set, or the repo is inaccessible). Set `API_REGISTRY_REPO` in `.claude/settings.json` or project `CLAUDE.md` — see `docs/registry-setup.md`."
 
 Stop.
 

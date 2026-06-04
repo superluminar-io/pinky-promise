@@ -35,7 +35,7 @@ git clone --depth 1 --filter=blob:none --sparse "$API_REGISTRY_REPO" .pinky-swea
 ```
 
 If clone fails:
-> "Registry unreachable. Skipping contract check."
+> "Registry unreachable or not configured (`API_REGISTRY_REPO` is not set, or the repo is inaccessible). Skipping contract check. Set `API_REGISTRY_REPO` in `.claude/settings.json` or project `CLAUDE.md` — see `docs/registry-setup.md`."
 
 Stop.
 

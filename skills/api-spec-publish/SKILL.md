@@ -70,7 +70,7 @@ git -C .pinky-swear/registry sparse-checkout set "services/<service-name>"
 ```
 
 If clone fails:
-> "Registry unreachable. Cannot publish without registry access."
+> "Registry unreachable or not configured (`API_REGISTRY_REPO` is not set, or the repo is inaccessible). Cannot publish. Set `API_REGISTRY_REPO` in `.claude/settings.json` or project `CLAUDE.md` — see `docs/registry-setup.md`."
 
 Stop.
 
