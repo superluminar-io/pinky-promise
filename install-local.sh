@@ -54,6 +54,8 @@ cd "$PROJECT_PATH"
 if [[ "$UPDATE" == "true" ]]; then
   echo "Syncing pinky-swear changes..."
   claude plugin uninstall "pinky-swear@$MARKETPLACE_NAME" --scope project 2>/dev/null || true
+  # Re-register marketplace from local source so the install gets the latest local files
+  claude plugin marketplace add "$PLUGIN_SRC" --scope project 2>/dev/null || true
   # Wipe the cache so the reinstall copies fresh files rather than reusing the old 1.0.0 directory
   rm -rf "$HOME/.claude/plugins/cache/$MARKETPLACE_NAME"
   claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
