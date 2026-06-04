@@ -25,7 +25,7 @@ Everything lives in a git registry you control. No external services required.
 
 ## Installation
 
-pinky-swear is not listed in the official Anthropic marketplace. Install it directly from GitHub.
+pinky-swear is not listed in the official Anthropic marketplace. Install it via the superluminar-io marketplace.
 
 **First, install superpowers if you haven't already:**
 
@@ -33,20 +33,25 @@ pinky-swear is not listed in the official Anthropic marketplace. Install it dire
 /plugin install superpowers@claude-plugins-official
 ```
 
-**Then install pinky-swear from GitHub** (run from your project directory):
+**Add the superluminar-io marketplace** (once per machine):
 
 ```bash
-claude plugin marketplace add git@github.com:superluminar-io/pinky-swear.git --scope project
-claude plugin install pinky-swear@pinky-swear-local --scope project
+claude plugin marketplace add superluminar-io/claude-plugins
+```
+
+**Then install pinky-swear** (run from your project directory):
+
+```bash
+claude plugin install pinky-swear@superluminar-io --scope project
 ```
 
 To update after new releases:
 
 ```bash
-claude plugin update pinky-swear@pinky-swear-local --scope project
+claude plugin update pinky-swear@superluminar-io --scope project
 ```
 
-**Alternatively, from a local checkout** (for development or a private fork):
+**From a local checkout** (for development or contributing):
 
 ```bash
 git clone git@github.com:superluminar-io/pinky-swear.git
