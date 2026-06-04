@@ -33,6 +33,8 @@ cd "$PROJECT_PATH"
 if [[ "$UPDATE" == "true" ]]; then
   echo "Syncing pinky-swear changes..."
   claude plugin uninstall "pinky-swear@$MARKETPLACE_NAME" --scope project 2>/dev/null || true
+  # Wipe the cache so the reinstall copies fresh files rather than reusing the old 1.0.0 directory
+  rm -rf "$HOME/.claude/plugins/cache/$MARKETPLACE_NAME"
   claude plugin install "pinky-swear@$MARKETPLACE_NAME" --scope project
   echo "Done. Plugin updated in $PROJECT_PATH."
 else
