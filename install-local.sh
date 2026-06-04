@@ -16,9 +16,10 @@ usage() {
 register_skills() {
   mkdir -p "$SKILLS_DIR"
   for skill in "${SKILLS[@]}"; do
-    ln -sfn "$PLUGIN_SRC/skills/$skill" "$SKILLS_DIR/$skill"
+    rm -rf "$SKILLS_DIR/$skill"
+    cp -r "$PLUGIN_SRC/skills/$skill" "$SKILLS_DIR/$skill"
   done
-  echo "Skills registered in $SKILLS_DIR/ (session restart required to pick them up)."
+  echo "Skills copied to $SKILLS_DIR/ — run /reload-plugins or start a new session."
 }
 
 PROJECT_PATH="${1:-}"
