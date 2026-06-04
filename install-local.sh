@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PLUGIN_SRC="$(cd "$(dirname "$0")" && pwd)"
-MARKETPLACE_NAME="pinky-swear-local"  # local dev only; production: superluminar-io/claude-plugins
+MARKETPLACE_NAME="superluminar-io"
 
 usage() {
   echo "Usage: $0 <project-path> [--update]" >&2

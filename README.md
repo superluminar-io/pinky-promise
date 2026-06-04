@@ -33,13 +33,13 @@ pinky-swear is not listed in the official Anthropic marketplace. Install it via 
 /plugin install superpowers@claude-plugins-official
 ```
 
-**Add the superluminar-io marketplace** (once per machine):
+**Add the pinky-swear marketplace** (once per machine):
 
 ```bash
-claude plugin marketplace add superluminar-io/claude-plugins
+claude plugin marketplace add superluminar-io/pinky-swear
 ```
 
-**Then install pinky-swear** (run from your project directory):
+**Then install** (run from your project directory):
 
 ```bash
 claude plugin install pinky-swear@superluminar-io --scope project
@@ -48,6 +48,7 @@ claude plugin install pinky-swear@superluminar-io --scope project
 To update after new releases:
 
 ```bash
+claude plugin marketplace update superluminar-io
 claude plugin update pinky-swear@superluminar-io --scope project
 ```
 
