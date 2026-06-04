@@ -1,0 +1,12 @@
+I'm starting a new service called notify-service. It does two things:
+
+Public API:
+- sendNotification(recipientId, channel, payload) → deliveryId
+- cancelNotification(deliveryId) → cancelled: bool
+- getDeliveryStatus(deliveryId) → status, attempts, lastError
+
+Async patterns:
+- subscribeToDeliveryEvents(recipientId) — ongoing stream of delivery status changes
+- deliveryFailed event — fire-and-forget, emitted when a delivery has permanently failed
+
+Let's brainstorm the design.

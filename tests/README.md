@@ -61,10 +61,12 @@ Full headless Claude sessions exercising end-to-end skill behaviour.
 
 A notification service that is simultaneously producer and consumer of its own API (dead-letter processor calls sendNotification — cron-driven, no recursion).
 
-| Script | Asserts |
-|---|---|
-| `run-test.sh` | `api-spec-brainstorming` is invoked when brainstorming a service with no published spec |
-| `run-brainstorm-with-external.sh` | Import suggestion surfaces when the brainstorm mentions calling the Twilio API |
+| Script | Prompt | Asserts |
+|---|---|---|
+| `run-test.sh` | Explicitly names the service and its operations | `api-spec-brainstorming` is invoked |
+| `run-implicit-brainstorm.sh` | Natural service description, no pinky-swear mention | `api-spec-brainstorming` fires without explicit instruction |
+| `run-brainstorm-with-external.sh` | Explicitly mentions Twilio | Import suggestion surfaces |
+| `run-implicit-external.sh` | Natural prompt mentioning Twilio, no pinky-swear mention | Import suggestion fires without explicit instruction |
 
 ### import-external-spec
 
