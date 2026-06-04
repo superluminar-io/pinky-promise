@@ -1,6 +1,6 @@
 ---
 name: api-spec-brainstorming
-description: "Invoke at the START of any brainstorm for a service with no published spec — runs alongside superpowers:brainstorming, not after it. Triggers: user is designing, building, or starting a new service; 'what operations should this expose?'; 'let's brainstorm'; 'I'm starting a new service'; redesigning an existing API."
+description: "ALWAYS invoke this alongside superpowers:brainstorming whenever a user is designing, building, or starting a service. Do not invoke one without the other. Captures the public API surface — operations, events, subscriptions, types, bindings — as a versioned spec. Required even when the prompt includes tech choices (language, cloud, framework)."
 ---
 
 # API Spec Brainstorming
