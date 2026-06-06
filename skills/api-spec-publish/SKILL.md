@@ -142,3 +142,12 @@ The summary describes the most significant change (e.g. "added listUsers operati
 rm -rf .pinky-promise/registry
 rm -f .pinky-promise/draft-spec.json .pinky-promise/bindings.json
 ```
+
+### Step 7: Offer follow-up tooling
+
+Use `AskUserQuestion` (multi-select):
+- **Generate mock server** — invoke `api-mock-server` to create a Prism/gRPC stub
+- **Generate Pact contract tests** — invoke `api-pact-generate` to create consumer-driven contract tests
+- **Nothing, I'm done**
+
+Invoke the selected skills in sequence.

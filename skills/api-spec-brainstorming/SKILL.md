@@ -218,6 +218,26 @@ BINDINGS
 
 Announce: "Draft contract and bindings written to `.pinky-promise/`. They will be published when the branch is finished."
 
+Use `AskUserQuestion` (multi-select) to offer follow-up tooling. Options depend on the project role determined in step 0b:
+
+**Producer (service):**
+- **Generate mock client** — invoke `api-mock-server --client` to create a test harness that calls your server
+- **Generate Pact contract tests** — invoke `api-pact-generate` for provider verification setup
+- **Nothing yet**
+
+**Consumer (client/tool):**
+- **Generate mock server** — invoke `api-mock-server --server` to create a Prism/gRPC stub to test against
+- **Generate Pact contract tests** — invoke `api-pact-generate` for consumer interaction file
+- **Nothing yet**
+
+**Both roles:**
+- **Generate mock client** — for testing the server side
+- **Generate mock server** — for testing the client side
+- **Generate Pact contract tests** — for both producer and consumer
+- **Nothing yet**
+
+Invoke the selected skills in sequence.
+
 ## Validation rules to enforce
 
 - No inline `enum`, `union`, or `object` — define them in the `types` map

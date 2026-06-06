@@ -4,7 +4,7 @@ set -euo pipefail
 PLUGIN_SRC="$(cd "$(dirname "$0")" && pwd)"
 MARKETPLACE_NAME="superluminar-io"
 SKILLS_DIR="$HOME/.claude/skills"
-SKILLS=(api-spec-brainstorming api-check-external api-spec-import api-spec-publish api-contract-check api-change-guardian)
+SKILLS=(api-spec-brainstorming api-check-external api-spec-import api-spec-publish api-contract-check api-change-guardian api-mock-server api-pact-generate)
 
 usage() {
   echo "Usage: $0 <project-path> [--update]" >&2

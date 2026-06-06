@@ -296,3 +296,10 @@ Display the full JSON. Do not stop the session.
 
 If the source spec declares an auth scheme that could not be mapped (e.g. `openIdConnect`):
 > "Note: the auth scheme `<scheme>` could not be automatically mapped. Add an `auth` block to the binding entry in `.pinky-promise/bindings.json` and re-run `/api-spec-import` to republish — do not edit the registry directly as a re-import will overwrite it. See `docs/idl-reference.md` for supported auth types."
+
+Use `AskUserQuestion` (multi-select) to offer follow-up tooling for this imported (consumer-side) dependency:
+- **Generate mock server** — invoke `api-mock-server --server` to create a local mock of `<service-name>` for development
+- **Generate Pact contract tests** — invoke `api-pact-generate` to create a consumer interaction file for `<service-name>`
+- **Nothing yet**
+
+Invoke the selected skills in sequence.
