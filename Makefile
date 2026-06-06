@@ -13,6 +13,7 @@ integration-test: check-plugin
 	@tests/notify-service/run-implicit-brainstorm-rich.sh
 	@tests/notify-service/run-brainstorm-with-external.sh
 	@tests/notify-service/run-implicit-external.sh
+	@tests/notify-service/run-implicit-external-client.sh
 	@tests/import-external-spec/run-test.sh
 	@tests/import-external-spec/run-grpc-import.sh
 	@tests/api-spec-publish-integration/run-test.sh

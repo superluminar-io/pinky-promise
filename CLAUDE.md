@@ -92,8 +92,14 @@ If the user's message is about designing, starting, building, or brainstorming a
 
 If the current service **has a published spec** and the user's message proposes changes to the public interface: `pinky-promise:api-change-guardian` is an applicable skill and MUST be invoked before those changes are adopted.
 
-If the user's message mentions **calling an external service** with no registry entry: surface this before concluding:
+## When the user mentions calling an external service
+
+This check fires on every user message, independent of whether a service is being designed.
+
+If the user's message mentions calling, integrating with, or building a client for an external service (GitHub, Stripe, Twilio, any third-party API) and no registry entry exists for it: surface this immediately:
   > "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
+
+This applies whether the user is building a producer service, a consumer client, or a standalone tool.
 
 ## During writing-plans (superpowers writing-plans skill)
 

@@ -17,6 +17,7 @@
       },
       "skills": [
         "./skills/api-spec-brainstorming",
+        "./skills/api-check-external",
         "./skills/api-spec-import",
         "./skills/api-spec-publish",
         "./skills/api-contract-check",

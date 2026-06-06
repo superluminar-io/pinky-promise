@@ -1,6 +1,6 @@
 ---
 name: api-spec-brainstorming
-description: "ALWAYS invoke this alongside superpowers:brainstorming whenever a user is designing, building, or starting a service. Do not invoke one without the other. Captures the public API surface — operations, events, subscriptions, types, bindings — as a versioned spec. Required even when the prompt includes tech choices (language, cloud, framework)."
+description: "ALWAYS invoke this alongside superpowers:brainstorming. Covers two cases: (1) the user is building a service/API — capture the public API surface as a versioned spec; (2) the user is building a client, tool, or CLI that calls external services — surface missing registry entries. Required even when the prompt includes tech choices (language, cloud, framework) or is purely a consumer project."
 ---
 
 # API Spec Brainstorming
@@ -19,19 +19,26 @@ Define the public API surface of a service in parallel with the superpowers brai
 
 ## What to do
 
-Work through the questions below one at a time. Use the answers to build toward the draft IDL.
+### 0. Check for external service dependencies
 
-### 0. Check registry configuration
+**Do this first, before anything else.**
+
+Scan the user's message for any mention of calling, integrating with, or managing an external service (GitHub, Stripe, Twilio, any third-party API or platform) that is not being built in this repo. For each one found, surface immediately:
+> "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
+
+This applies regardless of whether `API_REGISTRY_REPO` is configured.
+
+### 0b. Determine project type
+
+- **Producer** — the user is building a service that exposes a public API. Continue to all steps below.
+- **Consumer** — the user is building a client, tool, or CLI that only calls external services and exposes no public API itself. Stop here — the API surface questions below do not apply.
+
+### 0c. Check registry configuration
 
 Read `.claude/settings.json` and the project `CLAUDE.md` for `API_REGISTRY_REPO`. If not found in either:
 > "⚠️ pinky-promise: `API_REGISTRY_REPO` is not configured. The draft spec will be written locally but cannot be published to a registry or validated by consumers until you set this up. See `docs/registry-setup.md`."
 
 Do not block — continue with the brainstorm.
-
-### 0b. Check for external service dependencies
-
-Scan the conversation context for any mention of calling an external service (a service not being built in this repo — e.g. Stripe, Twilio, a third-party API). For each one with no registry entry, surface this immediately before continuing:
-> "The design depends on `<external-service>` but no public API entry exists in the registry. Run `/api-spec-import <url>` to register it before planning begins."
 
 ### 1. Identify the service name
 
