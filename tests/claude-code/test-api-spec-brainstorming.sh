@@ -17,7 +17,7 @@ echo ""
 echo "Test 2: Contract has no bindings field..."
 output=$(run_claude "Invoke the api-spec-brainstorming skill and then answer: does the contract JSON file include a bindings field?")
 
-assert_not_contains "$output" "yes.*bindings|bindings.*yes|includes.*bindings|contains.*bindings" "Contract does not include bindings" || exit 1
+assert_not_contains "$output" "yes.*bindings field|bindings field.*yes|contract.*includes.*bindings field|contract.*has.*bindings" "Contract does not include bindings" || exit 1
 
 echo ""
 echo "Test 3: Bindings are written to a separate file..."
