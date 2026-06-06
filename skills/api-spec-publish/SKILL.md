@@ -90,10 +90,9 @@ Calculate the new semver:
 - minor: increment second number, reset third (1.2.3 → 1.3.0)
 - major: increment first number, reset second and third (1.2.3 → 2.0.0)
 
-Confirm with the user:
-> "Ready to publish [service-name] as [new-version] ([bump]). Confirm? (yes/no)"
-
-Wait for confirmation before proceeding.
+Use `AskUserQuestion` (single-select) to confirm:
+- **Publish [service-name] as [new-version] ([bump])** — proceed
+- **Cancel** — stop without publishing
 
 ### Step 5: Write and publish
 

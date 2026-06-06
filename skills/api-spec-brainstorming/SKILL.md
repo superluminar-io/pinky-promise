@@ -92,20 +92,36 @@ State: "I'll define these as named types: [list]."
 
 ### 6. Ask about bindings
 
-Ask:
-> "How is [service-name] exposed? (e.g. HTTP JSON REST, gRPC, GraphQL, message queue)"
+Use `AskUserQuestion` for all closed-set choices in this step.
 
-For each binding:
-- Ask for the protocol-specific mapping of operations (e.g. HTTP method and path for REST, RPC name for gRPC)
-- For gRPC: ask for the proto `package` name (e.g. `audit`) — this is required to construct the fully-qualified service path `/<package>.<service>/<rpc>`
-- Ask: "Is there an optional path prefix? (e.g. `/v1`)" (HTTP only)
-- Ask: "Is there a known connection URL or host?"
-- Ask: "Does this service require authentication?" If yes, ask which type (`bearer`, `basic`, `api_key`, `oauth2`) and collect the protocol-specific fields (e.g. `tokenUrl` and `scopes` for oauth2, `in` and `name` for api_key). Do **not** ask for credential values — those are the consumer's concern.
-- Ask: "Does this binding apply to all versions, or a specific major version? (e.g. `1.*`, `2.*`, or leave blank for all)"
+**Protocol** — ask with checkboxes (multi-select, a service can expose multiple protocols simultaneously):
+- HTTP JSON REST
+- gRPC
+- GraphQL
+- Other
 
-Set `contractVersion` on the binding entry accordingly. Omit the field if the binding applies to all versions.
+For each protocol selected:
+- Ask for the protocol-specific mapping of operations (open-ended, plain text)
+- gRPC: ask for the proto `package` name (e.g. `audit`) — required for `/<package>.<service>/<rpc>` paths
+- HTTP only: ask for optional path prefix (e.g. `/v1`) and connection URL
+- gRPC: ask for host and port
 
-`prefix` and `connection` are optional.
+**Authentication** — ask with radio buttons (single-select):
+- None
+- Bearer token
+- API key
+- Basic (username/password)
+- OAuth2 (client credentials)
+- OAuth2 (password flow)
+
+For OAuth2: ask for `tokenUrl` and `scopes` (open-ended). For API key: ask for header/query and header name. Do **not** ask for credential values.
+
+**Version scope** — ask with radio buttons (single-select):
+- All versions (no `contractVersion`)
+- This major only — ask which (e.g. `1.*`, `2.*`)
+- Exact version (e.g. `1.5.0`)
+
+Set `contractVersion` accordingly.
 
 ### 7. Produce the draft contract and bindings
 

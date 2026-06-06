@@ -66,10 +66,11 @@ Stop.
 
 **GraphQL**: ask the user for both service name (kebab-case) and version string. If the user does not provide a version, use `"unknown"`.
 
-Confirm with the user:
-> "Service name: `<derived-name>`, external version: `<external-version>`. Reply with "confirmed" to proceed, or provide corrections."
+Use `AskUserQuestion` (single-select) to confirm:
+- **Confirmed** — proceed with `<derived-name>` / `<external-version>`
+- **Other** — let the user type corrections; use their input verbatim
 
-If the user provides corrections, use their values as-is without re-deriving. For gRPC and GraphQL where the user is asked directly, use their input verbatim.
+For gRPC and GraphQL where the user already provided the name/version directly, skip this confirmation.
 
 ### 6. Check for existing registry entry
 
@@ -227,8 +228,9 @@ If the user types 'cancel' or 'quit', stop and run `rm -rf .pinky-promise/regist
 - Confirmed set is identical to the previous entry → patch bump, reason: 'no functional changes'
 - Operations or types both added AND removed/changed in the same re-import → major bump (the most-breaking change takes precedence)
 
-Propose to user:
-> "Proposed version: `<new-version>` (<bump-type> bump — <reason>). Reply with "confirmed" to proceed, or provide a different version string."
+Use `AskUserQuestion` (single-select) to propose the version:
+- **`<new-version>` (<bump-type> — <reason>)** — accept the proposed version
+- **Other** — let the user type a different version string
 
 ### 10. Assemble and write the registry entry
 
