@@ -53,6 +53,8 @@ cd "$PROJECT_PATH"
 
 if [[ "$UPDATE" == "true" ]]; then
   echo "Syncing pinky-promise changes..."
+  # Clean up old name from before the rename
+  claude plugin uninstall "pinky-swear@$MARKETPLACE_NAME" --scope project 2>/dev/null || true
   claude plugin uninstall "pinky-promise@$MARKETPLACE_NAME" --scope project 2>/dev/null || true
   # Re-register and refresh marketplace from local source
   claude plugin marketplace add "$PLUGIN_SRC" --scope project 2>/dev/null || true
