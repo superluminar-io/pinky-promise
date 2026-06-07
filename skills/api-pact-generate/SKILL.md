@@ -17,6 +17,8 @@ Generate Pact consumer-driven contract test files from a pinky-promise spec.
 
 **Specs come exclusively from the registry or local draft files. Never read service implementation files.**
 
+**pact-go provides its own mock server internally. Never invoke `api-mock-server` as part of Pact test generation — `api-mock-server` is a separate tool for standalone development mocks, not for CDCT.**
+
 Announce: "Running api-pact-generate."
 
 ### Step 1: Determine role
@@ -83,34 +85,93 @@ For auth: if `connection.auth` declares bearer or API key, include a placeholder
 
 ### Step 5: Review examples
 
-Present all generated interactions as a single JSON block for review.
+Present all generated interactions as a single JSON block for review. These will be translated into pact-go test code in the next step.
 
 Use `AskUserQuestion` (single-select):
-- **Accept all** — write as-is
+- **Accept all** — proceed to generate Go test code
 - **Edit** — I will paste corrected JSON
 
-If Edit: wait for the user to paste corrected interactions JSON. Use their version.
+If Edit: wait for the user to paste corrected interactions JSON. Use their version as the basis for code generation.
 
-### Step 6: Write the Pact file
+### Step 6: Generate the consumer test file
 
-Write to `pacts/<consumer-name>-<provider-name>.json`:
+Generate a Go test file `pact_consumer_test.go` that uses pact-go's own mock server to define interactions and record the contract. **Do NOT use the `api-mock-server` skill here — pact-go spins up its own mock server internally.**
 
-```json
-{
-  "consumer": { "name": "<consumer-name>" },
-  "provider": { "name": "<service-name>" },
-  "interactions": [ <confirmed interactions> ],
-  "metadata": {
-    "pactSpecification": { "version": "2.0.0" },
-    "pinkyPromise": { "specVersion": "<spec-version>", "generatedAt": "<date>" }
-  }
+```go
+package <package>_test
+
+import (
+    "fmt"
+    "net/http"
+    "testing"
+
+    "github.com/pact-foundation/pact-go/v2/consumer"
+    "github.com/pact-foundation/pact-go/v2/matchers"
+)
+
+func TestPactConsumer_<OperationName>(t *testing.T) {
+    mockProvider, err := consumer.NewV2Pact(consumer.MockHTTPProviderConfig{
+        Consumer: "<consumer-name>",
+        Provider: "<service-name>",
+        PactDir:  "./pacts",
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    err = mockProvider.
+        AddInteraction().
+        Given("<state description>").
+        UponReceiving("<operation description from spec>").
+        WithRequest(consumer.Request{
+            Method:  "<HTTP method>",
+            Path:    matchers.String("<effective path with example values>"),
+            Headers: matchers.MapMatcher{
+                // include auth header placeholder if configured
+            },
+            Body: matchers.Map{
+                // request body fields using matchers.Like() for each field
+                // e.g. "userId": matchers.Like("userId-example"),
+            },
+        }).
+        WillRespondWith(consumer.Response{
+            Status:  200,
+            Headers: matchers.MapMatcher{"Content-Type": matchers.Like("application/json")},
+            Body: matchers.Map{
+                // response body fields using matchers.Like() for each field
+            },
+        }).
+        ExecuteTest(t, func(config consumer.MockServerConfig) error {
+            // Call your actual client code here against the pact mock server
+            baseURL := fmt.Sprintf("http://%s:%d", config.Host, config.Port)
+            resp, err := http.Get(baseURL + "<path>")
+            if err != nil {
+                return err
+            }
+            if resp.StatusCode != 200 {
+                return fmt.Errorf("expected 200, got %d", resp.StatusCode)
+            }
+            return nil
+        })
+    if err != nil {
+        t.Fatal(err)
+    }
 }
 ```
 
+Generate one test function per operation from the confirmed interactions. Fill in:
+- `matchers.Like(value)` for each field — pact-go verifies the type matches, not the exact value
+- The `ExecuteTest` callback must call the **real client code** (or an `http.Get` stub) against `config.Host:config.Port` — this is what causes pact-go to record the interaction
+
+Add to `go.mod` if not already present:
+```
+require github.com/pact-foundation/pact-go/v2 v2.x.x
+```
+
 Announce:
-> "Written `pacts/<consumer>-<provider>.json`. Run provider verification with:
+> "Generated `pact_consumer_test.go`. Running the tests will spin up pact-go's mock server, verify interactions, and write `pacts/<consumer>-<provider>.json` automatically:
 > ```
-> go test ./... -run TestPactProvider
+> go test ./... -run TestPactConsumer
 > ```
 > See Pact Go docs: https://docs.pact.io/implementation_guides/go"
 
