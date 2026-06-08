@@ -23,7 +23,8 @@
         "./skills/api-contract-check",
         "./skills/api-change-guardian",
         "./skills/api-mock-server",
-        "./skills/api-pact-generate"
+        "./skills/api-pact-generate",
+        "./skills/api-mcp-server"
       ]
     }
   ]
