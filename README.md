@@ -36,7 +36,7 @@ pinky-promise is not listed in the official Anthropic marketplace. Install it vi
 **Add the pinky-promise marketplace** (once per machine):
 
 ```bash
-claude plugin marketplace add superluminar-io/pinky-promise
+claude plugin marketplace add https://github.com/superluminar-io/pinky-promise
 ```
 
 **Then install** (run from your project directory):
@@ -284,7 +284,7 @@ Registry files carry a `pinkyPromiseVersion` field. If a skill encounters a file
 By default `marketplace add` tracks `main`. To pin to a specific release:
 
 ```bash
-claude plugin marketplace add git@github.com:superluminar-io/pinky-promise.git@v1.0.0 --scope project
+claude plugin marketplace add https://github.com/superluminar-io/pinky-promise@v1.0.0 --scope project
 claude plugin install pinky-promise@pinky-promise-local --scope project
 ```
 
