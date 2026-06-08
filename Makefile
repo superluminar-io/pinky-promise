@@ -39,7 +39,7 @@ print('SHA: ' + sha)"
 	@git add .claude-plugin/marketplace.json
 	@git diff --cached --quiet || git commit -m "chore: bump marketplace to $$(git rev-parse --short HEAD)"
 	@git push
-	@echo "Done. Users can update with: claude plugin marketplace update superluminar-io && claude plugin update pinky-swear@superluminar-io"
+	@echo "Done. Users can update with: claude plugin marketplace update superluminar-io && claude plugin update pinky-promise@superluminar-io"
 
 # Verify the plugin loads and its skills are visible — run before anything else
 check-plugin:
