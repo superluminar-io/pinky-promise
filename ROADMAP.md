@@ -45,6 +45,7 @@ The current IDL covers synchronous request/response (HTTP REST, gRPC) well but h
 - **pinky-promise as schema registry** — for brokers without a native schema registry (ActiveMQ, RabbitMQ, custom transports), the git registry becomes the schema registry; consumers fetch and pin to a schema version the same way they pin to an API version today
 - **Native schema registry integration** — for brokers that have one (Kafka + Confluent, AWS MSK + Glue), validate and sync pinky-promise types against the external registry at publish time rather than replacing it
 - **Schema serialization code generation** — generate Avro schemas, JSON Schema, or Protobuf definitions from spec types so services don't hand-write serialization formats
+- **Full compatibility within a major version** — within a given major version, all schema changes must be both backward-compatible (existing consumers can read messages written by the new schema) and forward-compatible (updated consumers can read messages written by the old schema); the guardian enforces this and blocks any change that breaks either direction; only a major version bump is allowed to relax the constraint
 - **Breaking change detection for message schemas** — extend `api-change-guardian` to classify schema evolutions (backward, forward, full compatibility) and block incompatible changes before a message format is published
 
 ### Developer experience
