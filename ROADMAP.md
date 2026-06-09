@@ -37,14 +37,15 @@ The current auth model is declarative: `bindings.json` describes the auth flow (
 - **Registry health check skill** — `/api-registry-status` that lists all published services, their versions, and flags stale or missing bindings
 - **Monorepo layout** — allow multiple services to share a single repo, with per-service sub-paths rather than requiring one repo per service
 
-### Async messaging (Kafka, Avro, Schema Registry)
+### Async messaging and schema registry
 
-The current IDL covers synchronous request/response (HTTP REST, gRPC) well but has no first-class model for async messaging. Planned work:
+The current IDL covers synchronous request/response (HTTP REST, gRPC) well but has no first-class model for async messaging. The pinky-promise registry already stores versioned, typed contracts — which is structurally what a schema registry does. The plan is to lean into that:
 
-- **Kafka topic contracts** — extend the spec IDL to declare topics, message keys, and payload schemas as part of the public API surface; producers publish topic contracts alongside HTTP contracts
-- **Avro schema integration** — bind spec types to Avro schemas and validate them against a Schema Registry (Confluent or AWS Glue) at publish time; consumers pin to a schema version the same way they pin to an API version
-- **Consumer group contract checks** — validate that a consumer's deserialization code matches the pinned schema version, catching field renames and type changes before deployment
-- **Breaking change detection for message schemas** — extend `api-change-guardian` to classify Avro schema evolutions (backward, forward, full compatibility) and block incompatible changes
+- **Topic and event contracts** — extend the IDL to declare message topics, routing keys, and payload schemas as part of the public API surface; producers publish these alongside HTTP/gRPC contracts
+- **pinky-promise as schema registry** — for brokers without a native schema registry (ActiveMQ, RabbitMQ, custom transports), the git registry becomes the schema registry; consumers fetch and pin to a schema version the same way they pin to an API version today
+- **Native schema registry integration** — for brokers that have one (Kafka + Confluent, AWS MSK + Glue), validate and sync pinky-promise types against the external registry at publish time rather than replacing it
+- **Schema serialization code generation** — generate Avro schemas, JSON Schema, or Protobuf definitions from spec types so services don't hand-write serialization formats
+- **Breaking change detection for message schemas** — extend `api-change-guardian` to classify schema evolutions (backward, forward, full compatibility) and block incompatible changes before a message format is published
 
 ### Developer experience
 

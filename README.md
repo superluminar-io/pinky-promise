@@ -26,7 +26,7 @@ Everything lives in a git registry you control. No external services required.
 - [ ] Consumer dependency drift detection
 - [ ] Registry health check
 - [ ] Monorepo layout support
-- [ ] Async messaging (Kafka, Avro, Schema Registry)
+- [ ] Async messaging and schema registry
 
 See [ROADMAP.md](ROADMAP.md) for details.
 
