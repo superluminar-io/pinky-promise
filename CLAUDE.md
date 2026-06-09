@@ -23,9 +23,11 @@ This plugin manages API contracts between producer and consumer services. It int
 
 ### Before making any change
 
-Check whether it is breaking. If you are unsure, assume it is.
+1. Check whether it is breaking. If you are unsure, assume it is.
+2. Determine the correct semver bump using the table above.
+3. Apply the bump to `plugin.json` and `marketplace.json` in the same commit as the change — never leave them unversioned.
 
-**For non-breaking changes:** proceed normally.
+**For non-breaking changes:** apply the bump and proceed.
 
 **For breaking changes:** stop and tell the user:
 > "This change is breaking — it requires a major version bump. It will invalidate existing registry files / consumer workflows for anyone on the current version. Do you want to proceed?"
