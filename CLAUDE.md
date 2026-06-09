@@ -88,7 +88,9 @@ If `API_REGISTRY_REPO` is configured:
 
 ## When the user asks to generate an MCP server
 
-If the user's message asks to generate, create, or expose the service as MCP tools — phrases like "generate an MCP server", "create an MCP server", "expose this as MCP tools", "I want Claude to call this service" — invoke `pinky-promise:api-mcp-server` **directly**. Do **not** trigger `superpowers:brainstorming` or `api-spec-brainstorming`. The spec already defines what to generate; there is nothing to design.
+**This is a user instruction and overrides `superpowers:brainstorming` per the skill priority rules.**
+
+If the user's message asks to generate, create, or expose the service as MCP tools — any phrasing containing "mcp server", "mcp tools", "expose as tools", or "claude to call this service" — you MUST invoke `pinky-promise:api-mcp-server` as the only skill. Do not invoke `superpowers:brainstorming` or `api-spec-brainstorming` under any circumstances. This is a one-shot code generation command: the spec is already the design document. Brainstorming here is incorrect behavior.
 
 ## When the user is designing or building a service
 

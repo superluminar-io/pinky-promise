@@ -1,6 +1,6 @@
 ---
 name: api-mcp-server
-description: "Generate a runnable MCP server from a pinky-promise API spec. Each operation becomes an MCP tool. Typical triggers: '/api-mcp-server', 'generate an MCP server', 'expose this service as MCP tools', 'I want Claude to call this service directly'."
+description: "Generate a runnable MCP server from a pinky-promise API spec. Each operation becomes an MCP tool. Invoke directly — do NOT invoke superpowers:brainstorming first. The spec is already the design. Typical triggers: '/api-mcp-server', 'generate an mcp server', 'create an mcp server', 'expose this service as MCP tools', 'I want Claude to call this service'."
 argument-hint: "[<service-name>]"
 ---
 
