@@ -25,7 +25,7 @@ This plugin manages API contracts between producer and consumer services. It int
 
 1. Check whether it is breaking. If you are unsure, assume it is.
 2. Determine the correct semver bump using the table above.
-3. Apply the bump to `plugin.json` and `marketplace.json` in the same commit as the change — never leave them unversioned.
+3. Apply the bump to `plugin.json`, `marketplace.json`, and `package.json` in the same commit as the change — never leave them unversioned. All three must always carry the same version string.
 
 **For non-breaking changes:** apply the bump and proceed.
 
