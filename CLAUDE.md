@@ -86,6 +86,10 @@ If `API_REGISTRY_REPO` is configured:
 
    Do not block the session — continue without registry data, but make sure the user knows the safety net is off.
 
+## When the user asks to generate an MCP server
+
+If the user's message asks to generate, create, or expose the service as MCP tools — phrases like "generate an MCP server", "create an MCP server", "expose this as MCP tools", "I want Claude to call this service" — invoke `pinky-promise:api-mcp-server` **directly**. Do **not** trigger `superpowers:brainstorming` or `api-spec-brainstorming`. The spec already defines what to generate; there is nothing to design.
+
 ## When the user is designing or building a service
 
 This check fires on the user message, before any other skill is invoked.
