@@ -12,6 +12,24 @@ pinky-promise is also flexible about where specs come from. Use `/api-spec-impor
 
 Everything lives in a git registry you control. No external services required.
 
+## What's coming
+
+- [x] API spec brainstorming
+- [x] Breaking change detection
+- [x] Consumer contract checks
+- [x] External API import (OpenAPI, gRPC, GraphQL)
+- [x] Spec publish to registry
+- [x] Mock server generation
+- [x] Pact consumer test generation
+- [ ] MCP server generation
+- [ ] Improved auth handling
+- [ ] Consumer dependency drift detection
+- [ ] Registry health check
+- [ ] Monorepo layout support
+- [ ] Async messaging and schema registry
+
+See [ROADMAP.md](ROADMAP.md) for details.
+
 ## See it in action
 
 **Catching a breaking change before it's planned:**
