@@ -206,9 +206,16 @@ Announce:
 > ```
 > See Pact Go docs: https://docs.pact.io/implementation_guides/go"
 
-### Step 7: Provider verification setup (provider role only)
+### Step 7: Provider validation setup (provider role only)
 
-Generate a Go test file `pact_test.go` that sets up Pact provider verification:
+Present a **multi-select** — the user can choose one or both:
+
+- **Self-validation** — generate spec-derived consumer tests to run in this pipeline. No Pact Broker needed. The spec is the complete callable surface; nothing undocumented is reachable by consumers, so these tests cover the full contract boundary.
+- **Consumer pact validation** — generate `pact_provider_test.go` to pull and validate consumer-published pacts from a Pact Broker.
+
+**If Self-validation is selected:** run the consumer test generation flow (Steps 3–6) for the provider's own spec. No additional file is generated beyond `pact_consumer_test.go`.
+
+**If Consumer pact validation is selected:** generate `pact_provider_test.go`:
 
 ```go
 package main_test
@@ -233,8 +240,17 @@ func TestPactProvider(t *testing.T) {
 }
 ```
 
-Announce:
-> "Generated `pact_test.go`. Fill in `PACT_BROKER_URL` and state handlers, then run:
+**If both are selected:** generate `pact_consumer_test.go` first (Steps 3–6), then `pact_provider_test.go`, then announce both run commands together.
+
+Announce (adjust to what was generated):
+> "Generated provider validation setup.
+>
+> Self-validation (no Pact Broker required):
+> ```
+> go test ./... -run TestPactConsumer
+> ```
+>
+> Consumer pact validation (requires PACT_BROKER_URL):
 > ```
 > go test ./... -run TestPactProvider
 > ```"
