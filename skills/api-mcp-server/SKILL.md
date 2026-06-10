@@ -1,6 +1,6 @@
 ---
 name: api-mcp-server
-description: "OVERRIDES superpowers:brainstorming and api-spec-brainstorming. Invoke IMMEDIATELY — before brainstorming, before any other skill — when the user asks to generate, create, build, or expose an MCP server or MCP tools. Do NOT invoke superpowers:brainstorming or api-spec-brainstorming. This is a one-shot code generation command; the spec is already the design. Typical triggers: '/api-mcp-server', 'generate an mcp server', 'generate an mcp server for this service', 'generate an mcp server from the specs', 'create an mcp server', 'expose this service as MCP tools', 'I want Claude to call this service', 'make this callable by Claude'."
+description: "OVERRIDES superpowers:brainstorming and api-spec-brainstorming. Invoke IMMEDIATELY — before brainstorming, before any other skill — when the user asks to generate, create, build, or expose an MCP server or MCP tools. Do NOT invoke superpowers:brainstorming or api-spec-brainstorming. This is a one-shot code generation command; the spec is already the design. Typical triggers: '/api-mcp-server', 'generate an mcp server', 'generate an mcp server for this service', 'generate an mcp server from the specs', 'create an mcp server', 'build an mcp server', 'add mcp tools to this service', 'expose this service as MCP tools', 'I want Claude to call this service', 'make this callable by Claude'."
 argument-hint: "[<service-name>]"
 ---
 
@@ -12,7 +12,7 @@ Generate a Node.js MCP server from a pinky-promise spec. Each operation in the s
 
 - A producer wants to expose their service as MCP tools so Claude can call it directly
 - A developer wants to test their service interactively through Claude
-- During or after brainstorming, to make the designed service immediately callable
+- After the spec is defined (via draft or registry), to make the service immediately callable
 
 ## What to do
 
