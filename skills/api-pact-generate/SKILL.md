@@ -129,6 +129,10 @@ If Edit: wait for the user to paste corrected interactions JSON. Use their versi
 Generate a Go test file `pact_consumer_test.go` that uses pact-go's own mock server to define interactions and record the contract. **Do NOT use the `api-mock-server` skill here — pact-go spins up its own mock server internally.**
 
 ```go
+// These tests validate that this service's client code only uses operations and fields
+// declared in <service>@<version>. Any field, parameter, or path not in the spec will
+// cause a test failure — this is intentional. The spec is the contract; the tests
+// enforce it.
 package <package>_test
 
 import (
@@ -200,7 +204,11 @@ require github.com/pact-foundation/pact-go/v2 v2.x.x
 ```
 
 Announce:
-> "Generated `pact_consumer_test.go`. Running the tests will spin up pact-go's mock server, verify interactions, and write `pacts/<consumer>-<provider>.json` automatically:
+> "Generated `pact_consumer_test.go`. These tests do two things:
+> 1. **Validate client code against the spec** — if the implementation accesses a field not declared in `<service>@<version>`, calls an undeclared path, or uses a wrong parameter name, the test fails. This is the anti-hallucination guarantee: the spec is the only source of truth and the tests enforce it.
+> 2. **Produce the pact contract artifact** — running the tests writes `pacts/<consumer>-<provider>.json` for use with a Pact Broker.
+>
+> Run:
 > ```
 > go test ./... -run TestPactConsumer
 > ```
