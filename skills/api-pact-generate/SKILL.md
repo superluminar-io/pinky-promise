@@ -27,13 +27,13 @@ Check the project state before asking anything:
 
 ```bash
 # provider signal: this service publishes its own API
-ls .pinky-promise/draft-spec.json 2>/dev/null && echo "HAS_DRAFT"
+ls .pinky-promise/draft-spec.json 2>/dev/null >/dev/null && echo "HAS_DRAFT"
 # consumer signal: any imported service spec (e.g. github-openapi.json, stripe-openapi.json)
-ls .pinky-promise/*.json 2>/dev/null | grep -v draft-spec | head -1 && echo "HAS_IMPORTS"
+find .pinky-promise -maxdepth 1 -name "*.json" ! -name "draft-spec.json" 2>/dev/null | grep -q . && echo "HAS_IMPORTS"
 # consumer signal: pinned dependency declaration
-ls api-dependencies.json 2>/dev/null && echo "HAS_DEPS"
-ls pact_consumer_test.go 2>/dev/null && echo "HAS_CONSUMER_TESTS"
-ls pact_provider_test.go 2>/dev/null && echo "HAS_PROVIDER_TESTS"
+ls api-dependencies.json 2>/dev/null >/dev/null && echo "HAS_DEPS"
+ls pact_consumer_test.go 2>/dev/null >/dev/null && echo "HAS_CONSUMER_TESTS"
+ls pact_provider_test.go 2>/dev/null >/dev/null && echo "HAS_PROVIDER_TESTS"
 ```
 
 **Signals:**
@@ -42,24 +42,19 @@ ls pact_provider_test.go 2>/dev/null && echo "HAS_PROVIDER_TESTS"
 - Existing consumer tests: `HAS_CONSUMER_TESTS`
 - Existing provider tests: `HAS_PROVIDER_TESTS`
 
-> **Example:** if `.pinky-promise/draft-spec.json` AND `.pinky-promise/github-openapi.json` both exist, that means `HAS_DRAFT` (provider signal) AND `HAS_IMPORTS` (consumer signal) are both present → use the "None | Both" row in the decision table → ask multi-select.
-
 **Decision table:**
 
 | Existing tests | Role signals | Behaviour |
 |---|---|---|
-| Consumer only | — | Multi-select: **Update consumer tests** / **Add provider tests** (show "Add provider tests" only if provider signal exists) |
-| Provider only | — | Multi-select: **Update provider tests** / **Add consumer tests** (show "Add consumer tests" only if consumer signal exists) |
-| Both | — | Multi-select: **Update consumer tests** / **Update provider tests** |
+| Consumer only | Any | Multi-select: **Update consumer tests** / **Add provider tests** (show "Add provider tests" only if provider signal exists) |
+| Provider only | Any | Multi-select: **Update provider tests** / **Add consumer tests** (show "Add consumer tests" only if consumer signal exists) |
+| Both | Any | Multi-select: **Update consumer tests** / **Update provider tests** |
 | None | Consumer only | Announce: "Detected consumer-only project — generating consumer tests." → proceed as Consumer |
 | None | Provider only | Announce: "Detected provider-only project — generating provider tests." → proceed as Provider |
 | None | Both | Ask (multi-select): "pinky-promise detected both a draft spec and imported service dependencies — which would you like to generate?" Options: **Consumer tests** / **Provider tests** |
 | None | Neither | Ask (multi-select): "What would you like to generate?" Options: **Consumer tests** / **Provider tests** |
 
-**When both provider signal (HAS_DRAFT) and consumer signal (HAS_IMPORTS or HAS_DEPS) are detected** — for example when `.pinky-promise/draft-spec.json` and an imported spec like `.pinky-promise/github-openapi.json` are both present — ask the user with a multi-select question:
-
-> "pinky-promise detected both a draft spec and imported service dependencies — which would you like to generate?"
-> Options: **Consumer tests** / **Provider tests**
+> **Example:** if `.pinky-promise/draft-spec.json` AND `.pinky-promise/github-openapi.json` both exist, that means `HAS_DRAFT` (provider signal) AND `HAS_IMPORTS` (consumer signal) are both present → use the "None | Both" row in the decision table → ask multi-select.
 
 **Update flow** (when updating existing tests): compare the current spec's operations against the operations covered in the existing test file, identified by function name convention (`TestPactConsumer_<OperationName>`, `TestPactProvider_<OperationName>`). For each delta — new operation in spec not yet in tests, changed input/output shape, operation removed from spec — propose the change individually and wait for approval before moving to the next. User can accept, skip, or edit each proposed change.
 
