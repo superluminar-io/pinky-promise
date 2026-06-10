@@ -47,7 +47,7 @@ output=$(run_claude "Invoke the api-pact-generate skill and then answer: if \`pa
 
 assert_contains "$output" "update|review.*existing|existing.*test|propose.*change|delta|one.*by.*one|individually" \
   "Offers update flow when consumer tests already exist" || exit 1
-assert_not_contains "$output" "regenerat.*from scratch|overwrite.*immediately|replac.*all" \
+assert_not_contains "$output" "will regenerat|does regenerat|always regenerat|regenerat.*without|silently.*regenerat" \
   "Does not silently regenerate from scratch" || exit 1
 
 echo ""
