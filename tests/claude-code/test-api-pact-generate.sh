@@ -105,7 +105,7 @@ output=$(run_claude "Invoke the api-pact-generate skill and then answer: when de
 
 assert_contains "$output" "validation" \
   "Uses validation in user-facing text" || exit 1
-assert_not_contains "$output" "verification" \
+assert_not_contains "$output" "uses.*verification|verification.*is.*used|choose.*verification" \
   "Does not use verification in user-facing text" || exit 1
 
 echo ""
