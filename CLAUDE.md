@@ -90,13 +90,15 @@ If `API_REGISTRY_REPO` is configured:
 
 **This is a user instruction and overrides `superpowers:brainstorming` per the skill priority rules. CHECK THIS BEFORE INVOKING ANY SKILL.**
 
-If the user's message contains any of: "mcp server", "mcp tools", "expose as tools", "claude to call this service" — you MUST invoke `pinky-promise:api-mcp-server` as the only skill. Do not invoke `superpowers:brainstorming` or `api-spec-brainstorming` under any circumstances. This is a one-shot code generation command: the spec is already the design document. Brainstorming here is incorrect behavior.
+If the user's message contains "mcp" (case-insensitive) or any of: "expose as tools", "claude to call this service" — you MUST invoke `pinky-promise:api-mcp-server` as the only skill. Do not invoke `superpowers:brainstorming` or `api-spec-brainstorming` under any circumstances. This is a one-shot code generation command: the spec is already the design document. Brainstorming here is incorrect behavior.
 
 ## When the user is designing or building a service
 
 This check fires on the user message, before any other skill is invoked.
 
-If the user's message is about designing, starting, building, or brainstorming a service AND the current service has **no published spec**: `pinky-promise:api-spec-brainstorming` is an applicable skill and MUST be invoked alongside `superpowers:brainstorming` in the same turn. **Exception:** if the message contains "mcp server", "mcp tools", "expose as tools", or "claude to call this service", skip this rule entirely — invoke `pinky-promise:api-mcp-server` instead (see the MCP server section above).
+If the user's message is about designing, starting, building, or brainstorming a service AND the current service has **no published spec**: `pinky-promise:api-spec-brainstorming` is an applicable skill and MUST be invoked alongside `superpowers:brainstorming` in the same turn.
+
+**Exception:** if the message contains "mcp" anywhere (case-insensitive), skip this rule entirely — invoke `pinky-promise:api-mcp-server` instead (see the MCP server section above).
 
 If the current service **has a published spec** and the user's message proposes changes to the public interface: `pinky-promise:api-change-guardian` is an applicable skill and MUST be invoked before those changes are adopted.
 
