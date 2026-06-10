@@ -64,6 +64,12 @@ run_mcp_trigger_test "spec" \
   || PASS=false
 
 echo ""
+echo "Test 4: user's exact failing phrase..."
+run_mcp_trigger_test "exact" \
+  "generate an mcp server for this" \
+  || PASS=false
+
+echo ""
 if [ "$PASS" = "true" ]; then
   echo "=== All mcp-server trigger tests passed ==="
   exit 0
