@@ -96,9 +96,10 @@ If the user's message contains "mcp" (case-insensitive) or any of: "expose as to
 
 This check fires on the user message, before any other skill is invoked.
 
-If the user's message is about designing, starting, building, or brainstorming a service AND the current service has **no published spec**: `pinky-promise:api-spec-brainstorming` is an applicable skill and MUST be invoked alongside `superpowers:brainstorming` in the same turn.
+If the user's message is about designing, starting, building, brainstorming, or generating **an MCP server or** a service:
 
-**Exception:** if the message contains "mcp" anywhere (case-insensitive), skip this rule entirely — invoke `pinky-promise:api-mcp-server` instead (see the MCP server section above).
+- **If the message contains "mcp" (case-insensitive): invoke `pinky-promise:api-mcp-server` only. Do NOT invoke brainstorming or `api-spec-brainstorming`.**
+- Otherwise, if the current service has **no published spec**: `pinky-promise:api-spec-brainstorming` is an applicable skill and MUST be invoked alongside `superpowers:brainstorming` in the same turn.
 
 If the current service **has a published spec** and the user's message proposes changes to the public interface: `pinky-promise:api-change-guardian` is an applicable skill and MUST be invoked before those changes are adopted.
 
