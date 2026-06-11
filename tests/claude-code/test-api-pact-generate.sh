@@ -101,11 +101,11 @@ assert_contains "$output" "spec.*contract|contract.*spec|enforce|only.*declared|
 
 echo ""
 echo "Test 11: Skill uses 'validation' not 'verification' in user-facing text..."
-output=$(run_claude "Invoke the api-pact-generate skill and then answer: when describing the provider test setup, does it use the word 'verification' or 'validation' in the text it shows to the user?")
+output=$(run_claude "Invoke the api-pact-generate skill and then answer: in the multi-select it shows the user for provider test setup, what are the exact option labels? List them only — do not explain.")
 
 assert_contains "$output" "validation" \
   "Uses validation in user-facing text" || exit 1
-assert_not_contains "$output" "uses.*verification|verification.*is.*used|choose.*verification" \
+assert_not_contains "$output" "^verification|option.*verification|label.*verification" \
   "Does not use verification in user-facing text" || exit 1
 
 echo ""
