@@ -33,7 +33,7 @@ find .pinky-promise -maxdepth 1 -name "*.json" ! -name "draft-spec.json" 2>/dev/
 # consumer signal: pinned dependency declaration
 ls api-dependencies.json 2>/dev/null >/dev/null && echo "HAS_DEPS"
 ls pact_consumer_test.go 2>/dev/null >/dev/null && echo "HAS_CONSUMER_TESTS"
-ls pact_provider_test.go 2>/dev/null >/dev/null && echo "HAS_PROVIDER_TESTS"
+{ ls pact_provider_test.go 2>/dev/null || ls pact_test.go 2>/dev/null; } >/dev/null 2>&1 && echo "HAS_PROVIDER_TESTS"
 ```
 
 **Signals:**
@@ -46,8 +46,8 @@ ls pact_provider_test.go 2>/dev/null >/dev/null && echo "HAS_PROVIDER_TESTS"
 
 | Existing tests | Role signals | Behaviour |
 |---|---|---|
-| Consumer only | Any | Multi-select: **Update consumer tests** / **Add provider tests** (show "Add provider tests" only if provider signal exists) |
-| Provider only | Any | Multi-select: **Update provider tests** / **Add consumer tests** (show "Add consumer tests" only if consumer signal exists) |
+| Consumer only | Any | If provider signal exists: multi-select **Update consumer tests** / **Add provider tests**. If no provider signal: announce "Detected existing consumer tests — proceeding to update." and proceed directly to update flow. |
+| Provider only | Any | If consumer signal exists: multi-select **Update provider tests** / **Add consumer tests**. If no consumer signal: announce "Detected existing provider tests — proceeding to update." and proceed directly to update flow. |
 | Both | Any | Multi-select: **Update consumer tests** / **Update provider tests** |
 | None | Consumer only | Announce: "Detected consumer-only project — generating consumer tests." → proceed as Consumer |
 | None | Provider only | Announce: "Detected provider-only project — generating provider tests." → proceed as Provider |
@@ -56,7 +56,7 @@ ls pact_provider_test.go 2>/dev/null >/dev/null && echo "HAS_PROVIDER_TESTS"
 
 > **Example:** if `.pinky-promise/draft-spec.json` AND `.pinky-promise/github-openapi.json` both exist, that means `HAS_DRAFT` (provider signal) AND `HAS_IMPORTS` (consumer signal) are both present → use the "None | Both" row in the decision table → ask multi-select.
 
-**Update flow** (when updating existing tests): compare the current spec's operations against the operations covered in the existing test file, identified by function name convention (`TestPactConsumer_<OperationName>`, `TestPactProvider_<OperationName>`). For each delta — new operation in spec not yet in tests, changed input/output shape, operation removed from spec — propose the change individually and wait for approval before moving to the next. User can accept, skip, or edit each proposed change.
+**Update flow** (when updating existing tests): compare the current spec's operations against the operations covered in the existing test file, identified by function name convention (`TestPactConsumer_<OperationName>`, `TestPactProvider_<OperationName>`). For each delta — new operation in spec not yet in tests, changed input/output shape, operation removed from spec — propose the change individually and wait for approval before moving to the next. User can accept, skip, or edit each proposed change. When updating consumer tests, load the spec via the consumer path in Step 2 (api-dependencies.json or registry). When updating provider tests, load the spec via the provider path in Step 2 (draft-spec.json or registry).
 
 ### Step 2: Locate the spec
 
@@ -72,7 +72,9 @@ rm -rf .pinky-promise/registry
 
 **Provider:** Check for `.pinky-promise/draft-spec.json`, else fetch the latest from the registry.
 
-### Step 3: Ask about Pact setup (consumer only)
+### Step 3: Ask about Pact setup
+
+**Note for provider self-validation path:** use the provider's own service name as the consumer name (e.g. `user-service-self`). The pact file will be `pacts/<service>-self-<service>.json`.
 
 Use `AskUserQuestion` (single-select):
 - **Create new Pact contract** — generate interactions for all operations
