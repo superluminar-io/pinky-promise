@@ -21,11 +21,42 @@ Generate Pact consumer-driven contract test files from a pinky-promise spec.
 
 Announce: "Running api-pact-generate."
 
-### Step 1: Determine role
+### Step 1: Detect role
 
-Use `AskUserQuestion` (single-select):
-- **Consumer** — I am writing a client that calls this service (generates consumer-side interaction file)
-- **Provider** — I am implementing this service (generates provider verification setup)
+Check the project state before asking anything:
+
+```bash
+# provider signal: this service publishes its own API
+ls .pinky-promise/draft-spec.json 2>/dev/null >/dev/null && echo "HAS_DRAFT"
+# consumer signal: any imported service spec (e.g. github-openapi.json, stripe-openapi.json)
+find .pinky-promise -maxdepth 1 -name "*.json" ! -name "draft-spec.json" 2>/dev/null | grep -q . && echo "HAS_IMPORTS"
+# consumer signal: pinned dependency declaration
+ls api-dependencies.json 2>/dev/null >/dev/null && echo "HAS_DEPS"
+ls pact_consumer_test.go 2>/dev/null >/dev/null && echo "HAS_CONSUMER_TESTS"
+{ ls pact_provider_test.go 2>/dev/null || ls pact_test.go 2>/dev/null; } >/dev/null 2>&1 && echo "HAS_PROVIDER_TESTS"
+```
+
+**Signals:**
+- Provider signal: `HAS_DRAFT` — `.pinky-promise/draft-spec.json` exists (this service publishes an API)
+- Consumer signal: `HAS_IMPORTS` or `HAS_DEPS` — **any** `.json` file in `.pinky-promise/` *other than* `draft-spec.json` is an imported external service spec that this project depends on as a consumer (examples: `.pinky-promise/github-openapi.json`, `.pinky-promise/stripe-openapi.json`, `.pinky-promise/bedrock-runtime-openapi.json`); `api-dependencies.json` also counts as a consumer signal
+- Existing consumer tests: `HAS_CONSUMER_TESTS`
+- Existing provider tests: `HAS_PROVIDER_TESTS`
+
+**Decision table:**
+
+| Existing tests | Role signals | Behaviour |
+|---|---|---|
+| Consumer only | Any | If provider signal exists: multi-select **Update consumer tests** / **Add provider tests**. If no provider signal: announce "Detected existing consumer tests — proceeding to update." and proceed directly to update flow. |
+| Provider only | Any | If consumer signal exists: multi-select **Update provider tests** / **Add consumer tests**. If no consumer signal: announce "Detected existing provider tests — proceeding to update." and proceed directly to update flow. |
+| Both | Any | Multi-select: **Update consumer tests** / **Update provider tests** |
+| None | Consumer only | Announce: "Detected consumer-only project — generating consumer tests." → proceed as Consumer |
+| None | Provider only | Announce: "Detected provider-only project — generating provider tests." → proceed as Provider |
+| None | Both | Ask (multi-select): "pinky-promise detected both a draft spec and imported service dependencies — which would you like to generate?" Options: **Consumer tests** / **Provider tests** |
+| None | Neither | Ask (multi-select): "What would you like to generate?" Options: **Consumer tests** / **Provider tests** |
+
+> **Example:** if `.pinky-promise/draft-spec.json` AND `.pinky-promise/github-openapi.json` both exist, that means `HAS_DRAFT` (provider signal) AND `HAS_IMPORTS` (consumer signal) are both present → use the "None | Both" row in the decision table → ask multi-select.
+
+**Update flow** (when updating existing tests): compare the current spec's operations against the operations covered in the existing test file, identified by function name convention (`TestPactConsumer_<OperationName>`, `TestPactProvider_<OperationName>`). For each delta — new operation in spec not yet in tests, changed input/output shape, operation removed from spec — propose the change individually and wait for approval before moving to the next. User can accept, skip, or edit each proposed change. When updating consumer tests, load the spec via the consumer path in Step 2 (api-dependencies.json or registry). When updating provider tests, load the spec via the provider path in Step 2 (draft-spec.json or registry).
 
 ### Step 2: Locate the spec
 
@@ -41,7 +72,9 @@ rm -rf .pinky-promise/registry
 
 **Provider:** Check for `.pinky-promise/draft-spec.json`, else fetch the latest from the registry.
 
-### Step 3: Ask about Pact setup (consumer only)
+### Step 3: Ask about Pact setup
+
+**Note for provider self-validation path:** use the provider's own service name as the consumer name (e.g. `user-service-self`). The pact file will be `pacts/<service>-self-<service>.json`.
 
 Use `AskUserQuestion` (single-select):
 - **Create new Pact contract** — generate interactions for all operations
@@ -98,6 +131,10 @@ If Edit: wait for the user to paste corrected interactions JSON. Use their versi
 Generate a Go test file `pact_consumer_test.go` that uses pact-go's own mock server to define interactions and record the contract. **Do NOT use the `api-mock-server` skill here — pact-go spins up its own mock server internally.**
 
 ```go
+// These tests validate that this service's client code only uses operations and fields
+// declared in <service>@<version>. Any field, parameter, or path not in the spec will
+// cause a test failure — this is intentional. The spec is the contract; the tests
+// enforce it.
 package <package>_test
 
 import (
@@ -169,15 +206,26 @@ require github.com/pact-foundation/pact-go/v2 v2.x.x
 ```
 
 Announce:
-> "Generated `pact_consumer_test.go`. Running the tests will spin up pact-go's mock server, verify interactions, and write `pacts/<consumer>-<provider>.json` automatically:
+> "Generated `pact_consumer_test.go`. These tests do two things:
+> 1. **Validate client code against the spec** — if the implementation accesses a field not declared in `<service>@<version>`, calls an undeclared path, or uses a wrong parameter name, the test fails. This is the anti-hallucination guarantee: the spec is the only source of truth and the tests enforce it.
+> 2. **Produce the pact contract artifact** — running the tests writes `pacts/<consumer>-<provider>.json` for use with a Pact Broker.
+>
+> Run:
 > ```
 > go test ./... -run TestPactConsumer
 > ```
 > See Pact Go docs: https://docs.pact.io/implementation_guides/go"
 
-### Step 7: Provider verification setup (provider role only)
+### Step 7: Provider validation setup (provider role only)
 
-Generate a Go test file `pact_test.go` that sets up Pact provider verification:
+Present a **multi-select** — the user can choose one or both:
+
+- **Self-validation** — generate spec-derived consumer tests to run in this pipeline. No Pact Broker needed. The spec is the complete callable surface; nothing undocumented is reachable by consumers, so these tests cover the full contract boundary.
+- **Consumer pact validation** — generate `pact_provider_test.go` to pull and validate consumer-published pacts from a Pact Broker.
+
+**If Self-validation is selected:** run the consumer test generation flow (Steps 3–6) for the provider's own spec. No additional file is generated beyond `pact_consumer_test.go`.
+
+**If Consumer pact validation is selected:** generate `pact_provider_test.go`:
 
 ```go
 package main_test
@@ -202,8 +250,17 @@ func TestPactProvider(t *testing.T) {
 }
 ```
 
-Announce:
-> "Generated `pact_test.go`. Fill in `PACT_BROKER_URL` and state handlers, then run:
+**If both are selected:** generate `pact_consumer_test.go` first (Steps 3–6), then `pact_provider_test.go`, then announce both run commands together.
+
+Announce (adjust to what was generated):
+> "Generated provider validation setup.
+>
+> Self-validation (no Pact Broker required):
+> ```
+> go test ./... -run TestPactConsumer
+> ```
+>
+> Consumer pact validation (requires PACT_BROKER_URL):
 > ```
 > go test ./... -run TestPactProvider
 > ```"
