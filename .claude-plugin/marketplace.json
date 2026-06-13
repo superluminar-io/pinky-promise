@@ -9,7 +9,7 @@
     {
       "name": "pinky-promise",
       "description": "API contract enforcement for producer and consumer services",
-      "version": "0.0.1",
+      "version": "0.2.0",
       "source": "./",
       "author": {
         "name": "superluminar",
@@ -23,7 +23,8 @@
         "./skills/api-contract-check",
         "./skills/api-change-guardian",
         "./skills/api-mock-server",
-        "./skills/api-pact-generate"
+        "./skills/api-pact-generate",
+        "./skills/api-mcp-server"
       ]
     }
   ]
