@@ -1,7 +1,7 @@
 {
   "name": "pinky-promise",
   "description": "API contract enforcement for producer and consumer services — brainstorming, planning, and review hooks that catch breaking changes and missing specs before they ship",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "superluminar",
     "email": "robert.von.massow@superluminar.io"

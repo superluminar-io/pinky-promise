@@ -34,6 +34,7 @@ run_test "$SCRIPT_DIR/test-api-spec-brainstorming.sh"
 run_test "$SCRIPT_DIR/test-api-change-guardian-triggers.sh"
 run_test "$SCRIPT_DIR/test-brainstorming-external-hook.sh"
 run_test "$SCRIPT_DIR/test-api-spec-publish.sh"
+run_test "$SCRIPT_DIR/test-api-pact-generate.sh"
 
 echo ""
 echo "════════════════════════════════════════"
