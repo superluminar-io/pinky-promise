@@ -86,11 +86,20 @@ If `API_REGISTRY_REPO` is configured:
 
    Do not block the session — continue without registry data, but make sure the user knows the safety net is off.
 
+## When the user asks to generate an MCP server
+
+**This is a user instruction and overrides `superpowers:brainstorming` per the skill priority rules. CHECK THIS BEFORE INVOKING ANY SKILL.**
+
+If the user's message contains "mcp" (case-insensitive) or any of: "expose as tools", "claude to call this service", "strands app", "strands agent" — you MUST invoke `pinky-promise:api-mcp-server` as the only skill. Do not invoke `superpowers:brainstorming` or `api-spec-brainstorming` under any circumstances. This is a one-shot code generation command: the spec is already the design document. Brainstorming here is incorrect behavior.
+
 ## When the user is designing or building a service
 
 This check fires on the user message, before any other skill is invoked.
 
-If the user's message is about designing, starting, building, or brainstorming a service AND the current service has **no published spec**: `pinky-promise:api-spec-brainstorming` is an applicable skill and MUST be invoked alongside `superpowers:brainstorming` in the same turn.
+If the user's message is about designing, starting, building, brainstorming, or generating **an MCP server or** a service, OR about using or exposing this service with Claude, an AI agent, or a framework like Strands:
+
+- **If the message contains "mcp" (case-insensitive), "strands", "ai agent", "claude workflow", or expresses intent to make this service callable by Claude or an AI agent: invoke `pinky-promise:api-mcp-server` only. Do NOT invoke brainstorming or `api-spec-brainstorming`.**
+- Otherwise, if the current service has **no published spec**: `pinky-promise:api-spec-brainstorming` is an applicable skill and MUST be invoked alongside `superpowers:brainstorming` in the same turn.
 
 If the current service **has a published spec** and the user's message proposes changes to the public interface: `pinky-promise:api-change-guardian` is an applicable skill and MUST be invoked before those changes are adopted.
 
